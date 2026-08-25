@@ -1,0 +1,22 @@
+/*
+ * OPTIONAL. Kida UI does not require Tailwind (ADR D7).
+ * This file only re-exposes the same tokens as Tailwind v4 theme values, so Tailwind
+ * users can write `duration-kida-md` / `ease-kida-out` instead of arbitrary values.
+ *
+ *   @import "tailwindcss";
+ *   @import "@kida-ui/styles/tailwind.css";
+ */
+@import "./kida.css";
+
+@theme {
+  --duration-kida-xs: var(--kida-duration-xs);
+  --duration-kida-sm: var(--kida-duration-sm);
+  --duration-kida-md: var(--kida-duration-md);
+  --duration-kida-lg: var(--kida-duration-lg);
+  --duration-kida-xl: var(--kida-duration-xl);
+
+  --ease-kida-out: var(--kida-ease-out);
+  --ease-kida-in: var(--kida-ease-in);
+  --ease-kida-in-out: var(--kida-ease-in-out);
+  --ease-kida-spring: var(--kida-ease-spring);
+}

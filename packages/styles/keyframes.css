@@ -1,0 +1,43 @@
+/* Kida UI — shared keyframes. Referenced by every CSS-driven enter/exit (ADR D5). */
+
+@keyframes kida-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes kida-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes kida-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(var(--kida-enter-x, 0), var(--kida-enter-y, var(--kida-distance-md)), 0)
+      scale(var(--kida-enter-scale, 1));
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes kida-exit {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(var(--kida-exit-x, 0), var(--kida-exit-y, var(--kida-distance-sm)), 0)
+      scale(var(--kida-exit-scale, 1));
+  }
+}

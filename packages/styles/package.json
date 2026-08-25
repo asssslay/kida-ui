@@ -1,0 +1,23 @@
+{
+  "name": "@kida-ui/styles",
+  "version": "0.0.0",
+  "description": "Plain CSS custom properties, keyframes and data-attribute contract for Kida UI. No build step, no dependencies, any stack.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
+  "files": [
+    "*.css"
+  ],
+  "exports": {
+    "./kida.css": "./kida.css",
+    "./tokens.css": "./tokens.css",
+    "./keyframes.css": "./keyframes.css",
+    "./tailwind.css": "./tailwind.css",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

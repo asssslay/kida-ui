@@ -1,0 +1,30 @@
+/*
+ * Kida UI — base stylesheet. Import this once, in any framework:
+ *   @import "@kida-ui/styles/kida.css";
+ */
+@import "./tokens.css";
+@import "./keyframes.css";
+
+/*
+ * The data-attribute contract (ADR D6).
+ * Any element that opts in with `data-kida-animate` gets mount/unmount motion from CSS
+ * alone, driven by the `data-state` that the behaviour layer (Zag) already writes.
+ * Every knob below is a custom property, so a component — or a user — overrides motion
+ * without touching framework code.
+ */
+[data-kida-animate][data-state="open"],
+[data-kida-animate][data-state="visible"] {
+  animation: kida-enter var(--kida-enter-duration, var(--kida-duration-md))
+    var(--kida-enter-ease, var(--kida-ease-out)) both;
+}
+
+[data-kida-animate][data-state="closed"],
+[data-kida-animate][data-state="hidden"] {
+  animation: kida-exit var(--kida-exit-duration, var(--kida-duration-sm))
+    var(--kida-exit-ease, var(--kida-ease-in)) both;
+}
+
+/* While the node is present but not shown, nothing should animate. */
+[data-kida-animate][hidden] {
+  animation: none;
+}

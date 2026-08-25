@@ -1,0 +1,8 @@
+packages:
+  - packages/*
+  - apps/*
+
+# pnpm settings (kept here, not in .npmrc — npm warns on unknown keys there).
+# Packages must declare what they import; this protects the D3a boundary.
+autoInstallPeers: false
+strictPeerDependencies: false

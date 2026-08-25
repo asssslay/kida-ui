@@ -1,0 +1,28 @@
+{
+  "name": "kida-ui",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.25.0",
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "gate:agnostic": "node scripts/check-framework-deps.mjs",
+    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm gate:agnostic",
+    "changeset": "changeset",
+    "release": "turbo run build && changeset publish"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.9",
+    "@changesets/cli": "3.0.0",
+    "publint": "0.3.23",
+    "turbo": "2.10.11",
+    "typescript": "7.0.2"
+  }
+}

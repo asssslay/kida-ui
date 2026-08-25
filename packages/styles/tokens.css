@@ -1,0 +1,46 @@
+/*
+ * Kida UI — motion tokens.
+ * Plain CSS custom properties (ADR D7). No preprocessor, no Tailwind, no build step.
+ */
+
+:root {
+  /* Durations */
+  --kida-duration-xs: 100ms;
+  --kida-duration-sm: 150ms;
+  --kida-duration-md: 300ms;
+  --kida-duration-lg: 500ms;
+  --kida-duration-xl: 800ms;
+
+  /* Easings */
+  --kida-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --kida-ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --kida-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --kida-ease-spring: linear(0, 0.5, 0.9, 1.02, 1);
+
+  /* Travel distances used by the enter/exit keyframes */
+  --kida-distance-sm: 4px;
+  --kida-distance-md: 8px;
+  --kida-distance-lg: 16px;
+
+  /* Stagger step between siblings */
+  --kida-stagger: 60ms;
+}
+
+/*
+ * The single reduced-motion guard for every CSS-driven animation in the library.
+ * Durations collapse to ~0 instead of being disabled, so `animationend` still fires
+ * and presence-based unmounts (ADR D5) never hang.
+ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --kida-duration-xs: 1ms;
+    --kida-duration-sm: 1ms;
+    --kida-duration-md: 1ms;
+    --kida-duration-lg: 1ms;
+    --kida-duration-xl: 1ms;
+    --kida-distance-sm: 0px;
+    --kida-distance-md: 0px;
+    --kida-distance-lg: 0px;
+    --kida-stagger: 0ms;
+  }
+}
