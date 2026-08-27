@@ -25,6 +25,7 @@ is React-only; the multi-stack space (Ark UI, Zag) is motion-agnostic. Kida sits
 | D9 | npm packages + registry generated from ONE source | shadcn's `registry:build` pattern. Hand-maintained copies always rot. |
 | D10 | Docs site on Astro | Only mainstream docs stack with native React+Svelte+Vue+Solid live demos in one page |
 | D11 | `@kida-ui/react` ships a package-wide `'use client'` banner, injected at build time | Rolldown drops per-module directives when merging modules into one chunk — verified in the scaffold. Every export here is client-side by nature, so banner the bundle rather than fight the bundler per file. |
+| D12 | Components are tested in a **real browser** (Vitest browser mode + Playwright), not jsdom | Everything these components do — layout measurement, `IntersectionObserver`, `ResizeObserver`, WAAPI, CSS keyframes — is absent or faked in jsdom, so a green jsdom suite proves nothing. jsdom stays for pure logic (`packages/motion`). |
 
 ## 3. Layers
 
@@ -169,4 +170,6 @@ Vitest + Playwright + axe · Biome · Astro (docs) · Shiki
 - **R3** copy-source drift → `build-registry.ts` is the only writer; CI fails on manual edits to `registry/r/`
 - **R4** breadth-before-depth → framework #2 blocked until React hits v1.0
 - ~~**R5** npm `@kida` scope unconfirmed~~ → **resolved 2026-08-18: `@kida` is taken.** `GET registry.npmjs.org/-/org/kida/user` returns `{"kida":"owner"}` (200), while `kida-ui` returns 404 `Scope not found`. That endpoint resolves *user* scopes too — control: `sindresorhus` → 200, `zzq9xnope` → 404 — so zero published packages never meant available. **All packages are `@kida-ui/*`.** → **Closed 2026-08-25: the `kida-ui` org exists and is owned by `asssslay`** (`npm org ls kida-ui` → `asssslay - owner`; the scope endpoint now returns 200 where it returned 404). Free plan, unlimited public packages. Publishing is unblocked.
+- **R7** the JS engine keeps its own idea of an element's current value → never re-hide an element by writing `style` behind its back and expect the next `animate()` to infer a start: spell both keyframes out. Verified in the browser: a `once: false` reveal otherwise resolves instantly on re-entry and never animates.
+- **R8** Playwright ships no bundled Chromium for macOS 13 → `packages/react/vitest.config.ts` falls back to the system Chrome when the bundled build is missing; CI is unaffected
 - **R6** dropping Tailwind classes costs the shadcn "edit utilities inline" DX → mitigate with per-component CSS custom properties + `className` passthrough

@@ -8,3 +8,7 @@ coverage/
 .env
 .env.*
 !.env.example
+
+# Vitest browser mode writes a screenshot for every failing test.
+__screenshots__/
+.vitest-attachments/

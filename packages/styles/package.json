@@ -8,14 +8,16 @@
     "*.css"
   ],
   "files": [
-    "*.css"
+    "*.css",
+    "components/*.css"
   ],
   "exports": {
     "./kida.css": "./kida.css",
     "./tokens.css": "./tokens.css",
     "./keyframes.css": "./keyframes.css",
     "./tailwind.css": "./tailwind.css",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./components/collapse.css": "./components/collapse.css"
   },
   "publishConfig": {
     "access": "public"

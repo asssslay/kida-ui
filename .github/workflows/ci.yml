@@ -16,6 +16,10 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      # The React components are tested in a real browser — layout, IntersectionObserver
+      # and CSS animations have no meaningful jsdom equivalent.
+      - name: Install Chromium for the browser tests
+        run: pnpm --filter @kida-ui/react exec playwright install --with-deps chromium
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test

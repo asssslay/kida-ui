@@ -1,0 +1,52 @@
+/*
+ * Collapse — the CSS-driven half of ADR D5.
+ *
+ * `@zag-js/presence` reads the computed animation on this element to decide how long to
+ * keep it mounted, so the exit transition MUST be a CSS animation. If it were a JS
+ * animation the node would be torn out on the first frame.
+ *
+ * Height is animated rather than transform, which is not compositor-friendly — the usual
+ * and unavoidable trade for collapsing to natural height. Content inside should animate
+ * with opacity/transform if it needs motion of its own.
+ */
+
+[data-kida-collapse] {
+  overflow: hidden;
+}
+
+[data-kida-collapse][data-state="open"] {
+  animation: kida-collapse-open var(--kida-collapse-duration, var(--kida-duration-md))
+    var(--kida-collapse-ease, var(--kida-ease-out));
+}
+
+[data-kida-collapse][data-state="closed"] {
+  animation: kida-collapse-close var(--kida-collapse-duration, var(--kida-duration-sm))
+    var(--kida-collapse-ease, var(--kida-ease-in));
+}
+
+/*
+ * Mounted already-open: there is no previous state to animate from.
+ * Declared last so it wins on order — both selectors have the same specificity, which is
+ * why this needs no `!important`.
+ */
+[data-kida-collapse][data-skip-animation] {
+  animation: none;
+}
+
+@keyframes kida-collapse-open {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--kida-collapse-height);
+  }
+}
+
+@keyframes kida-collapse-close {
+  from {
+    height: var(--kida-collapse-height);
+  }
+  to {
+    height: 0;
+  }
+}

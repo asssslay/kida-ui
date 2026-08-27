@@ -1,0 +1,130 @@
+:root {
+  color-scheme: dark;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  --bg: #0b0b0f;
+  --fg: #e8e8ef;
+  --muted: #8a8a9a;
+  --line: #23232e;
+  --accent: #7c5cff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+main {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 12rem;
+}
+header {
+  padding-block: 2rem 3rem;
+  border-bottom: 1px solid var(--line);
+}
+h1 {
+  font-size: 1.6rem;
+  margin: 0 0 0.75rem;
+}
+h2 {
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem;
+}
+section {
+  padding-block: 3rem;
+  border-bottom: 1px solid var(--line);
+}
+.hint {
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  margin: 0.25rem 0 1.25rem;
+}
+
+.badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+}
+.badge.on {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+button {
+  font: inherit;
+  color: var(--fg);
+  background: transparent;
+  cursor: pointer;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+}
+button:hover {
+  border-color: var(--accent);
+}
+
+.grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+}
+.grid.dense {
+  grid-template-columns: repeat(auto-fill, minmax(4rem, 1fr));
+}
+
+.card {
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: #121218;
+}
+.card code {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+.card.small {
+  align-items: center;
+  justify-content: center;
+  min-height: 4rem;
+}
+
+.panel {
+  margin-top: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+}
+.panel-inner {
+  padding: 1rem 1.25rem;
+}
+.panel-inner p {
+  margin: 0 0 0.75rem;
+  line-height: 1.6;
+}
+.panel-inner p:last-child {
+  margin-bottom: 0;
+}
+.panel code {
+  color: var(--accent);
+  font-size: 0.85em;
+}
+
+.spacer {
+  height: 70vh;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  letter-spacing: 0.3em;
+  font-size: 0.75rem;
+}
