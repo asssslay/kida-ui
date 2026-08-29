@@ -1,11 +1,13 @@
 :root {
-  color-scheme: dark;
+  /* Light only, deliberately: no dark palette and no `prefers-color-scheme` block until
+     the theming story is settled. One set of colours to look at while judging motion. */
+  color-scheme: light;
   font-family: ui-sans-serif, system-ui, sans-serif;
-  --bg: #0b0b0f;
-  --fg: #e8e8ef;
-  --muted: #8a8a9a;
-  --line: #23232e;
-  --accent: #7c5cff;
+  --bg: #ffffff;
+  --fg: #17171f;
+  --muted: #62626f;
+  --line: #e3e3ea;
+  --accent: #5b3df5;
 }
 
 * {
@@ -88,7 +90,7 @@ button:hover {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  background: #121218;
+  background: #fafafb;
 }
 .card code {
   color: var(--muted);
@@ -100,13 +102,19 @@ button:hover {
   min-height: 4rem;
 }
 
+/*
+ * Nothing but the margin lives on the collapsing root. A border there renders at 1px for
+ * the whole close — Chrome floors sub-pixel border widths to a hairline rather than
+ * letting them fade — so the box could never travel its last 2px and sat there static
+ * until presence unmounted it. The frame belongs on the content the root clips.
+ */
 .panel {
   margin-top: 1rem;
-  border: 1px solid var(--line);
-  border-radius: 0.75rem;
 }
 .panel-inner {
   padding: 1rem 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
 }
 .panel-inner p {
   margin: 0 0 0.75rem;

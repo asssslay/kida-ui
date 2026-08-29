@@ -19,9 +19,22 @@
     var(--kida-collapse-ease, var(--kida-ease-out));
 }
 
+/*
+ * Deliberately not `--kida-ease-in`. Both of that curve's control points sit at y=0, so
+ * it is pinned near zero for most of its length: measured over the old 150ms close, the
+ * panel was 4% collapsed at the halfway mark and dropped the last 53% inside ~26ms —
+ * a frame and a half. It reads as the panel blinking out rather than closing. Reversing
+ * the open curve is exact on paper and wrong in the eye, because the fast part lands
+ * where nobody is still looking. Here the shrinking IS the information, so it has to be
+ * legible, which also means matching the open duration instead of halving it.
+ *
+ * `forwards` holds the final frame: presence unmounts on `animationend`, and without a
+ * fill mode any gap between the two lets the element revert to its natural height for a
+ * frame — a full-height flash on the way out.
+ */
 [data-kida-collapse][data-state="closed"] {
-  animation: kida-collapse-close var(--kida-collapse-duration, var(--kida-duration-sm))
-    var(--kida-collapse-ease, var(--kida-ease-in));
+  animation: kida-collapse-close var(--kida-collapse-duration, var(--kida-duration-md))
+    var(--kida-collapse-ease, var(--kida-ease-in-out)) forwards;
 }
 
 /*
@@ -33,20 +46,58 @@
   animation: none;
 }
 
+/*
+ * The root's vertical frame collapses with the content, because `height: 0` does not mean
+ * "invisible": a root with a 1px border still renders a 2px box, and one with
+ * `padding: 1rem` a 32px slab. Left in, that residue sits perfectly static at the end of
+ * the close until presence unmounts — a hairline that hangs for a few frames and then
+ * pops out.
+ *
+ * Both ends of every property are written out on purpose. An omitted end is supposed to
+ * be filled in from the element's own value, and for `opacity` it is, but Chrome does not
+ * synthesise one for border widths: a keyframe naming only `border-top-width: 0` leaves
+ * the border sitting at its authored width for the whole animation. Hence the four
+ * variables, which the component measures off the root and writes back. They are outputs,
+ * not knobs — the `0px` fallbacks only stand in for the frame before the first
+ * measurement lands, and a root with no border or padding animates 0 to 0 for free.
+ *
+ * Padding collapses cleanly, sub-pixel and all the way down. A border does not: Chrome
+ * renders any width between 0 and 1px as a full hairline, so a 1px border reads as 1px
+ * for the entire close and only disappears on the final frame. That is enough to keep the
+ * last frame honest, but a bordered root still hits a 2px floor slightly before the
+ * animation ends and holds it for a few frames. There is no CSS answer to that, so the
+ * rule is: keep borders on the content, and let this root be the thing that clips it.
+ */
 @keyframes kida-collapse-open {
   from {
     height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
   }
   to {
     height: var(--kida-collapse-height);
+    padding-top: var(--kida-collapse-padding-top, 0px);
+    padding-bottom: var(--kida-collapse-padding-bottom, 0px);
+    border-top-width: var(--kida-collapse-border-top-width, 0px);
+    border-bottom-width: var(--kida-collapse-border-bottom-width, 0px);
   }
 }
 
 @keyframes kida-collapse-close {
   from {
     height: var(--kida-collapse-height);
+    padding-top: var(--kida-collapse-padding-top, 0px);
+    padding-bottom: var(--kida-collapse-padding-bottom, 0px);
+    border-top-width: var(--kida-collapse-border-top-width, 0px);
+    border-bottom-width: var(--kida-collapse-border-bottom-width, 0px);
   }
   to {
     height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
   }
 }
