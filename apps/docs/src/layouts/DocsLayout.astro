@@ -1,6 +1,7 @@
 ---
 import { type CollectionEntry, getCollection } from 'astro:content'
 import type { MarkdownHeading } from 'astro'
+import { COMPONENT_CATEGORIES, categoryOrder } from '../config/components'
 import Base from './Base.astro'
 
 interface Props {
@@ -11,8 +12,16 @@ interface Props {
 const { entry, headings } = Astro.props
 
 const entries = (await getCollection('components')).sort(
-  (a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title),
+  (a, b) =>
+    categoryOrder(a.data.category) - categoryOrder(b.data.category) ||
+    a.data.order - b.data.order ||
+    a.data.title.localeCompare(b.data.title),
 )
+
+const groups = COMPONENT_CATEGORIES.map((category) => ({
+  ...category,
+  entries: entries.filter((item) => item.data.category === category.id),
+})).filter((category) => category.entries.length > 0)
 
 // h2 carries the page outline and h3 sits under it; anything deeper would make the rail
 // longer than the section it points at.
@@ -23,17 +32,25 @@ const toc = headings.filter((heading) => heading.depth === 2 || heading.depth ==
   <div class="docs">
     <aside class="sidebar">
       <h2>Components</h2>
-      <ul>
-        {
-          entries.map((item) => (
-            <li>
-              <a href={`/docs/${item.id}`} aria-current={item.id === entry.id ? 'page' : undefined}>
-                {item.data.title}
-              </a>
-            </li>
-          ))
-        }
-      </ul>
+      {
+        groups.map((group) => (
+          <section class="sidebar-group">
+            <h3>{group.label}</h3>
+            <ul>
+              {group.entries.map((item) => (
+                <li>
+                  <a
+                    href={`/docs/${item.id}`}
+                    aria-current={item.id === entry.id ? 'page' : undefined}
+                  >
+                    {item.data.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+      }
     </aside>
 
     <main class="prose" id="main">

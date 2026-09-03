@@ -1,39 +1,13 @@
 ---
 import { getCollection } from 'astro:content'
 import Demo from '../components/Demo.astro'
+import { COMPONENT_CATEGORIES } from '../config/components'
 import RevealBasic from '../demos/reveal-basic.react.tsx'
 import Base from '../layouts/Base.astro'
 
 const shipped = (await getCollection('components')).sort(
   (a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title),
 )
-
-/** ADR §5. `count` is what exists today, not what is planned. */
-const TIERS = [
-  {
-    tier: 'T1',
-    name: 'CSS effects',
-    blurb:
-      'Aurora, beam, shimmer, glow, gradient border, noise. Pure CSS — no JavaScript, no adapter, and they already work in every framework.',
-  },
-  {
-    tier: 'T2',
-    name: 'Motion primitives',
-    blurb:
-      'Reveal, Stagger, Parallax, Magnetic, Tilt, Marquee, TextEffect, NumberFlow. The engine plus a thin per-framework wrapper.',
-  },
-  {
-    tier: 'T3',
-    name: 'Animated primitives',
-    blurb:
-      'Dialog, Popover, Accordion, Tabs, Carousel, Toast. Real keyboard and focus behaviour from Zag.js, with motion built in rather than bolted on.',
-  },
-  {
-    tier: 'T4',
-    name: 'Showcase blocks',
-    blurb: 'Hero, bento grid, feature cards, pricing. Composed from everything above.',
-  },
-]
 ---
 
 <Base
@@ -67,18 +41,18 @@ const TIERS = [
       </section>
 
       <section class="section">
-        <h2>Four tiers</h2>
+        <h2>Made for motion</h2>
         <p>
-          Each tier costs something different to bring to a second framework, so they ship
-          in that order rather than by how impressive they look.
+          Clean at rest, playful on intent. Browse by the part of the experience you want to
+          bring to life.
         </p>
         <div class="tiers">
           {
-            TIERS.map(({ tier, name, blurb }) => (
+            COMPONENT_CATEGORIES.map(({ id, label, description }) => (
               <article class="tier">
-                <span class="pill">{tier}</span>
-                <h3>{name}</h3>
-                <p>{blurb}</p>
+                <span class="pill">{id}</span>
+                <h3>{label}</h3>
+                <p>{description}</p>
               </article>
             ))
           }

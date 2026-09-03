@@ -164,6 +164,17 @@ a {
   padding: 0;
 }
 
+.sidebar-group h3 {
+  margin: 1.25rem 0 0.35rem;
+  color: var(--fg);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.sidebar-group:first-of-type h3 {
+  margin-top: 0;
+}
+
 .sidebar a,
 .toc a {
   display: block;
@@ -440,10 +451,46 @@ a {
   letter-spacing: -0.015em;
   margin: 0 0 0.5rem;
 }
+
+.section > h1 {
+  margin: 0 0 0.5rem;
+  font-size: 2rem;
+  line-height: 1.2;
+}
+
 .section > p {
   color: var(--muted);
   max-width: var(--measure);
   margin: 0 0 2rem;
+}
+
+.catalog-groups {
+  display: grid;
+  gap: 3rem;
+}
+
+.catalog-group {
+  min-width: 0;
+}
+
+.catalog-group-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.catalog-group-head h2 {
+  margin: 0 0 0.2rem;
+}
+
+.catalog-group-head p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.875rem;
 }
 
 .tiers {

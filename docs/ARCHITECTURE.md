@@ -1,12 +1,16 @@
 # Kida UI — Architecture Decision Record
 
-Status: **decided** (2026-08-18) · Scope: v1 · Rev 3 — npm scope claimed, D11 added, monorepo scaffolded
+Status: **decided** (2026-09-03) · Scope: v1 · Rev 4 — component standard and design direction added
 
 ## 1. Positioning
 
 Animation-first component library. The differentiator is **motion quality + genuine
 multi-stack reach**. The animation-heavy space (Aceternity, Magic UI, Motion Primitives)
 is React-only; the multi-stack space (Ark UI, Zag) is motion-agnostic. Kida sits in the gap.
+
+The first collection follows a **soft/candy editorial** direction: clean composition at rest,
+tactile and playful motion in response to intent. `DESIGN_DIRECTION.md` owns the visual language;
+`COMPONENT_STANDARD.md` defines the release contract every new component must meet.
 
 ## 2. Decisions
 
@@ -26,6 +30,8 @@ is React-only; the multi-stack space (Ark UI, Zag) is motion-agnostic. Kida sits
 | D10 | Docs site on Astro | Only mainstream docs stack with native React+Svelte+Vue+Solid live demos in one page |
 | D11 | `@kida-ui/react` ships a package-wide `'use client'` banner, injected at build time | Rolldown drops per-module directives when merging modules into one chunk — verified in the scaffold. Every export here is client-side by nature, so banner the bundle rather than fight the bundler per file. |
 | D12 | Components are tested in a **real browser** (Vitest browser mode + Playwright), not jsdom | Everything these components do — layout measurement, `IntersectionObserver`, `ResizeObserver`, WAAPI, CSS keyframes — is absent or faked in jsdom, so a green jsdom suite proves nothing. jsdom stays for pure logic (`packages/motion`). |
+| D13 | Public catalog categories are separate from implementation tiers | Users browse by outcome (Text, Image, Background), while T1-T4 remains an internal cost model. |
+| D14 | Finished defaults follow one motion language and remain customizable through CSS variables | A coherent first collection is more valuable than unrelated effects; presentation can vary without forking behavior. |
 
 ## 3. Layers
 
@@ -96,6 +102,8 @@ utilities on top.
 
 ## 5. Component taxonomy
 
+Tiers remain internal and describe implementation shape:
+
 | Tier | Examples | Impl | Multi-stack cost |
 |---|---|---|---|
 | T1 CSS effects | aurora, beam, shimmer, glow, gradient border, noise | pure CSS | **zero** — works everywhere today |
@@ -104,6 +112,18 @@ utilities on top.
 | T4 Showcase blocks | hero, bento grid, feature cards, pricing | composition of T1–T3 | low |
 
 T1 is shippable to every stack immediately and backs the multi-stack claim while T3 catches up.
+
+The documentation catalog uses user-facing categories instead:
+
+| Category | Scope |
+|---|---|
+| Primitives | Low-level motion and presence building blocks |
+| Text | Readable typographic motion |
+| Interaction | Pointer, keyboard, touch, and drag responses |
+| Image | Animated media presentation and manipulation |
+| Background | Ambient effects behind content |
+| Decorative | Scribbles, stickers, highlights, and accents |
+| Blocks | Complete sections composed from lower-level components |
 
 ## 6. Repo layout
 
@@ -156,11 +176,15 @@ Vitest + Playwright + axe · Biome · Astro (docs) · Shiki
 
 ## 9. Roadmap
 
-- **P0** monorepo, `@kida-ui/styles` tokens, `@kida-ui/motion` core + React adapter, 6 T1 effects, Astro docs skeleton, `build-registry.ts`, shadcn-compatible JSON
-- **P1** 10 T2 motion primitives, `check-parity.ts`, docs with live + copy + install tabs
-- **P2** 8 T3 Zag-backed primitives with motion built in, `@zag-js/presence` bridge
-- **P3** 6 T4 showcase blocks, theming, reduced-motion audit → **v1.0 (React)**
-- **P4** framework #2 (Svelte or Vue): `@kida-ui/motion/<fw>` + adapters + `kida` CLI
+- **P0 — complete:** monorepo, motion/style boundaries, React vertical slice, browser tests,
+  playground, Astro docs skeleton, release tooling, and repository baseline
+- **P1 — current:** component standard, soft/candy editorial direction, and public catalog categories
+- **P2:** generated copy-source path, install/copy documentation, clean fixture validation, and
+  shadcn-compatible registry JSON (no custom CLI)
+- **P3:** first signature collection — TextBloom, Magnetic, ScribbleHighlight, CandyDock,
+  PhotoPile, one background, and one composed hero
+- **P4:** package metadata, visual regression and accessibility audit → **v0.1 alpha (React)**
+- **P5:** framework #2 (Svelte or Vue), parity checks, then evaluate a Kida CLI
 
 ## 10. Known risks
 
