@@ -1,0 +1,14 @@
+[data-kida-magnetic] {
+  display: inline-flex;
+}
+
+[data-kida-magnetic-target] {
+  display: inline-flex;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-kida-magnetic-target] {
+    /* biome-ignore lint/complexity/noImportantStyles: stops an in-flight inline transform */
+    transform: none !important;
+  }
+}

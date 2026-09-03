@@ -69,4 +69,115 @@ export const registryDefinitions = [
       },
     ],
   },
+  {
+    name: 'text-bloom',
+    title: 'TextBloom',
+    description: 'Reveals readable text with a gentle or softly overshooting stagger.',
+    category: 'text',
+    package: {
+      name: '@kida-ui/react',
+      exportName: 'TextBloom',
+      styleImports: ['@kida-ui/styles/kida.css'],
+    },
+    dependencies: ['@kida-ui/motion'],
+    files: [
+      {
+        source: 'packages/react/src/text-bloom.tsx',
+        type: 'registry:ui',
+        target: '@ui/kida/text-bloom.tsx',
+        styleImport: './text-bloom.css',
+      },
+      {
+        source: 'packages/react/src/compose-refs.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/compose-refs.ts',
+      },
+      {
+        source: 'packages/react/src/use-isomorphic-layout-effect.ts',
+        type: 'registry:hook',
+        target: '@ui/kida/use-isomorphic-layout-effect.ts',
+      },
+      {
+        source: 'packages/styles/components/text-bloom.css',
+        type: 'registry:ui',
+        target: '@ui/kida/text-bloom.css',
+      },
+    ],
+  },
+  {
+    name: 'magnetic',
+    title: 'Magnetic',
+    description: 'Pulls an isolated child toward a fine pointer and settles with a spring.',
+    category: 'interaction',
+    package: {
+      name: '@kida-ui/react',
+      exportName: 'Magnetic',
+      styleImports: ['@kida-ui/styles/kida.css'],
+    },
+    dependencies: ['@kida-ui/motion'],
+    files: [
+      {
+        source: 'packages/react/src/magnetic.tsx',
+        type: 'registry:ui',
+        target: '@ui/kida/magnetic.tsx',
+        styleImport: './magnetic.css',
+      },
+      {
+        source: 'packages/react/src/compose-refs.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/compose-refs.ts',
+      },
+      {
+        source: 'packages/react/src/use-isomorphic-layout-effect.ts',
+        type: 'registry:hook',
+        target: '@ui/kida/use-isomorphic-layout-effect.ts',
+      },
+      {
+        source: 'packages/styles/components/magnetic.css',
+        type: 'registry:ui',
+        target: '@ui/kida/magnetic.css',
+      },
+    ],
+  },
+  {
+    name: 'scribble-highlight',
+    title: 'ScribbleHighlight',
+    description: 'Draws an informal underline or circle around existing content.',
+    category: 'decorative',
+    package: {
+      name: '@kida-ui/react',
+      exportName: 'ScribbleHighlight',
+      styleImports: ['@kida-ui/styles/kida.css'],
+    },
+    dependencies: ['@kida-ui/motion'],
+    files: [
+      {
+        source: 'packages/react/src/scribble-highlight.tsx',
+        type: 'registry:ui',
+        target: '@ui/kida/scribble-highlight.tsx',
+        styleImport: './scribble-highlight.css',
+      },
+      {
+        source: 'packages/react/src/compose-refs.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/compose-refs.ts',
+      },
+      {
+        source: 'packages/react/src/use-isomorphic-layout-effect.ts',
+        type: 'registry:hook',
+        target: '@ui/kida/use-isomorphic-layout-effect.ts',
+      },
+      {
+        source: 'packages/styles/components/scribble-highlight.css',
+        type: 'registry:ui',
+        target: '@ui/kida/scribble-highlight.css',
+        imports: ['./tokens.css'],
+      },
+      {
+        source: 'packages/styles/tokens.css',
+        type: 'registry:ui',
+        target: '@ui/kida/tokens.css',
+      },
+    ],
+  },
 ]

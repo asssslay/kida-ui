@@ -244,7 +244,10 @@ a {
 }
 
 .prose table {
+  display: block;
   width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
   border-collapse: collapse;
   font-size: 0.875rem;
   margin: 1.25rem 0;
@@ -284,10 +287,16 @@ a {
 
 .code {
   position: relative;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
   margin: 1rem 0;
 }
 
 .code pre {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
   margin: 0;
   padding: 1rem 1.1rem;
   border: 1px solid var(--line);
@@ -698,4 +707,74 @@ a.tier {
 }
 a.tier:hover {
   border-color: var(--accent);
+}
+
+.demo-feature {
+  display: grid;
+  justify-items: center;
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.demo-text-bloom h2 {
+  margin: 0;
+  color: var(--fg);
+  font-size: 2.25rem;
+  line-height: 1.05;
+  text-align: center;
+}
+
+.demo-character-bloom {
+  color: #6552a8;
+  font-size: 1.75rem;
+  font-weight: 650;
+}
+
+.demo-magnetic-button {
+  min-width: 9rem;
+  min-height: 3rem;
+  padding: 0.7rem 1.1rem;
+  border: 1px solid #d7a5b8;
+  border-radius: 0.7rem;
+  color: #39232e;
+  background: #ffdceb;
+  box-shadow:
+    0 4px 0 #dba0b8,
+    0 10px 24px rgb(69 35 52 / 12%);
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.demo-magnetic-button:focus-visible {
+  outline: 2px solid #6d52a8;
+  outline-offset: 4px;
+}
+
+.demo-scribble-copy {
+  max-width: 30rem;
+  margin: 0;
+  color: var(--fg);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 2rem;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.demo-scribble-circle {
+  --kida-scribble-color: #75a98f;
+
+  color: #314c40;
+  font-size: 1.7rem;
+  font-weight: 650;
+}
+
+@media (max-width: 48rem) {
+  .demo-text-bloom h2 {
+    font-size: 1.65rem;
+  }
+
+  .demo-scribble-copy {
+    font-size: 1.35rem;
+  }
 }

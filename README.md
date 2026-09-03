@@ -3,8 +3,8 @@
 Animation-first UI components, built to reach every stack.
 
 **Status: pre-alpha.** The `@kida-ui` npm scope is claimed, and the first vertical slice includes
-`Reveal`, `Collapse`, a browser-tested React adapter, and an Astro documentation site. The packages
-are not published yet.
+`Reveal`, `Collapse`, the first three signature motion components, a browser-tested React adapter,
+and an Astro documentation site. The packages are not published yet.
 Project decisions live in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). New components follow the
 [`component standard`](docs/COMPONENT_STANDARD.md) and the first collection's
 [`soft/candy editorial direction`](docs/DESIGN_DIRECTION.md). Package and copy-source behavior is
