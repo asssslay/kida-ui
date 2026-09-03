@@ -2,8 +2,9 @@
 
 Animation-first UI components, built to reach every stack.
 
-**Status: pre-alpha.** The monorepo skeleton is up and the `@kida-ui` npm scope is claimed; no components
-have shipped yet.
+**Status: pre-alpha.** The `@kida-ui` npm scope is claimed, and the first vertical slice includes
+`Reveal`, `Collapse`, a browser-tested React adapter, and an Astro documentation site. The packages
+are not published yet.
 Architecture and the reasoning behind it live in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 ## Packages
