@@ -12,26 +12,23 @@ import Distribution from '../../components/Distribution.astro'
 import TextBloomBasic from '../../demos/text-bloom-basic.react.tsx'
 import TextBloomCharacters from '../../demos/text-bloom-characters.react.tsx'
 
-<Demo name="text-bloom-basic" title="Pop by word">
+<Demo name="text-bloom-basic" title="Pop by word" hideSource>
   <TextBloomBasic client:visible />
 </Demo>
 
-## Installation
+## Quick start
 
 <Distribution name="text-bloom" />
 
-## Usage
-
 ```tsx
-import { TextBloom } from '@kida-ui/react'
-import '@kida-ui/styles/kida.css'
+import { TextBloom } from '@/components/ui/kida/text-bloom'
 
 <TextBloom as="h1" voice="pop">
   Make the headline bloom.
 </TextBloom>
 ```
 
-## Character mode
+## Additional examples
 
 <Demo name="text-bloom-characters" title="Gentle by character">
   <TextBloomCharacters client:visible />
@@ -40,7 +37,9 @@ import '@kida-ui/styles/kida.css'
 Use word segmentation for most interface copy. Character segmentation is best reserved for short
 display phrases, where its longer sequence will not delay comprehension.
 
-## Props
+## API
+
+### Props
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -56,7 +55,7 @@ display phrases, where its longer sequence will not delay comprehension.
 
 Safe native attributes, `className`, `style`, and a forwarded `ref` are passed to the root.
 
-## Accessibility and reduced motion
+## Accessibility and input behavior
 
 The authored string remains the root's accessible label. Visual segments are hidden from assistive
 technology, preventing screen readers from announcing one word or character at a time. The visual

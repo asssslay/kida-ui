@@ -11,29 +11,27 @@ import Demo from '../../components/Demo.astro'
 import Distribution from '../../components/Distribution.astro'
 import CollapseBasic from '../../demos/collapse-basic.react.tsx'
 
-<Demo name="collapse-basic" title="Basic">
+<Demo name="collapse-basic" title="Basic" hideSource>
   <CollapseBasic client:visible />
 </Demo>
 
-## Installation
+## Quick start
 
 <Distribution name="collapse" />
 
-## Usage
-
 ```tsx
-import { Collapse } from '@kida-ui/react'
-import '@kida-ui/styles/kida.css'
+import { Collapse } from '@/components/ui/kida/collapse'
 
 <Collapse open={open}>
   <div>Anything at all.</div>
 </Collapse>
 ```
 
-Unlike `Reveal`, this component **requires the stylesheet**. The exit is a CSS animation,
-and without `kida.css` the panel would unmount on the first frame.
+The copy-source command includes the required styles.
 
-## Props
+## API
+
+### Props
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -42,46 +40,23 @@ and without `kida.css` the panel would unmount on the first frame.
 | `className` | `string` | — | Applied to the collapsing root. |
 | `style` | `CSSProperties` | — | Applied to the collapsing root. |
 
-## How it stays mounted
-
-The node is held by [`@zag-js/presence`](https://zagjs.com), which reads the computed
-animation on the element to decide how long to keep it alive. That is why the exit has to
-be a CSS animation and not a JS one — the presence machine has no way to wait on an
-animation the engine owns.
-
-The natural height is measured into `--kida-collapse-height`, because CSS cannot animate to
-`height: auto`.
-
-## Custom properties
+### CSS custom properties
 
 | Property | Default | Description |
 | --- | --- | --- |
 | `--kida-collapse-duration` | `--kida-duration-md` | Applies to both directions. |
-| `--kida-collapse-ease` | `--kida-ease-out` opening, `--kida-ease-in-out` closing | |
+| `--kida-collapse-ease` | `--kida-ease-out` opening, `--kida-ease-in-out` closing | Easing for each direction. |
 
-The close is deliberately **not** the reverse of the open. Both of `--kida-ease-in`'s
-control points sit at `y=0`, so it stays pinned near zero for most of its length: measured
-over a 150ms close, the panel was 4% collapsed at the halfway mark and dropped the last 53%
-inside about 26ms. It reads as the panel blinking out rather than closing. Here the
-shrinking *is* the information, so it has to stay legible — which also means matching the
-open duration instead of halving it.
+## Accessibility and input behavior
 
-## Put borders on the content, not the root
+Collapse preserves its children's semantics and focus behavior while open. When reduced motion is
+requested, the transition finishes almost immediately while still unmounting the panel and calling
+`onExitComplete`.
 
-> The collapsing root should carry no border of its own. Give it to the content inside.
+## Troubleshooting
 
-`height: 0` does not mean invisible: a root with a 1px border still renders a 2px box, and
-one with `padding: 1rem` a 32px slab. The keyframes therefore collapse the root's padding
-and border widths too, which the component measures and writes back as custom properties.
+> Put borders and padding on the content inside Collapse, not on its root. The root needs to shrink
+> cleanly to zero while it clips the panel.
 
-Padding collapses cleanly, sub-pixel and all the way down. A border does not — Chrome
-renders any width between 0 and 1px as a full hairline, so a bordered root hits a 2px floor
-slightly before the animation ends and holds it for a few frames. There is no CSS answer to
-that, so the rule is: let this root be the thing that clips, and keep the frame on what it
-clips.
-
-## Reduced motion
-
-Durations collapse to `1ms` rather than being disabled. `animationend` still fires, so
-presence still unmounts the node and `onExitComplete` still runs — an unmount that hangs
-would be a far worse failure than an animation that is too quick to see.
+The required CSS is included by the copy-source command. If you install the package after v0.1,
+import `@kida-ui/styles/kida.css` once in your application.

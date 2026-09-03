@@ -1,8 +1,7 @@
 ---
 import { getCollection } from 'astro:content'
 import Demo from '../components/Demo.astro'
-import { COMPONENT_CATEGORIES } from '../config/components'
-import RevealBasic from '../demos/reveal-basic.react.tsx'
+import TextBloomBasic from '../demos/text-bloom-basic.react.tsx'
 import Base from '../layouts/Base.astro'
 
 const shipped = (await getCollection('components')).sort(
@@ -16,77 +15,37 @@ const shipped = (await getCollection('components')).sort(
 >
   <main id="main">
     <section class="hero">
-      <span class="pill">pre-alpha</span>
       <h1>Animation-first components, built to reach <em>every stack</em>.</h1>
       <p>
-        The animation-heavy libraries are React-only. The multi-stack ones are
-        motion-agnostic. Kida is the one in the gap.
+        Polished motion components you can install, customize, and keep accessible.
       </p>
       <div class="actions">
-        <a class="button primary" href="/docs">Read the docs</a>
-        <a class="button" href="https://github.com/asssslay/kida-ui">GitHub</a>
+        <a class="button primary" href="/docs">Browse components</a>
       </div>
     </section>
 
     <div class="sections">
-      <section class="section">
-        <h2>See it move</h2>
-        <p>
-          Every demo on this site is a real component, server-rendered by Astro and
-          hydrated in place — the same code you would install.
-        </p>
-        <Demo name="reveal-basic" title="Reveal">
-          <RevealBasic client:visible={{ rootMargin: '200px' }} />
+      <section class="section featured">
+        <h2>Made to move</h2>
+        <p>Thoughtful motion that feels expressive without getting in the way.</p>
+        <Demo name="text-bloom-basic" previewOnly>
+          <TextBloomBasic client:visible />
         </Demo>
       </section>
 
       <section class="section">
-        <h2>Made for motion</h2>
-        <p>
-          Clean at rest, playful on intent. Browse by the part of the experience you want to
-          bring to life.
-        </p>
-        <div class="tiers">
-          {
-            COMPONENT_CATEGORIES.map(({ id, label, description }) => (
-              <article class="tier">
-                <span class="pill">{id}</span>
-                <h3>{label}</h3>
-                <p>{description}</p>
-              </article>
-            ))
-          }
-        </div>
-      </section>
-
-      <section class="section">
-        <h2>Shipped so far</h2>
-        <p>
-          Two components, one per architectural path: <code>Reveal</code> drives the JS
-          engine, <code>Collapse</code> the CSS-and-presence route. Proving both spines
-          before scaling out.
-        </p>
-        <div class="tiers">
+        <h2>Available components</h2>
+        <p>Start with a focused primitive or add an expressive finishing detail.</p>
+        <div class="component-grid">
           {
             shipped.map((entry) => (
-              <a class="tier" href={`/docs/${entry.id}`}>
-                <span class="pill">{entry.data.tier}</span>
+              <a class="component-card" href={`/docs/${entry.id}`}>
                 <h3>{entry.data.title}</h3>
                 <p>{entry.data.description}</p>
               </a>
             ))
           }
         </div>
-      </section>
-
-      <section class="section">
-        <h2>Why it reaches further</h2>
-        <p>
-          The animation engine has no framework code in it at all, and CI fails the build
-          if any leaks in. State reaches CSS through <code>data-*</code> attributes only,
-          never through framework code, so the entire stylesheet is shareable unchanged —
-          which is what makes a second framework an adapter instead of a rewrite.
-        </p>
       </section>
     </div>
   </main>

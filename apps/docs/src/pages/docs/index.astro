@@ -13,7 +13,7 @@ const entries = (await getCollection('components')).sort(
 const groups = COMPONENT_CATEGORIES.map((category) => ({
   ...category,
   entries: entries.filter((entry) => entry.data.category === category.id),
-}))
+})).filter((group) => group.entries.length > 0)
 ---
 
 <Base
@@ -24,31 +24,24 @@ const groups = COMPONENT_CATEGORIES.map((category) => ({
     <section class="section" style="border-top: 0; padding-top: 3rem;">
       <h1>Components</h1>
       <p>
-        Browse motion by what it helps you create. Primitives are available now; the first
-        soft/candy editorial collection starts with text, interaction, and decorative motion.
+        Add polished entrances, text motion, tactile interaction, and hand-drawn details to your
+        interface. Choose a component to see it live and copy it into your project.
       </p>
       <div class="catalog-groups">
         {
           groups.map((group) => (
             <section class="catalog-group">
               <div class="catalog-group-head">
-                <div>
-                  <h2>{group.label}</h2>
-                  <p>{group.description}</p>
-                </div>
-                <span class="pill">{group.entries.length || 'soon'}</span>
+                <h2>{group.label}</h2>
               </div>
-              {group.entries.length > 0 && (
-                <div class="tiers">
-                  {group.entries.map((entry) => (
-                    <a class="tier" href={`/docs/${entry.id}`}>
-                      <span class="pill">{entry.data.status}</span>
-                      <h3>{entry.data.title}</h3>
-                      <p>{entry.data.description}</p>
-                    </a>
-                  ))}
-                </div>
-              )}
+              <div class="component-grid">
+                {group.entries.map((entry) => (
+                  <a class="component-card" href={`/docs/${entry.id}`}>
+                    <h3>{entry.data.title}</h3>
+                    <p>{entry.data.description}</p>
+                  </a>
+                ))}
+              </div>
             </section>
           ))
         }

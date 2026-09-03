@@ -337,35 +337,27 @@ a {
   margin: 1.25rem 0 2rem;
 }
 
-.distribution-tabs {
-  display: inline-grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  padding: 0.2rem;
-  border: 1px solid var(--line);
-  border-radius: 0.5rem;
-  background: var(--bg-subtle);
-}
-
-.distribution-tabs button {
-  min-width: 6.75rem;
-  min-height: 2rem;
-  padding: 0.35rem 0.65rem;
-  border: 0;
-  border-radius: 0.35rem;
-  color: var(--muted);
-  background: transparent;
-  font: inherit;
+.distribution-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid var(--line);
   font-size: 0.8125rem;
-  cursor: pointer;
 }
 
-.distribution-tabs button[aria-selected="true"] {
+.distribution-head strong {
   color: var(--fg);
-  background: var(--bg);
-  box-shadow: 0 1px 2px rgb(20 16 24 / 10%);
+  font-weight: 600;
 }
 
-.distribution [role="tabpanel"] {
+.distribution-status {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.distribution-source {
   padding-top: 0.25rem;
 }
 
@@ -375,12 +367,6 @@ a {
   font-family: var(--font-mono);
   font-size: 0.75rem;
   overflow-wrap: anywhere;
-}
-
-.distribution-note {
-  margin: 0.75rem 0 0;
-  color: var(--muted);
-  font-size: 0.8125rem;
 }
 
 .source-files {
@@ -424,26 +410,6 @@ a {
   background: var(--bg-subtle);
 }
 
-/*
- * Only React exists today (ADR D2), so this reads as a label rather than a control. It is
- * the same slot the framework switcher will occupy once there is a second adapter (D10).
- */
-.demo-frameworks {
-  margin-left: auto;
-  display: flex;
-  gap: 0.35rem;
-}
-.demo-frameworks [data-framework] {
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 0.1rem 0.5rem;
-  background: var(--bg);
-}
-.demo-frameworks [data-framework][data-active] {
-  color: var(--accent);
-  border-color: var(--accent);
-}
-
 .demo-stage {
   padding: 2rem 1.25rem;
   display: grid;
@@ -460,6 +426,15 @@ a {
   border-radius: 0;
 }
 
+.demo[data-preview-only] {
+  border-radius: 1rem;
+  background: var(--bg-subtle);
+}
+
+.demo[data-preview-only] .demo-stage {
+  min-height: 16rem;
+}
+
 /* ---------------------------------------------------------------- landing */
 
 .hero {
@@ -473,7 +448,7 @@ a {
   font-size: clamp(2.25rem, 6vw, 3.5rem);
   line-height: 1.05;
   letter-spacing: -0.035em;
-  margin: 1.25rem 0 0;
+  margin: 0;
   text-wrap: balance;
 }
 .hero h1 em {
@@ -556,10 +531,6 @@ a {
 }
 
 .catalog-group-head {
-  display: flex;
-  align-items: start;
-  justify-content: space-between;
-  gap: 1rem;
   margin-bottom: 1rem;
   padding-bottom: 0.75rem;
   border-bottom: 1px solid var(--line);
@@ -569,35 +540,34 @@ a {
   margin: 0 0 0.2rem;
 }
 
-.catalog-group-head p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.875rem;
-}
-
-.tiers {
+.component-grid {
   display: grid;
   gap: 1rem;
   grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
 }
 
-.tier {
+.component-card {
   border: 1px solid var(--line);
   border-radius: 0.75rem;
   padding: 1.1rem;
   background: var(--bg-subtle);
+  text-decoration: none;
+  transition:
+    border-color var(--kida-duration-sm) var(--kida-ease-out),
+    transform var(--kida-duration-sm) var(--kida-ease-out);
 }
-.tier h3 {
-  font-size: 0.9375rem;
-  margin: 0.5rem 0 0.35rem;
+.component-card h3 {
+  font-size: 1rem;
+  margin: 0 0 0.35rem;
 }
-.tier p {
+.component-card p {
   font-size: 0.875rem;
   color: var(--muted);
   margin: 0;
 }
-.tier .pill {
-  background: var(--bg);
+.component-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
 }
 
 .site-footer {
@@ -698,15 +668,6 @@ a {
 }
 .demo-panel p:last-child {
   margin-bottom: 0;
-}
-
-/* Cards on the landing page double as links. */
-a.tier {
-  text-decoration: none;
-  transition: border-color var(--kida-duration-sm) var(--kida-ease-out);
-}
-a.tier:hover {
-  border-color: var(--accent);
 }
 
 .demo-feature {

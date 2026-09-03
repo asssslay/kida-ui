@@ -1,5 +1,5 @@
 ---
-import { FRAMEWORKS, getDemo } from '../demos/registry'
+import { getDemo } from '../demos/registry'
 import CodeBlock from './CodeBlock.astro'
 
 interface Props {
@@ -7,9 +7,13 @@ interface Props {
   name: string
   /** Shown above the stage. Defaults to the demo's name. */
   title?: string
+  /** Render only the live stage, for marketing surfaces where source would distract. */
+  previewOnly?: boolean
+  /** Keep the titled demo chrome but let Quick start carry the basic usage code. */
+  hideSource?: boolean
 }
 
-const { name, title } = Astro.props
+const { name, title, previewOnly = false, hideSource = false } = Astro.props
 
 // Throws on an unknown name, so a typo fails the build instead of shipping a code block
 // that belongs to nothing.
@@ -19,23 +23,12 @@ const react = demo.react
 if (!react) throw new Error(`Demo "${name}" has no React variant.`)
 ---
 
-<figure class="demo">
-  <figcaption class="demo-head">
-    <span>{title ?? name}</span>
-    <div class="demo-frameworks">
-      {
-        FRAMEWORKS.map((framework) => (
-          <span data-framework={framework} data-active={demo[framework] ? '' : undefined}>
-            {framework}
-          </span>
-        ))
-      }
-    </div>
-  </figcaption>
+<figure class="demo" data-preview-only={previewOnly ? '' : undefined}>
+  {!previewOnly && <figcaption class="demo-head">{title ?? name}</figcaption>}
 
   <div class="demo-stage">
     <slot />
   </div>
 
-  <CodeBlock code={react.source} lang={react.lang} />
+  {!previewOnly && !hideSource && <CodeBlock code={react.source} lang={react.lang} />}
 </figure>

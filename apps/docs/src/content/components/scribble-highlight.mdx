@@ -12,30 +12,29 @@ import Distribution from '../../components/Distribution.astro'
 import ScribbleHighlightBasic from '../../demos/scribble-highlight-basic.react.tsx'
 import ScribbleHighlightCircle from '../../demos/scribble-highlight-circle.react.tsx'
 
-<Demo name="scribble-highlight-basic" title="Underline">
+<Demo name="scribble-highlight-basic" title="Underline" hideSource>
   <ScribbleHighlightBasic client:visible />
 </Demo>
 
-## Installation
+## Quick start
 
 <Distribution name="scribble-highlight" />
 
-## Usage
-
 ```tsx
-import { ScribbleHighlight } from '@kida-ui/react'
-import '@kida-ui/styles/kida.css'
+import { ScribbleHighlight } from '@/components/ui/kida/scribble-highlight'
 
 <ScribbleHighlight>imperfect detail</ScribbleHighlight>
 ```
 
-## Circle and color
+## Additional examples
 
 <Demo name="scribble-highlight-circle" title="Mint circle">
   <ScribbleHighlightCircle client:visible />
 </Demo>
 
-## Props
+## API
+
+### Props
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -45,7 +44,7 @@ import '@kida-ui/styles/kida.css'
 
 The root accepts span attributes, `className`, `style`, and a forwarded `ref`.
 
-## Custom properties
+### CSS custom properties
 
 | Property | Default | Description |
 | --- | --- | --- |
@@ -53,7 +52,7 @@ The root accepts span attributes, `className`, `style`, and a forwarded `ref`.
 | `--kida-scribble-width` | `0.14em` | Stroke width. |
 | `--kida-scribble-duration` | `650ms` | Draw duration. |
 
-## Accessibility and rendering
+## Accessibility and input behavior
 
 The SVG is decorative and hidden from assistive technology; the wrapped text remains ordinary,
 readable content. Static paths avoid generated IDs and remain deterministic during server rendering.
