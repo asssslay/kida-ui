@@ -1,0 +1,36 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "reveal",
+  "title": "Reveal",
+  "description": "Animates its children in when they enter the viewport.",
+  "dependencies": [
+    "@kida-ui/motion"
+  ],
+  "files": [
+    {
+      "path": "packages/react/src/reveal.tsx",
+      "content": "'use client'\n\nimport { type RevealOptions, reveal, revealInitialStyle } from '@kida-ui/motion'\nimport type { CSSProperties, ElementType, ReactNode } from 'react'\nimport { useRef } from 'react'\nimport { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js'\n\nexport interface RevealProps extends RevealOptions {\n  children?: ReactNode\n  className?: string\n  style?: CSSProperties\n  /** Element to render. @default 'div' */\n  as?: ElementType\n}\n\n/**\n * Animates its children in when scrolled into view.\n *\n * The pre-animation state is rendered inline on the very first paint — including during\n * SSR — so the content never flashes at full opacity before the effect runs.\n *\n * Options are read once, on mount. A reveal that restarts because a parent re-rendered\n * with a new inline `ease` array would be a visible glitch, not a feature.\n */\nexport function Reveal({ as: Tag = 'div', children, className, style, ...options }: RevealProps) {\n  const ref = useRef<HTMLElement>(null)\n  const optionsRef = useRef(options)\n  optionsRef.current = options\n\n  useIsomorphicLayoutEffect(() => {\n    const element = ref.current\n    if (!element) return\n    return reveal(element, optionsRef.current)\n  }, [])\n\n  return (\n    <Tag\n      ref={ref}\n      className={className}\n      data-kida-reveal=\"\"\n      style={{ ...revealInitialStyle(options), ...style }}\n    >\n      {children}\n    </Tag>\n  )\n}\n",
+      "type": "registry:ui",
+      "target": "@ui/kida/reveal.tsx"
+    },
+    {
+      "path": "packages/react/src/use-isomorphic-layout-effect.ts",
+      "content": "'use client'\n\nimport { useEffect, useLayoutEffect } from 'react'\n\n/**\n * `useLayoutEffect` in the browser, `useEffect` on the server.\n *\n * Motion has to be applied before paint or the user sees an unstyled frame, but React\n * warns when `useLayoutEffect` runs during SSR — where it does nothing anyway.\n */\nexport const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect\n",
+      "type": "registry:hook",
+      "target": "@ui/kida/use-isomorphic-layout-effect.ts"
+    }
+  ],
+  "meta": {
+    "kida": {
+      "package": {
+        "name": "@kida-ui/react",
+        "exportName": "Reveal",
+        "styleImports": []
+      }
+    }
+  },
+  "categories": [
+    "primitives"
+  ],
+  "type": "registry:ui"
+}

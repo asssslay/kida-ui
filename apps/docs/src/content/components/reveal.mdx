@@ -8,6 +8,7 @@ order: 1
 ---
 
 import Demo from '../../components/Demo.astro'
+import Distribution from '../../components/Distribution.astro'
 import RevealBasic from '../../demos/reveal-basic.react.tsx'
 import RevealOptions from '../../demos/reveal-options.react.tsx'
 
@@ -18,6 +19,10 @@ import RevealOptions from '../../demos/reveal-options.react.tsx'
 <Demo name="reveal-basic" title="Basic">
   <RevealBasic client:visible={{ rootMargin: '200px' }} />
 </Demo>
+
+## Installation
+
+<Distribution name="reveal" />
 
 ## Usage
 

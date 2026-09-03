@@ -7,7 +7,8 @@ Animation-first UI components, built to reach every stack.
 are not published yet.
 Project decisions live in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). New components follow the
 [`component standard`](docs/COMPONENT_STANDARD.md) and the first collection's
-[`soft/candy editorial direction`](docs/DESIGN_DIRECTION.md).
+[`soft/candy editorial direction`](docs/DESIGN_DIRECTION.md). Package and copy-source behavior is
+documented in [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md).
 
 ## Packages
 
@@ -25,11 +26,12 @@ framework import ever leaks into the agnostic packages (ADR D3a).
 
 ```bash
 pnpm install
-pnpm verify      # lint → typecheck → test → build → framework-free gate
+pnpm verify      # lint → registry checks → types → tests → build → framework-free gate
 pnpm dev         # watch builds
 ```
 
 Individual tasks: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`, `pnpm gate:agnostic`.
+Registry tasks: `pnpm registry:build`, `pnpm registry:check`, `pnpm registry:check-copy`.
 
 ## Conventions
 

@@ -1,6 +1,6 @@
 # Kida UI — Architecture Decision Record
 
-Status: **decided** (2026-09-03) · Scope: v1 · Rev 4 — component standard and design direction added
+Status: **decided** (2026-09-03) · Scope: v1 · Rev 5 — copy-source pipeline implemented
 
 ## 1. Positioning
 
@@ -10,7 +10,8 @@ is React-only; the multi-stack space (Ark UI, Zag) is motion-agnostic. Kida sits
 
 The first collection follows a **soft/candy editorial** direction: clean composition at rest,
 tactile and playful motion in response to intent. `DESIGN_DIRECTION.md` owns the visual language;
-`COMPONENT_STANDARD.md` defines the release contract every new component must meet.
+`COMPONENT_STANDARD.md` defines the release contract every new component must meet, and
+`DISTRIBUTION.md` documents the package and generated-source workflows.
 
 ## 2. Decisions
 
@@ -25,7 +26,7 @@ tactile and playful motion in response to intent. `DESIGN_DIRECTION.md` owns the
 | D5a | Own `presence()` helper in `@kida-ui/motion` for the rare JS-driven exit | ~30 LOC: run exit animation, `await animation.finished`, then unmount. Don't force Zag presence to do this. |
 | D6 | State → CSS via `data-*` attributes only | Makes the entire style layer 100% shareable across frameworks, forever |
 | D7 | **Plain CSS custom properties are the source of truth. Tailwind is an optional add-on, never a requirement.** | A Tailwind dependency contradicts "every stack" — it would mean every stack *that installs Tailwind*. And for an animation library Tailwind buys little: the CSS is keyframes, transforms, custom props and data-attr selectors. `@ark-ui/react` ships zero CSS; `daisyui` declares no deps or peer deps. |
-| D8 | Registry JSON conforming to **shadcn's registry-item schema** | Ship copy-source at v1 with zero CLI. Instant reach to shadcn's 6.8M weekly CLI users. |
+| D8 | Registry JSON conforming to **shadcn's registry-item schema** | Ship copy-source at v1 with zero custom CLI. Existing shadcn projects can use their standard CLI. |
 | D9 | npm packages + registry generated from ONE source | shadcn's `registry:build` pattern. Hand-maintained copies always rot. |
 | D10 | Docs site on Astro | Only mainstream docs stack with native React+Svelte+Vue+Solid live demos in one page |
 | D11 | `@kida-ui/react` ships a package-wide `'use client'` banner, injected at build time | Rolldown drops per-module directives when merging modules into one chunk — verified in the scaffold. Every export here is client-side by nature, so banner the bundle rather than fight the bundler per file. |
@@ -141,7 +142,8 @@ kida-ui/
 │  ├─ docs/            Astro + MDX + Shiki, framework-switcher demos
 │  └─ playground/
 └─ scripts/
-   ├─ build-registry.ts   packages/* → registry/r/*.json (inline + rewrite imports)
+   ├─ build-registry.mjs  packages/* → registry/r/*.json (inline + rewrite imports)
+   ├─ check-copy-source.mjs  generated files → clean fixture typecheck
    └─ check-parity.ts     CI gate: every framework exports the same surface
 ```
 
@@ -158,7 +160,7 @@ Split, following shadcn's own conclusion (`@shadcn/react` v0.3.0 exists for exac
 - **Copy** → styled, opinionated, users will edit it (T1, T2, T4)
 - **Install** → complex, infrastructural (`@kida-ui/motion`, `@kida-ui/styles`, Zag-backed T3)
 
-v1 needs **no CLI**: emit shadcn-schema JSON and users run
+v1 needs **no Kida CLI**: emit shadcn-schema JSON and users run
 `npx shadcn@latest add https://kida.dev/r/spotlight-card.json`, or register a namespace:
 
 ```jsonc
@@ -178,10 +180,11 @@ Vitest + Playwright + axe · Biome · Astro (docs) · Shiki
 
 - **P0 — complete:** monorepo, motion/style boundaries, React vertical slice, browser tests,
   playground, Astro docs skeleton, release tooling, and repository baseline
-- **P1 — current:** component standard, soft/candy editorial direction, and public catalog categories
-- **P2:** generated copy-source path, install/copy documentation, clean fixture validation, and
-  shadcn-compatible registry JSON (no custom CLI)
-- **P3:** first signature collection — TextBloom, Magnetic, ScribbleHighlight, CandyDock,
+- **P1 — complete:** component standard, soft/candy editorial direction, and public catalog
+  categories
+- **P2 — complete:** generated copy-source path, install/copy documentation, clean fixture
+  validation, and shadcn-compatible registry JSON (no custom CLI)
+- **P3 — next:** first signature collection — TextBloom, Magnetic, ScribbleHighlight, CandyDock,
   PhotoPile, one background, and one composed hero
 - **P4:** package metadata, visual regression and accessibility audit → **v0.1 alpha (React)**
 - **P5:** framework #2 (Svelte or Vue), parity checks, then evaluate a Kida CLI

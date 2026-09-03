@@ -1,0 +1,120 @@
+---
+import { getRegistryItem } from '../lib/registry'
+import CodeBlock from './CodeBlock.astro'
+import type { CodeLang } from './code-lang'
+
+interface Props {
+  name: string
+}
+
+const { name } = Astro.props
+const item = getRegistryItem(name)
+const packageInstall = item.meta.kida.package
+const stylePackages = packageInstall.styleImports.map((path) =>
+  path.split('/').slice(0, 2).join('/'),
+)
+const packageNames = [...new Set([packageInstall.name, ...stylePackages])]
+const packageCommand = `pnpm add ${packageNames.join(' ')}`
+const packageUsage = [
+  ...packageInstall.styleImports.map((path) => `import '${path}'`),
+  `import { ${packageInstall.exportName} } from '${packageInstall.name}'`,
+].join('\n')
+const registryCommand = `npx shadcn@latest add https://kida.dev/r/${item.name}.json`
+const id = `distribution-${item.name}`
+
+function codeLanguage(path: string): CodeLang {
+  if (path.endsWith('.css')) return 'css'
+  if (path.endsWith('.ts')) return 'ts'
+  return 'tsx'
+}
+---
+
+<section class="distribution" data-distribution>
+  <div class="distribution-tabs" role="tablist" aria-label={`${item.title} installation method`}>
+    <button
+      type="button"
+      role="tab"
+      id={`${id}-package-tab`}
+      aria-controls={`${id}-package`}
+      aria-selected="true"
+      data-distribution-tab="package"
+    >
+      Package
+    </button>
+    <button
+      type="button"
+      role="tab"
+      id={`${id}-source-tab`}
+      aria-controls={`${id}-source`}
+      aria-selected="false"
+      tabindex="-1"
+      data-distribution-tab="source"
+    >
+      Copy source
+    </button>
+  </div>
+
+  <div
+    role="tabpanel"
+    id={`${id}-package`}
+    aria-labelledby={`${id}-package-tab`}
+    data-distribution-panel="package"
+  >
+    <CodeBlock code={packageCommand} lang="bash" />
+    <CodeBlock code={packageUsage} lang="ts" />
+    <p class="distribution-note">Package publishing begins with the v0.1 alpha.</p>
+  </div>
+
+  <div
+    role="tabpanel"
+    id={`${id}-source`}
+    aria-labelledby={`${id}-source-tab`}
+    data-distribution-panel="source"
+    hidden
+  >
+    <CodeBlock code={registryCommand} lang="bash" />
+    <p class="distribution-meta">
+      Runtime dependencies: {item.dependencies.join(', ') || 'none'}
+    </p>
+    <div class="source-files">
+      {
+        item.files.map((file, index) => (
+          <details open={index === 0}>
+            <summary>{file.target}</summary>
+            <CodeBlock code={file.content} lang={codeLanguage(file.path)} />
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<script>
+  for (const root of document.querySelectorAll<HTMLElement>('[data-distribution]')) {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[data-distribution-tab]')]
+    const panels = [...root.querySelectorAll<HTMLElement>('[data-distribution-panel]')]
+
+    const select = (tab: HTMLButtonElement) => {
+      const value = tab.dataset.distributionTab
+      for (const candidate of tabs) {
+        const active = candidate === tab
+        candidate.setAttribute('aria-selected', String(active))
+        candidate.tabIndex = active ? 0 : -1
+      }
+      for (const panel of panels) panel.hidden = panel.dataset.distributionPanel !== value
+    }
+
+    for (const [index, tab] of tabs.entries()) {
+      tab.addEventListener('click', () => select(tab))
+      tab.addEventListener('keydown', (event) => {
+        if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return
+        event.preventDefault()
+        const direction = event.key === 'ArrowRight' ? 1 : -1
+        const next = tabs[(index + direction + tabs.length) % tabs.length]
+        if (!next) return
+        select(next)
+        next.focus()
+      })
+    }
+  }
+</script>
