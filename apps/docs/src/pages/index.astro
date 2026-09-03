@@ -1,0 +1,119 @@
+---
+import { getCollection } from 'astro:content'
+import Demo from '../components/Demo.astro'
+import RevealBasic from '../demos/reveal-basic.react.tsx'
+import Base from '../layouts/Base.astro'
+
+const shipped = (await getCollection('components')).sort(
+  (a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title),
+)
+
+/** ADR §5. `count` is what exists today, not what is planned. */
+const TIERS = [
+  {
+    tier: 'T1',
+    name: 'CSS effects',
+    blurb:
+      'Aurora, beam, shimmer, glow, gradient border, noise. Pure CSS — no JavaScript, no adapter, and they already work in every framework.',
+  },
+  {
+    tier: 'T2',
+    name: 'Motion primitives',
+    blurb:
+      'Reveal, Stagger, Parallax, Magnetic, Tilt, Marquee, TextEffect, NumberFlow. The engine plus a thin per-framework wrapper.',
+  },
+  {
+    tier: 'T3',
+    name: 'Animated primitives',
+    blurb:
+      'Dialog, Popover, Accordion, Tabs, Carousel, Toast. Real keyboard and focus behaviour from Zag.js, with motion built in rather than bolted on.',
+  },
+  {
+    tier: 'T4',
+    name: 'Showcase blocks',
+    blurb: 'Hero, bento grid, feature cards, pricing. Composed from everything above.',
+  },
+]
+---
+
+<Base
+  title="Kida UI — animation-first components, built to reach every stack"
+  description="Animation-first UI components. Motion quality and genuine multi-stack reach, from a framework-agnostic core."
+>
+  <main id="main">
+    <section class="hero">
+      <span class="pill">pre-alpha</span>
+      <h1>Animation-first components, built to reach <em>every stack</em>.</h1>
+      <p>
+        The animation-heavy libraries are React-only. The multi-stack ones are
+        motion-agnostic. Kida is the one in the gap.
+      </p>
+      <div class="actions">
+        <a class="button primary" href="/docs">Read the docs</a>
+        <a class="button" href="https://github.com/asssslay/kida-ui">GitHub</a>
+      </div>
+    </section>
+
+    <div class="sections">
+      <section class="section">
+        <h2>See it move</h2>
+        <p>
+          Every demo on this site is a real component, server-rendered by Astro and
+          hydrated in place — the same code you would install.
+        </p>
+        <Demo name="reveal-basic" title="Reveal">
+          <RevealBasic client:visible={{ rootMargin: '200px' }} />
+        </Demo>
+      </section>
+
+      <section class="section">
+        <h2>Four tiers</h2>
+        <p>
+          Each tier costs something different to bring to a second framework, so they ship
+          in that order rather than by how impressive they look.
+        </p>
+        <div class="tiers">
+          {
+            TIERS.map(({ tier, name, blurb }) => (
+              <article class="tier">
+                <span class="pill">{tier}</span>
+                <h3>{name}</h3>
+                <p>{blurb}</p>
+              </article>
+            ))
+          }
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Shipped so far</h2>
+        <p>
+          Two components, one per architectural path: <code>Reveal</code> drives the JS
+          engine, <code>Collapse</code> the CSS-and-presence route. Proving both spines
+          before scaling out.
+        </p>
+        <div class="tiers">
+          {
+            shipped.map((entry) => (
+              <a class="tier" href={`/docs/${entry.id}`}>
+                <span class="pill">{entry.data.tier}</span>
+                <h3>{entry.data.title}</h3>
+                <p>{entry.data.description}</p>
+              </a>
+            ))
+          }
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Why it reaches further</h2>
+        <p>
+          The animation engine has no framework code in it at all, and CI fails the build
+          if any leaks in. State reaches CSS through <code>data-*</code> attributes only,
+          never through framework code, so the entire stylesheet is shareable unchanged —
+          which is what makes a second framework an adapter instead of a rewrite.
+        </p>
+      </section>
+    </div>
+  </main>
+</Base>

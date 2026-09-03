@@ -1,0 +1,41 @@
+---
+import { FRAMEWORKS, getDemo } from '../demos/registry'
+import CodeBlock from './CodeBlock.astro'
+
+interface Props {
+  /** Basename of a file in `src/demos`, without the `.react.tsx` suffix. */
+  name: string
+  /** Shown above the stage. Defaults to the demo's name. */
+  title?: string
+}
+
+const { name, title } = Astro.props
+
+// Throws on an unknown name, so a typo fails the build instead of shipping a code block
+// that belongs to nothing.
+const demo = getDemo(name)
+
+const react = demo.react
+if (!react) throw new Error(`Demo "${name}" has no React variant.`)
+---
+
+<figure class="demo">
+  <figcaption class="demo-head">
+    <span>{title ?? name}</span>
+    <div class="demo-frameworks">
+      {
+        FRAMEWORKS.map((framework) => (
+          <span data-framework={framework} data-active={demo[framework] ? '' : undefined}>
+            {framework}
+          </span>
+        ))
+      }
+    </div>
+  </figcaption>
+
+  <div class="demo-stage">
+    <slot />
+  </div>
+
+  <CodeBlock code={react.source} lang={react.lang} />
+</figure>

@@ -1,0 +1,96 @@
+---
+title: Reveal
+description: Animates its children in when they are scrolled into view.
+tier: T2
+status: beta
+order: 1
+---
+
+import Demo from '../../components/Demo.astro'
+import RevealBasic from '../../demos/reveal-basic.react.tsx'
+import RevealOptions from '../../demos/reveal-options.react.tsx'
+
+{/* Hydrated 200px *before* it scrolls into view, not as it arrives: `Reveal` arms its own
+    IntersectionObserver on mount, and an observer created while its element is already on
+    screen fires immediately — the demo would settle visible without ever having animated,
+    which is the one thing this page exists to show. */}
+<Demo name="reveal-basic" title="Basic">
+  <RevealBasic client:visible={{ rootMargin: '200px' }} />
+</Demo>
+
+## Usage
+
+```tsx
+import { Reveal } from '@kida-ui/react'
+
+<Reveal>
+  <h2>Rises into place</h2>
+</Reveal>
+```
+
+No stylesheet is required for `Reveal` — it is driven entirely by the JS engine, so the
+only import is the component itself.
+
+## Options
+
+<Demo name="reveal-options" title="Travel, timing and repetition">
+  <RevealOptions client:visible={{ rootMargin: '200px' }} />
+</Demo>
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `y` | `number` | `8` | Vertical travel in px. Positive starts below and rises. |
+| `x` | `number` | `0` | Horizontal travel in px. |
+| `scale` | `number` | `1` | Starting scale. |
+| `duration` | `number` | `0.5` | Seconds. |
+| `delay` | `number` | `0` | Seconds. |
+| `ease` | `RevealEase` | `[0.16, 1, 0.3, 1]` | The same curve as `--kida-ease-out`. |
+| `once` | `boolean` | `true` | Animate only the first entry into the viewport. |
+| `amount` | `'some' \| 'all' \| number` | `0.3` | How much must be visible before it fires. |
+| `margin` | `string` | — | Margin around the viewport, CSS-style. |
+| `as` | `ElementType` | `'div'` | Element to render. |
+| `className` | `string` | — | Passed straight through. |
+| `style` | `CSSProperties` | — | Merged over the pre-animation state. |
+
+### Easing
+
+`ease` accepts `'linear'`, `'easeIn'`, `'easeOut'`, `'easeInOut'`, a four-number cubic
+bézier, or your own `(t: number) => number`. The set is deliberately narrower than what the
+underlying engine takes.
+
+## Options are read once
+
+Props are captured on mount and never re-read. A parent that re-renders with a fresh inline
+`ease` array would otherwise restart the animation mid-flight, which is a visible glitch
+rather than a feature.
+
+To genuinely restart a reveal, change the element's `key`.
+
+## Server rendering
+
+The pre-animation state is rendered as an inline `style` on the very first paint, including
+during SSR. Without that, the content would paint at full opacity and then jump back to
+hidden once hydration ran — a flash on every page load.
+
+This page is itself the proof: Astro server-renders each demo, and the island only hydrates
+as you scroll near it.
+
+## Reduced motion
+
+Under `prefers-reduced-motion: reduce` the element is placed directly in its final state —
+visible and unanimated. It is never left hidden.
+
+That distinction matters more than it looks: an implementation that simply skips the
+animation would leave `opacity: 0` painted from the initial style, and the content would
+never appear at all.
+
+## Notes
+
+Two details worth knowing if you go reading the engine:
+
+- The element settles to `transform: none` rather than an identity matrix. Any transform
+  value other than `none` makes the element a containing block for fixed-position
+  descendants, which would silently reposition a popover rendered inside a revealed card.
+- With `once: false`, both ends of every keyframe are written out explicitly. The engine
+  caches what it last animated an element to, so on re-entry it would otherwise believe
+  opacity was already `1`, resolve instantly, and never animate.

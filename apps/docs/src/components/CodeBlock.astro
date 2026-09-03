@@ -1,0 +1,34 @@
+---
+import { Code } from 'astro:components'
+import type { CodeLang } from './code-lang'
+
+interface Props {
+  code: string
+  lang?: CodeLang
+}
+
+const { code, lang = 'tsx' } = Astro.props
+---
+
+<div class="code">
+  {/* Theme is passed explicitly: `<Code>` does not inherit `markdown.shikiConfig`. */}
+  <Code code={code.trim()} lang={lang} theme="github-light" />
+  <button type="button" class="copy" data-copy>Copy</button>
+</div>
+
+<script>
+  // Hoisted and bundled once by Astro, however many code blocks a page renders.
+  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-copy]')) {
+    button.addEventListener('click', async () => {
+      const pre = button.closest('.code')?.querySelector('pre')
+      if (!pre) return
+      await navigator.clipboard.writeText(pre.textContent ?? '')
+      button.dataset.copied = ''
+      button.textContent = 'Copied'
+      setTimeout(() => {
+        delete button.dataset.copied
+        button.textContent = 'Copy'
+      }, 1200)
+    })
+  }
+</script>

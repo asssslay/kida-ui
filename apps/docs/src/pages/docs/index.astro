@@ -1,0 +1,34 @@
+---
+import { getCollection } from 'astro:content'
+import Base from '../../layouts/Base.astro'
+
+const entries = (await getCollection('components')).sort(
+  (a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title),
+)
+---
+
+<Base
+  title="Documentation — Kida UI"
+  description="Component documentation for Kida UI, the animation-first component library."
+>
+  <main id="main" class="sections">
+    <section class="section" style="border-top: 0; padding-top: 3rem;">
+      <h2>Components</h2>
+      <p>
+        Two shipped so far. Every page has a live demo, the source that produced it, and
+        the full prop table.
+      </p>
+      <div class="tiers">
+        {
+          entries.map((entry) => (
+            <a class="tier" href={`/docs/${entry.id}`}>
+              <span class="pill">{entry.data.tier}</span>
+              <h3>{entry.data.title}</h3>
+              <p>{entry.data.description}</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+</Base>
