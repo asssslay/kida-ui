@@ -27,7 +27,7 @@
     },
     {
       "path": "packages/styles/components/magnetic.css",
-      "content": "[data-kida-magnetic] {\n  display: inline-flex;\n}\n\n[data-kida-magnetic-target] {\n  display: inline-flex;\n}\n\n@media (prefers-reduced-motion: reduce) {\n  [data-kida-magnetic-target] {\n    /* biome-ignore lint/complexity/noImportantStyles: stops an in-flight inline transform */\n    transform: none !important;\n  }\n}\n",
+      "content": "[data-kida-magnetic] {\n  --kida-magnetic-activation-distance: 2rem;\n\n  display: inline-flex;\n  position: relative;\n  isolation: isolate;\n}\n\n/* Keep hover detection around the stationary root. Without this stable area, translating\n   the target can move it out from under the pointer and immediately cancel the effect. */\n[data-kida-magnetic]::before {\n  position: absolute;\n  z-index: -1;\n  inset: calc(-1 * var(--kida-magnetic-activation-distance));\n  content: \"\";\n}\n\n[data-kida-magnetic-target] {\n  display: inline-flex;\n}\n\n@media (prefers-reduced-motion: reduce) {\n  [data-kida-magnetic-target] {\n    /* biome-ignore lint/complexity/noImportantStyles: stops an in-flight inline transform */\n    transform: none !important;\n  }\n}\n",
       "type": "registry:ui",
       "target": "@ui/kida/magnetic.css"
     }

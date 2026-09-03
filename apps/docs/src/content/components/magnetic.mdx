@@ -40,6 +40,12 @@ import '@kida-ui/styles/kida.css'
 
 The root also accepts span attributes, `className`, `style`, event handlers, and a forwarded `ref`.
 
+### CSS custom properties
+
+| Property | Default | Description |
+| --- | --- | --- |
+| `--kida-magnetic-activation-distance` | `2rem` | Stable pointer area around the stationary root. |
+
 ## Input and performance
 
 Only mouse and pen movement activate the effect. Touch input is ignored, and the wrapped control
@@ -47,8 +53,10 @@ continues to own its click, focus, and keyboard behavior. Magnetic does not reve
 no keyboard-only motion is required.
 
 The root rectangle is cached on pointer entry and refreshed by `ResizeObserver`; pointer movement
-does not trigger a layout read on every frame. Updates are limited to one per animation frame, and
-listeners, observers, animation frames, and spring controls are removed on unmount.
+does not trigger a layout read on every frame. A stable invisible pointer area lets the target react
+before the pointer reaches it and prevents its own movement from ending the interaction. Updates
+retarget one persistent spring at most once per animation frame, and listeners, observers, animation
+frames, motion values, and spring subscriptions are removed on unmount.
 
 ## Reduced motion
 

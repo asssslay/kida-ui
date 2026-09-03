@@ -1,4 +1,4 @@
-import { animate } from 'motion'
+import { motionValue, springValue, styleEffect } from 'motion'
 import { prefersReducedMotion } from './reduced-motion.js'
 
 export interface MagneticOptions {
@@ -22,19 +22,48 @@ export function magnetic(
   let frame = 0
   let x = 0
   let y = 0
-  let controls: ReturnType<typeof animate> | undefined
+  let inside = false
+
+  // Retarget one persistent spring instead of canceling and recreating a DOM animation
+  // for every pointer frame. Recreating it continually throws away most of the spring's
+  // velocity, which makes a moving pointer look as though it barely affects the target.
+  const sourceX = motionValue(0)
+  const sourceY = motionValue(0)
+  const spring = { stiffness: 360, damping: 24, mass: 0.65 }
+  const springX = springValue(sourceX, spring)
+  const springY = springValue(sourceY, spring)
+  const stopStyleEffect = styleEffect(target, { x: springX, y: springY })
+
+  let xSettled = true
+  let ySettled = true
+  const settle = () => {
+    if (inside || !xSettled || !ySettled || sourceX.get() !== 0 || sourceY.get() !== 0) return
+    target.style.transform = 'none'
+    target.style.willChange = 'auto'
+  }
+  const stopXStart = springX.on('animationStart', () => {
+    xSettled = false
+  })
+  const stopYStart = springY.on('animationStart', () => {
+    ySettled = false
+  })
+  const stopXComplete = springX.on('animationComplete', () => {
+    xSettled = true
+    settle()
+  })
+  const stopYComplete = springY.on('animationComplete', () => {
+    ySettled = true
+    settle()
+  })
 
   const move = () => {
     frame = 0
-    controls?.cancel()
-    controls = animate(
-      target,
-      { x, y },
-      { type: 'spring', stiffness: 360, damping: 24, mass: 0.65 },
-    )
+    sourceX.set(x)
+    sourceY.set(y)
   }
 
   const onEnter = () => {
+    inside = true
     bounds = root.getBoundingClientRect()
     target.style.willChange = 'transform'
   }
@@ -47,23 +76,14 @@ export function magnetic(
     if (!frame) frame = requestAnimationFrame(move)
   }
   const onLeave = () => {
+    inside = false
     if (frame) cancelAnimationFrame(frame)
     frame = 0
-    controls?.cancel()
-    controls = animate(
-      target,
-      { x: 0, y: 0 },
-      {
-        type: 'spring',
-        stiffness: 420,
-        damping: 26,
-        mass: 0.65,
-        onComplete: () => {
-          target.style.transform = 'none'
-          target.style.willChange = 'auto'
-        },
-      },
-    )
+    x = 0
+    y = 0
+    sourceX.set(0)
+    sourceY.set(0)
+    settle()
   }
 
   root.addEventListener('pointerenter', onEnter)
@@ -80,7 +100,15 @@ export function magnetic(
     root.removeEventListener('pointerleave', onLeave)
     observer.disconnect()
     if (frame) cancelAnimationFrame(frame)
-    controls?.cancel()
+    stopXStart()
+    stopYStart()
+    stopXComplete()
+    stopYComplete()
+    stopStyleEffect()
+    springX.destroy()
+    springY.destroy()
+    sourceX.destroy()
+    sourceY.destroy()
     target.style.transform = 'none'
     target.style.willChange = 'auto'
   }
