@@ -34,8 +34,10 @@ test('moves toward a fine pointer and settles on leave', async () => {
   await expect.poll(() => getComputedStyle(target).transform).not.toBe('none')
 
   root.dispatchEvent(new PointerEvent('pointerleave', { pointerType: 'mouse' }))
-  await expect.poll(() => getComputedStyle(target).transform).toBe('none')
-  expect(target.style.willChange).toBe('auto')
+  // The renderer can write the identity transform one tick before both spring-completion
+  // callbacks have run. `will-change: auto` is the controller's complete settled-state signal.
+  await expect.poll(() => target.style.willChange, { timeout: 3000 }).toBe('auto')
+  expect(getComputedStyle(target).transform).toBe('none')
 })
 
 test('keeps a stable activation area around the moving target', async () => {
