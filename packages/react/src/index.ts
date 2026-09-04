@@ -1,3 +1,6 @@
 export { Collapse, type CollapseProps } from './collapse.js'
+export { Magnetic, type MagneticProps } from './magnetic.js'
 export { Reveal, type RevealProps } from './reveal.js'
+export { ScribbleHighlight, type ScribbleHighlightProps } from './scribble-highlight.js'
+export { TextBloom, type TextBloomProps } from './text-bloom.js'
 export { useReducedMotion } from './use-reduced-motion.js'

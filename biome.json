@@ -1,9 +1,24 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.5.9/schema.json",
   "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
-  "files": { "includes": ["**", "!**/dist", "!**/.turbo", "!registry/r"] },
+  "files": {
+    "includes": ["**", "!**/dist", "!**/.turbo", "!registry/registry.json", "!registry/r"]
+  },
   "formatter": { "enabled": true, "indentStyle": "space", "indentWidth": 2, "lineWidth": 100 },
   "linter": { "enabled": true, "rules": { "preset": "recommended" } },
   "css": { "parser": { "tailwindDirectives": true } },
-  "javascript": { "formatter": { "quoteStyle": "single", "semicolons": "asNeeded" } }
+  "javascript": { "formatter": { "quoteStyle": "single", "semicolons": "asNeeded" } },
+  "overrides": [
+    {
+      "includes": ["**/*.astro"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnusedVariables": "off",
+            "noUnusedImports": "off"
+          }
+        }
+      }
+    }
+  ]
 }

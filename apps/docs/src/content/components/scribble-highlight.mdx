@@ -1,0 +1,59 @@
+---
+title: ScribbleHighlight
+description: Draws an informal underline or circle around existing content.
+category: decorative
+tier: T2
+status: beta
+order: 1
+---
+
+import Demo from '../../components/Demo.astro'
+import Distribution from '../../components/Distribution.astro'
+import ScribbleHighlightBasic from '../../demos/scribble-highlight-basic.react.tsx'
+import ScribbleHighlightCircle from '../../demos/scribble-highlight-circle.react.tsx'
+
+<Demo name="scribble-highlight-basic" title="Underline" hideSource>
+  <ScribbleHighlightBasic client:visible />
+</Demo>
+
+## Quick start
+
+<Distribution name="scribble-highlight" />
+
+```tsx
+import { ScribbleHighlight } from '@/components/ui/kida/scribble-highlight'
+
+<ScribbleHighlight>imperfect detail</ScribbleHighlight>
+```
+
+## Additional examples
+
+<Demo name="scribble-highlight-circle" title="Mint circle">
+  <ScribbleHighlightCircle client:visible />
+</Demo>
+
+## API
+
+### Props
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `'underline' \| 'circle'` | `'underline'` | Shape drawn around the content. |
+| `once` | `boolean` | `true` | Draw only on the first viewport entry. |
+| `amount` | `'some' \| 'all' \| number` | `0.4` | Required visible portion. |
+
+The root accepts span attributes, `className`, `style`, and a forwarded `ref`.
+
+### CSS custom properties
+
+| Property | Default | Description |
+| --- | --- | --- |
+| `--kida-scribble-color` | `#e94f86` | Stroke color. |
+| `--kida-scribble-width` | `0.14em` | Stroke width. |
+| `--kida-scribble-duration` | `650ms` | Draw duration. |
+
+## Accessibility and input behavior
+
+The SVG is decorative and hidden from assistive technology; the wrapped text remains ordinary,
+readable content. Static paths avoid generated IDs and remain deterministic during server rendering.
+Reduced motion displays the completed mark without running the draw animation.

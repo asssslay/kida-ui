@@ -1,0 +1,63 @@
+[data-kida-scribble] {
+  --kida-scribble-color: #e94f86;
+  --kida-scribble-width: 0.14em;
+  --kida-scribble-duration: 650ms;
+
+  position: relative;
+  display: inline-block;
+  isolation: isolate;
+}
+
+[data-kida-scribble-content] {
+  position: relative;
+  z-index: 1;
+}
+
+[data-kida-scribble] svg {
+  position: absolute;
+  z-index: 0;
+  left: -4%;
+  width: 108%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+[data-kida-scribble][data-variant="underline"] svg {
+  top: 78%;
+  height: 0.55em;
+}
+
+[data-kida-scribble][data-variant="circle"] svg {
+  inset: -12% -7%;
+  width: 114%;
+  height: 124%;
+}
+
+[data-kida-scribble] path {
+  fill: none;
+  stroke: var(--kida-scribble-color);
+  stroke-width: var(--kida-scribble-width);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+[data-kida-scribble][data-state="active"] path,
+[data-kida-scribble][data-state="settled"] path {
+  animation: kida-scribble-draw var(--kida-scribble-duration) var(--kida-ease-out) forwards;
+}
+
+@keyframes kida-scribble-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-kida-scribble] path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}

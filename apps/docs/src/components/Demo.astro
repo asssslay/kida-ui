@@ -1,0 +1,34 @@
+---
+import { getDemo } from '../demos/registry'
+import CodeBlock from './CodeBlock.astro'
+
+interface Props {
+  /** Basename of a file in `src/demos`, without the `.react.tsx` suffix. */
+  name: string
+  /** Shown above the stage. Defaults to the demo's name. */
+  title?: string
+  /** Render only the live stage, for marketing surfaces where source would distract. */
+  previewOnly?: boolean
+  /** Keep the titled demo chrome but let Quick start carry the basic usage code. */
+  hideSource?: boolean
+}
+
+const { name, title, previewOnly = false, hideSource = false } = Astro.props
+
+// Throws on an unknown name, so a typo fails the build instead of shipping a code block
+// that belongs to nothing.
+const demo = getDemo(name)
+
+const react = demo.react
+if (!react) throw new Error(`Demo "${name}" has no React variant.`)
+---
+
+<figure class="demo" data-preview-only={previewOnly ? '' : undefined}>
+  {!previewOnly && <figcaption class="demo-head">{title ?? name}</figcaption>}
+
+  <div class="demo-stage">
+    <slot />
+  </div>
+
+  {!previewOnly && !hideSource && <CodeBlock code={react.source} lang={react.lang} />}
+</figure>

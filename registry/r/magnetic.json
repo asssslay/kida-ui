@@ -1,0 +1,50 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "magnetic",
+  "title": "Magnetic",
+  "description": "Pulls an isolated child toward a fine pointer and settles with a spring.",
+  "dependencies": [
+    "@kida-ui/motion"
+  ],
+  "files": [
+    {
+      "path": "packages/react/src/magnetic.tsx",
+      "content": "'use client'\n\nimport './magnetic.css'\nimport { type MagneticOptions, magnetic } from '@kida-ui/motion'\nimport type { HTMLAttributes, ReactNode } from 'react'\nimport { forwardRef, useRef } from 'react'\nimport { composeRefs } from './compose-refs.js'\nimport { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js'\n\nexport interface MagneticProps extends MagneticOptions, HTMLAttributes<HTMLSpanElement> {\n  children?: ReactNode\n  targetClassName?: string\n}\n\nexport const Magnetic = forwardRef<HTMLSpanElement, MagneticProps>(function Magnetic(\n  { strength, maxDistance, children, targetClassName, ...props },\n  forwardedRef,\n) {\n  const rootRef = useRef<HTMLSpanElement>(null)\n  const targetRef = useRef<HTMLSpanElement>(null)\n  const optionsRef = useRef({ strength, maxDistance })\n\n  useIsomorphicLayoutEffect(() => {\n    const root = rootRef.current\n    const target = targetRef.current\n    if (!root || !target) return\n    return magnetic(root, target, optionsRef.current)\n  }, [])\n\n  return (\n    <span {...props} ref={composeRefs(rootRef, forwardedRef)} data-kida-magnetic=\"\">\n      <span ref={targetRef} className={targetClassName} data-kida-magnetic-target=\"\">\n        {children}\n      </span>\n    </span>\n  )\n})\n",
+      "type": "registry:ui",
+      "target": "@ui/kida/magnetic.tsx"
+    },
+    {
+      "path": "packages/react/src/compose-refs.ts",
+      "content": "import type { Ref } from 'react'\n\n/** Feed one node to several refs — ours for measuring, Zag's for animation detection. */\nexport function composeRefs<T>(...refs: (Ref<T> | undefined)[]) {\n  return (node: T | null) => {\n    for (const ref of refs) {\n      if (typeof ref === 'function') ref(node)\n      else if (ref) (ref as { current: T | null }).current = node\n    }\n  }\n}\n",
+      "type": "registry:lib",
+      "target": "@ui/kida/compose-refs.ts"
+    },
+    {
+      "path": "packages/react/src/use-isomorphic-layout-effect.ts",
+      "content": "'use client'\n\nimport { useEffect, useLayoutEffect } from 'react'\n\n/**\n * `useLayoutEffect` in the browser, `useEffect` on the server.\n *\n * Motion has to be applied before paint or the user sees an unstyled frame, but React\n * warns when `useLayoutEffect` runs during SSR — where it does nothing anyway.\n */\nexport const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect\n",
+      "type": "registry:hook",
+      "target": "@ui/kida/use-isomorphic-layout-effect.ts"
+    },
+    {
+      "path": "packages/styles/components/magnetic.css",
+      "content": "[data-kida-magnetic] {\n  --kida-magnetic-activation-distance: 2rem;\n\n  display: inline-flex;\n  position: relative;\n  isolation: isolate;\n}\n\n/* Keep hover detection around the stationary root. Without this stable area, translating\n   the target can move it out from under the pointer and immediately cancel the effect. */\n[data-kida-magnetic]::before {\n  position: absolute;\n  z-index: -1;\n  inset: calc(-1 * var(--kida-magnetic-activation-distance));\n  content: \"\";\n}\n\n[data-kida-magnetic-target] {\n  display: inline-flex;\n}\n\n@media (prefers-reduced-motion: reduce) {\n  [data-kida-magnetic-target] {\n    /* biome-ignore lint/complexity/noImportantStyles: stops an in-flight inline transform */\n    transform: none !important;\n  }\n}\n",
+      "type": "registry:ui",
+      "target": "@ui/kida/magnetic.css"
+    }
+  ],
+  "meta": {
+    "kida": {
+      "package": {
+        "name": "@kida-ui/react",
+        "exportName": "Magnetic",
+        "styleImports": [
+          "@kida-ui/styles/kida.css"
+        ]
+      }
+    }
+  },
+  "categories": [
+    "interaction"
+  ],
+  "type": "registry:ui"
+}

@@ -1,0 +1,43 @@
+---
+import { getRegistryItem } from '../lib/registry'
+import CodeBlock from './CodeBlock.astro'
+import type { CodeLang } from './code-lang'
+
+interface Props {
+  name: string
+}
+
+const { name } = Astro.props
+const item = getRegistryItem(name)
+const registryCommand = `npx shadcn@latest add https://kida.dev/r/${item.name}.json`
+
+function codeLanguage(path: string): CodeLang {
+  if (path.endsWith('.css')) return 'css'
+  if (path.endsWith('.ts')) return 'ts'
+  return 'tsx'
+}
+---
+
+<section class="distribution" data-distribution>
+  <div class="distribution-head">
+    <strong>Copy source</strong>
+    <span class="distribution-status">Package coming in v0.1</span>
+  </div>
+
+  <div class="distribution-source">
+    <CodeBlock code={registryCommand} lang="bash" />
+    <p class="distribution-meta">
+      Runtime dependencies: {item.dependencies.join(', ') || 'none'}
+    </p>
+    <div class="source-files">
+      {
+        item.files.map((file) => (
+          <details>
+            <summary>{file.target}</summary>
+            <CodeBlock code={file.content} lang={codeLanguage(file.path)} />
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>

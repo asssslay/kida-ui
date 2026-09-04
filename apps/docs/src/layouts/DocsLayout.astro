@@ -1,0 +1,75 @@
+---
+import { type CollectionEntry, getCollection } from 'astro:content'
+import type { MarkdownHeading } from 'astro'
+import { COMPONENT_CATEGORIES, categoryOrder } from '../config/components'
+import Base from './Base.astro'
+
+interface Props {
+  entry: CollectionEntry<'components'>
+  headings: MarkdownHeading[]
+}
+
+const { entry, headings } = Astro.props
+
+const entries = (await getCollection('components')).sort(
+  (a, b) =>
+    categoryOrder(a.data.category) - categoryOrder(b.data.category) ||
+    a.data.order - b.data.order ||
+    a.data.title.localeCompare(b.data.title),
+)
+
+const groups = COMPONENT_CATEGORIES.map((category) => ({
+  ...category,
+  entries: entries.filter((item) => item.data.category === category.id),
+})).filter((category) => category.entries.length > 0)
+
+// h2 carries the page outline and h3 sits under it; anything deeper would make the rail
+// longer than the section it points at.
+const toc = headings.filter((heading) => heading.depth === 2 || heading.depth === 3)
+---
+
+<Base title={`${entry.data.title} — Kida UI`} description={entry.data.description}>
+  <div class="docs">
+    <aside class="sidebar">
+      <h2>Components</h2>
+      {
+        groups.map((group) => (
+          <section class="sidebar-group">
+            <h3>{group.label}</h3>
+            <ul>
+              {group.entries.map((item) => (
+                <li>
+                  <a
+                    href={`/docs/${item.id}`}
+                    aria-current={item.id === entry.id ? 'page' : undefined}
+                  >
+                    {item.data.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+      }
+    </aside>
+
+    <main class="prose" id="main">
+      <h1>{entry.data.title}</h1>
+      <p class="lede">{entry.data.description}</p>
+      <slot />
+    </main>
+
+    <aside class="toc">
+      <h2>On this page</h2>
+      <ul>
+        {
+          toc.map((heading) => (
+            <li data-depth={heading.depth}>
+              <a href={`#${heading.slug}`}>{heading.text}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </aside>
+  </div>
+</Base>

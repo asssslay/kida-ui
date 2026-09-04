@@ -1,0 +1,27 @@
+[data-kida-magnetic] {
+  --kida-magnetic-activation-distance: 2rem;
+
+  display: inline-flex;
+  position: relative;
+  isolation: isolate;
+}
+
+/* Keep hover detection around the stationary root. Without this stable area, translating
+   the target can move it out from under the pointer and immediately cancel the effect. */
+[data-kida-magnetic]::before {
+  position: absolute;
+  z-index: -1;
+  inset: calc(-1 * var(--kida-magnetic-activation-distance));
+  content: "";
+}
+
+[data-kida-magnetic-target] {
+  display: inline-flex;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-kida-magnetic-target] {
+    /* biome-ignore lint/complexity/noImportantStyles: stops an in-flight inline transform */
+    transform: none !important;
+  }
+}

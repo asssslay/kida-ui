@@ -1,0 +1,62 @@
+---
+title: Collapse
+description: Height collapse with a real exit animation, held open until the keyframes finish.
+category: primitives
+tier: T3
+status: beta
+order: 2
+---
+
+import Demo from '../../components/Demo.astro'
+import Distribution from '../../components/Distribution.astro'
+import CollapseBasic from '../../demos/collapse-basic.react.tsx'
+
+<Demo name="collapse-basic" title="Basic" hideSource>
+  <CollapseBasic client:visible />
+</Demo>
+
+## Quick start
+
+<Distribution name="collapse" />
+
+```tsx
+import { Collapse } from '@/components/ui/kida/collapse'
+
+<Collapse open={open}>
+  <div>Anything at all.</div>
+</Collapse>
+```
+
+The copy-source command includes the required styles.
+
+## API
+
+### Props
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | `boolean` | — | Whether the content is shown. |
+| `onExitComplete` | `() => void` | — | Fires after the exit animation ends and the node is removed. |
+| `className` | `string` | — | Applied to the collapsing root. |
+| `style` | `CSSProperties` | — | Applied to the collapsing root. |
+
+### CSS custom properties
+
+| Property | Default | Description |
+| --- | --- | --- |
+| `--kida-collapse-duration` | `--kida-duration-md` | Applies to both directions. |
+| `--kida-collapse-ease` | `--kida-ease-out` opening, `--kida-ease-in-out` closing | Easing for each direction. |
+
+## Accessibility and input behavior
+
+Collapse preserves its children's semantics and focus behavior while open. When reduced motion is
+requested, the transition finishes almost immediately while still unmounting the panel and calling
+`onExitComplete`.
+
+## Troubleshooting
+
+> Put borders and padding on the content inside Collapse, not on its root. The root needs to shrink
+> cleanly to zero while it clips the panel.
+
+The required CSS is included by the copy-source command. If you install the package after v0.1,
+import `@kida-ui/styles/kida.css` once in your application.

@@ -2,9 +2,13 @@
 
 Animation-first UI components, built to reach every stack.
 
-**Status: pre-alpha.** The monorepo skeleton is up and the `@kida-ui` npm scope is claimed; no components
-have shipped yet.
-Architecture and the reasoning behind it live in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+**Status: pre-alpha.** The `@kida-ui` npm scope is claimed, and the first vertical slice includes
+`Reveal`, `Collapse`, the first three signature motion components, a browser-tested React adapter,
+and an Astro documentation site. The packages are not published yet.
+Project decisions live in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). New components follow the
+[`component standard`](docs/COMPONENT_STANDARD.md) and the first collection's
+[`soft/candy editorial direction`](docs/DESIGN_DIRECTION.md). Package and copy-source behavior is
+documented in [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md).
 
 ## Packages
 
@@ -22,11 +26,12 @@ framework import ever leaks into the agnostic packages (ADR D3a).
 
 ```bash
 pnpm install
-pnpm verify      # lint → typecheck → test → build → framework-free gate
+pnpm verify      # lint → registry checks → types → tests → build → framework-free gate
 pnpm dev         # watch builds
 ```
 
 Individual tasks: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`, `pnpm gate:agnostic`.
+Registry tasks: `pnpm registry:build`, `pnpm registry:check`, `pnpm registry:check-copy`.
 
 ## Conventions
 

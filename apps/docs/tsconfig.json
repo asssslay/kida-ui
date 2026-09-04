@@ -1,0 +1,20 @@
+{
+  // Astro's preset comes second so its Astro-specific settings win over the repo base;
+  // the base's extra strictness (`noUncheckedIndexedAccess` and friends) isn't touched by
+  // it and survives.
+  "extends": ["../../tsconfig.base.json", "astro/tsconfigs/strict"],
+  "compilerOptions": {
+    // Astro's base sets `jsx: preserve` for `.astro` files. The demos are real React, and
+    // React 19's types dropped the global JSX namespace, so `.tsx` needs the runtime form.
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    // `astro/client` pulls in Vite's ambient types, which is what declares `?raw` imports.
+    "types": ["astro/client"],
+    // The repo base turns declaration emit on for the publishable packages. An app never
+    // emits types, and leaving it on makes TypeScript demand that every inferred export be
+    // nameable in a `.d.ts` — which a zod schema's internals are not.
+    "declaration": false
+  },
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"]
+}

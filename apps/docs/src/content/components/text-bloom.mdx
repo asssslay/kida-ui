@@ -1,0 +1,65 @@
+---
+title: TextBloom
+description: Reveals readable text with a gentle or softly overshooting stagger.
+category: text
+tier: T2
+status: beta
+order: 1
+---
+
+import Demo from '../../components/Demo.astro'
+import Distribution from '../../components/Distribution.astro'
+import TextBloomBasic from '../../demos/text-bloom-basic.react.tsx'
+import TextBloomCharacters from '../../demos/text-bloom-characters.react.tsx'
+
+<Demo name="text-bloom-basic" title="Pop by word" hideSource>
+  <TextBloomBasic client:visible />
+</Demo>
+
+## Quick start
+
+<Distribution name="text-bloom" />
+
+```tsx
+import { TextBloom } from '@/components/ui/kida/text-bloom'
+
+<TextBloom as="h1" voice="pop">
+  Make the headline bloom.
+</TextBloom>
+```
+
+## Additional examples
+
+<Demo name="text-bloom-characters" title="Gentle by character">
+  <TextBloomCharacters client:visible />
+</Demo>
+
+Use word segmentation for most interface copy. Character segmentation is best reserved for short
+display phrases, where its longer sequence will not delay comprehension.
+
+## API
+
+### Props
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `string` | required | The readable and animated text. |
+| `by` | `'word' \| 'character'` | `'word'` | Segmentation unit. |
+| `voice` | `'gentle' \| 'pop'` | `'gentle'` | Soft rise or small overshoot. |
+| `stagger` | `number` | `0.045` | Seconds between segments. |
+| `delay` | `number` | `0` | Seconds before the first segment. |
+| `duration` | `number` | `0.55` | Seconds per segment. |
+| `once` | `boolean` | `true` | Animate only on the first viewport entry. |
+| `amount` | `'some' \| 'all' \| number` | `0.4` | Required visible portion. |
+| `as` | `ElementType` | `'span'` | Semantic element to render. |
+
+Safe native attributes, `className`, `style`, and a forwarded `ref` are passed to the root.
+
+## Accessibility and input behavior
+
+The authored string remains the root's accessible label. Visual segments are hidden from assistive
+technology, preventing screen readers from announcing one word or character at a time. The visual
+text remains selectable and copyable.
+
+Under reduced motion, every segment renders immediately at its settled position. The server output
+uses deterministic segments and keys, so hydration does not change the text structure.

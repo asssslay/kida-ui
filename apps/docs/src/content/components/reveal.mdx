@@ -1,0 +1,77 @@
+---
+title: Reveal
+description: Animates its children in when they are scrolled into view.
+category: primitives
+tier: T2
+status: beta
+order: 1
+---
+
+import Demo from '../../components/Demo.astro'
+import Distribution from '../../components/Distribution.astro'
+import RevealBasic from '../../demos/reveal-basic.react.tsx'
+import RevealOptions from '../../demos/reveal-options.react.tsx'
+
+{/* Hydrated 200px *before* it scrolls into view, not as it arrives: `Reveal` arms its own
+    IntersectionObserver on mount, and an observer created while its element is already on
+    screen fires immediately — the demo would settle visible without ever having animated,
+    which is the one thing this page exists to show. */}
+<Demo name="reveal-basic" title="Basic" hideSource>
+  <RevealBasic client:visible={{ rootMargin: '200px' }} />
+</Demo>
+
+## Quick start
+
+<Distribution name="reveal" />
+
+```tsx
+import { Reveal } from '@/components/ui/kida/reveal'
+
+<Reveal>
+  <h2>Rises into place</h2>
+</Reveal>
+```
+
+The copied component does not need a stylesheet.
+
+## Additional examples
+
+<Demo name="reveal-options" title="Travel, timing and repetition">
+  <RevealOptions client:visible={{ rootMargin: '200px' }} />
+</Demo>
+
+## API
+
+### Props
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `y` | `number` | `8` | Vertical travel in px. Positive starts below and rises. |
+| `x` | `number` | `0` | Horizontal travel in px. |
+| `scale` | `number` | `1` | Starting scale. |
+| `duration` | `number` | `0.5` | Seconds. |
+| `delay` | `number` | `0` | Seconds. |
+| `ease` | `RevealEase` | `[0.16, 1, 0.3, 1]` | The same curve as `--kida-ease-out`. |
+| `once` | `boolean` | `true` | Animate only the first entry into the viewport. |
+| `amount` | `'some' \| 'all' \| number` | `0.3` | How much must be visible before it fires. |
+| `margin` | `string` | — | Margin around the viewport, CSS-style. |
+| `as` | `ElementType` | `'div'` | Element to render. |
+| `className` | `string` | — | Passed straight through. |
+| `style` | `CSSProperties` | — | Merged over the pre-animation state. |
+
+### Easing values
+
+`ease` accepts `'linear'`, `'easeIn'`, `'easeOut'`, `'easeInOut'`, a four-number cubic
+bézier, or your own `(t: number) => number`. The set is deliberately narrower than what the
+underlying engine accepts.
+
+## Accessibility and input behavior
+
+Reveal does not change the semantics or focus order of its content. Server-rendered output includes
+the starting visual state, so hydration does not flash visible content before the animation begins.
+Under `prefers-reduced-motion: reduce`, content renders immediately in its final, visible state.
+
+## Troubleshooting
+
+Options are read when Reveal mounts. To intentionally replay it with different options, change the
+element's `key`.

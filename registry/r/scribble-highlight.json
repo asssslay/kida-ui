@@ -1,0 +1,56 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "scribble-highlight",
+  "title": "ScribbleHighlight",
+  "description": "Draws an informal underline or circle around existing content.",
+  "dependencies": [
+    "@kida-ui/motion"
+  ],
+  "files": [
+    {
+      "path": "packages/react/src/scribble-highlight.tsx",
+      "content": "'use client'\n\nimport './scribble-highlight.css'\nimport { type DrawInViewOptions, drawInView } from '@kida-ui/motion'\nimport type { HTMLAttributes, ReactNode } from 'react'\nimport { forwardRef, useRef } from 'react'\nimport { composeRefs } from './compose-refs.js'\nimport { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js'\n\nexport interface ScribbleHighlightProps\n  extends DrawInViewOptions,\n    Omit<HTMLAttributes<HTMLSpanElement>, 'children'> {\n  children?: ReactNode\n  /** Shape drawn around the content. @default 'underline' */\n  variant?: 'underline' | 'circle'\n}\n\nconst paths = {\n  underline: 'M2 12.5 C18 8.5 34 15.5 50 11 C66 6.5 82 14 98 9.5',\n  circle: 'M6 10 C16 1 78 0 94 8 C104 15 88 20 50 19 C14 19 -3 15 6 10',\n} as const\n\nexport const ScribbleHighlight = forwardRef<HTMLSpanElement, ScribbleHighlightProps>(\n  function ScribbleHighlight(\n    { children, variant = 'underline', once, amount, ...props },\n    forwardedRef,\n  ) {\n    const ref = useRef<HTMLSpanElement>(null)\n    const optionsRef = useRef({ once, amount })\n\n    useIsomorphicLayoutEffect(() => {\n      const element = ref.current\n      if (!element) return\n      return drawInView(element, optionsRef.current)\n    }, [])\n\n    return (\n      <span\n        {...props}\n        ref={composeRefs(ref, forwardedRef)}\n        data-kida-scribble=\"\"\n        data-variant={variant}\n        data-state=\"idle\"\n      >\n        <span data-kida-scribble-content=\"\">{children}</span>\n        <svg aria-hidden=\"true\" viewBox=\"0 0 100 20\" preserveAspectRatio=\"none\">\n          <path d={paths[variant]} pathLength=\"1\" />\n        </svg>\n      </span>\n    )\n  },\n)\n",
+      "type": "registry:ui",
+      "target": "@ui/kida/scribble-highlight.tsx"
+    },
+    {
+      "path": "packages/react/src/compose-refs.ts",
+      "content": "import type { Ref } from 'react'\n\n/** Feed one node to several refs — ours for measuring, Zag's for animation detection. */\nexport function composeRefs<T>(...refs: (Ref<T> | undefined)[]) {\n  return (node: T | null) => {\n    for (const ref of refs) {\n      if (typeof ref === 'function') ref(node)\n      else if (ref) (ref as { current: T | null }).current = node\n    }\n  }\n}\n",
+      "type": "registry:lib",
+      "target": "@ui/kida/compose-refs.ts"
+    },
+    {
+      "path": "packages/react/src/use-isomorphic-layout-effect.ts",
+      "content": "'use client'\n\nimport { useEffect, useLayoutEffect } from 'react'\n\n/**\n * `useLayoutEffect` in the browser, `useEffect` on the server.\n *\n * Motion has to be applied before paint or the user sees an unstyled frame, but React\n * warns when `useLayoutEffect` runs during SSR — where it does nothing anyway.\n */\nexport const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect\n",
+      "type": "registry:hook",
+      "target": "@ui/kida/use-isomorphic-layout-effect.ts"
+    },
+    {
+      "path": "packages/styles/components/scribble-highlight.css",
+      "content": "@import './tokens.css';\n\n[data-kida-scribble] {\n  --kida-scribble-color: #e94f86;\n  --kida-scribble-width: 0.14em;\n  --kida-scribble-duration: 650ms;\n\n  position: relative;\n  display: inline-block;\n  isolation: isolate;\n}\n\n[data-kida-scribble-content] {\n  position: relative;\n  z-index: 1;\n}\n\n[data-kida-scribble] svg {\n  position: absolute;\n  z-index: 0;\n  left: -4%;\n  width: 108%;\n  overflow: visible;\n  pointer-events: none;\n}\n\n[data-kida-scribble][data-variant=\"underline\"] svg {\n  top: 78%;\n  height: 0.55em;\n}\n\n[data-kida-scribble][data-variant=\"circle\"] svg {\n  inset: -12% -7%;\n  width: 114%;\n  height: 124%;\n}\n\n[data-kida-scribble] path {\n  fill: none;\n  stroke: var(--kida-scribble-color);\n  stroke-width: var(--kida-scribble-width);\n  stroke-linecap: round;\n  stroke-linejoin: round;\n  vector-effect: non-scaling-stroke;\n  stroke-dasharray: 1;\n  stroke-dashoffset: 1;\n}\n\n[data-kida-scribble][data-state=\"active\"] path,\n[data-kida-scribble][data-state=\"settled\"] path {\n  animation: kida-scribble-draw var(--kida-scribble-duration) var(--kida-ease-out) forwards;\n}\n\n@keyframes kida-scribble-draw {\n  to {\n    stroke-dashoffset: 0;\n  }\n}\n\n@media (prefers-reduced-motion: reduce) {\n  [data-kida-scribble] path {\n    animation: none;\n    stroke-dashoffset: 0;\n  }\n}\n",
+      "type": "registry:ui",
+      "target": "@ui/kida/scribble-highlight.css"
+    },
+    {
+      "path": "packages/styles/tokens.css",
+      "content": "/*\n * Kida UI — motion tokens.\n * Plain CSS custom properties (ADR D7). No preprocessor, no Tailwind, no build step.\n */\n\n:root {\n  /* Durations */\n  --kida-duration-xs: 100ms;\n  --kida-duration-sm: 150ms;\n  --kida-duration-md: 300ms;\n  --kida-duration-lg: 500ms;\n  --kida-duration-xl: 800ms;\n\n  /* Easings */\n  --kida-ease-out: cubic-bezier(0.16, 1, 0.3, 1);\n  --kida-ease-in: cubic-bezier(0.7, 0, 0.84, 0);\n  --kida-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);\n  --kida-ease-spring: linear(0, 0.5, 0.9, 1.02, 1);\n\n  /* Travel distances used by the enter/exit keyframes */\n  --kida-distance-sm: 4px;\n  --kida-distance-md: 8px;\n  --kida-distance-lg: 16px;\n\n  /* Stagger step between siblings */\n  --kida-stagger: 60ms;\n}\n\n/*\n * The single reduced-motion guard for every CSS-driven animation in the library.\n * Durations collapse to ~0 instead of being disabled, so `animationend` still fires\n * and presence-based unmounts (ADR D5) never hang.\n */\n@media (prefers-reduced-motion: reduce) {\n  :root {\n    --kida-duration-xs: 1ms;\n    --kida-duration-sm: 1ms;\n    --kida-duration-md: 1ms;\n    --kida-duration-lg: 1ms;\n    --kida-duration-xl: 1ms;\n    --kida-distance-sm: 0px;\n    --kida-distance-md: 0px;\n    --kida-distance-lg: 0px;\n    --kida-stagger: 0ms;\n  }\n}\n",
+      "type": "registry:ui",
+      "target": "@ui/kida/tokens.css"
+    }
+  ],
+  "meta": {
+    "kida": {
+      "package": {
+        "name": "@kida-ui/react",
+        "exportName": "ScribbleHighlight",
+        "styleImports": [
+          "@kida-ui/styles/kida.css"
+        ]
+      }
+    }
+  },
+  "categories": [
+    "decorative"
+  ],
+  "type": "registry:ui"
+}

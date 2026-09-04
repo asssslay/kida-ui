@@ -1,0 +1,55 @@
+---
+title: Magnetic
+description: Pulls an isolated child toward a fine pointer and settles with a spring.
+category: interaction
+tier: T2
+status: beta
+order: 1
+---
+
+import Demo from '../../components/Demo.astro'
+import Distribution from '../../components/Distribution.astro'
+import MagneticBasic from '../../demos/magnetic-basic.react.tsx'
+
+<Demo name="magnetic-basic" title="Restrained pull" hideSource>
+  <MagneticBasic client:visible />
+</Demo>
+
+## Quick start
+
+<Distribution name="magnetic" />
+
+```tsx
+import { Magnetic } from '@/components/ui/kida/magnetic'
+
+<Magnetic>
+  <button type="button">Come closer</button>
+</Magnetic>
+```
+
+## API
+
+### Props
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `strength` | `number` | `0.22` | Portion of pointer distance followed. |
+| `maxDistance` | `number` | `18` | Maximum travel in CSS pixels. |
+| `targetClassName` | `string` | — | Class applied to the isolated moving layer. |
+
+The root also accepts span attributes, `className`, `style`, event handlers, and a forwarded `ref`.
+
+### CSS custom properties
+
+| Property | Default | Description |
+| --- | --- | --- |
+| `--kida-magnetic-activation-distance` | `2rem` | Stable pointer area around the stationary root. |
+
+## Accessibility and input behavior
+
+Only mouse and pen movement activate the effect. Touch input is ignored, and the wrapped control
+continues to own its click, focus, and keyboard behavior. Magnetic does not reveal information, so
+no keyboard-only motion is required.
+
+When reduced motion is requested, pointer tracking is disabled and the child stays in its natural
+position. The stationary root keeps the hit area predictable while the visible child moves.

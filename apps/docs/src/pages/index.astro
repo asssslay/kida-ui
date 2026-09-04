@@ -1,0 +1,52 @@
+---
+import { getCollection } from 'astro:content'
+import Demo from '../components/Demo.astro'
+import TextBloomBasic from '../demos/text-bloom-basic.react.tsx'
+import Base from '../layouts/Base.astro'
+
+const shipped = (await getCollection('components')).sort(
+  (a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title),
+)
+---
+
+<Base
+  title="Kida UI — animation-first components, built to reach every stack"
+  description="Animation-first UI components. Motion quality and genuine multi-stack reach, from a framework-agnostic core."
+>
+  <main id="main">
+    <section class="hero">
+      <h1>Animation-first components, built to reach <em>every stack</em>.</h1>
+      <p>
+        Polished motion components you can install, customize, and keep accessible.
+      </p>
+      <div class="actions">
+        <a class="button primary" href="/docs">Browse components</a>
+      </div>
+    </section>
+
+    <div class="sections">
+      <section class="section featured">
+        <h2>Made to move</h2>
+        <p>Thoughtful motion that feels expressive without getting in the way.</p>
+        <Demo name="text-bloom-basic" previewOnly>
+          <TextBloomBasic client:visible />
+        </Demo>
+      </section>
+
+      <section class="section">
+        <h2>Available components</h2>
+        <p>Start with a focused primitive or add an expressive finishing detail.</p>
+        <div class="component-grid">
+          {
+            shipped.map((entry) => (
+              <a class="component-card" href={`/docs/${entry.id}`}>
+                <h3>{entry.data.title}</h3>
+                <p>{entry.data.description}</p>
+              </a>
+            ))
+          }
+        </div>
+      </section>
+    </div>
+  </main>
+</Base>

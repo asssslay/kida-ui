@@ -5,6 +5,9 @@
 @import "./tokens.css";
 @import "./keyframes.css";
 @import "./components/collapse.css";
+@import "./components/text-bloom.css";
+@import "./components/magnetic.css";
+@import "./components/scribble-highlight.css";
 
 /*
  * The data-attribute contract (ADR D6).
