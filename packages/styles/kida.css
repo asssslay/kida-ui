@@ -8,6 +8,8 @@
 @import "./components/text-bloom.css";
 @import "./components/magnetic.css";
 @import "./components/scribble-highlight.css";
+@import "./components/photo-pile.css";
+@import "./components/sticker-burst.css";
 
 /*
  * The data-attribute contract (ADR D6).

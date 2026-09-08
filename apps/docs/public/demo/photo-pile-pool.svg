@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 800" role="img" aria-labelledby="title">
+  <title id="title">Mint pool with striped float</title>
+  <rect width="640" height="800" fill="#9edfc8"/>
+  <g fill="none" stroke="#fff" stroke-width="7" opacity=".52">
+    <path d="M-20 116c88-45 150-45 238 0s150 45 238 0 150-45 238 0"/>
+    <path d="M-20 218c88-45 150-45 238 0s150 45 238 0 150-45 238 0"/>
+    <path d="M-20 620c88-45 150-45 238 0s150 45 238 0 150-45 238 0"/>
+  </g>
+  <g transform="translate(320 416) rotate(-18)">
+    <circle r="164" fill="#fff8f1"/>
+    <path d="M0-164A164 164 0 0 1 142 82L70 40A81 81 0 0 0 0-80Z" fill="#f19870"/>
+    <path d="M142 82A164 164 0 0 1-142 82l72-42A81 81 0 0 0 70 40Z" fill="#ef6e9e"/>
+    <path d="M-142 82A164 164 0 0 1 0-164v84a81 81 0 0 0-70 120Z" fill="#ffd17d"/>
+    <circle r="80" fill="#9edfc8"/>
+  </g>
+</svg>

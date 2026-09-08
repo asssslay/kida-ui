@@ -1,0 +1,62 @@
+---
+title: StickerBurst
+description: Bursts colorful decorative symbols around an existing control when it is activated.
+category: decorative
+tier: T2
+status: beta
+order: 2
+---
+
+import Demo from '../../components/Demo.astro'
+import Distribution from '../../components/Distribution.astro'
+import StickerBurstBasic from '../../demos/sticker-burst-basic.react.tsx'
+
+<Demo name="sticker-burst-basic" title="Click to celebrate" hideSource>
+  <StickerBurstBasic client:visible />
+</Demo>
+
+## Quick start
+
+<Distribution name="sticker-burst" />
+
+```tsx
+import { StickerBurst } from '@/components/ui/kida/sticker-burst'
+
+<StickerBurst stickers={['✦', '●', '♥', '★']}>
+  <button type="button">Celebrate</button>
+</StickerBurst>
+```
+
+## API
+
+### Props
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `ReactNode` | — | Existing control or interactive content that triggers the effect. |
+| `stickers` | `readonly string[]` | `['✦', '●', '♥', '★']` | Decorative symbols repeated through the burst. |
+| `count` | `number` | `8` | Number of pieces, clamped from 1 to 16. |
+| `distance` | `number` | `64` | Maximum travel in CSS pixels. |
+| `seed` | `number` | `17` | Stable seed used to vary the layout. |
+
+The root also accepts span attributes, `className`, `style`, event handlers, and a forwarded `ref`.
+
+### CSS custom properties
+
+| Property | Default | Description |
+| --- | --- | --- |
+| `--kida-sticker-color` | `#e94f86` | First piece color. |
+| `--kida-sticker-color-secondary` | `#a78bfa` | Second piece color. |
+| `--kida-sticker-color-tertiary` | `#75c9a6` | Third piece color. |
+| `--kida-sticker-color-fourth` | `#f4a261` | Fourth piece color. |
+| `--kida-sticker-size` | `1rem` | Base size of each symbol. |
+| `--kida-sticker-duration` | `620ms` | Burst duration. |
+
+## Accessibility and input behavior
+
+StickerBurst does not replace the wrapped control's semantics or click handler. Wrap a native
+button or another accessible interactive element so pointer and keyboard-generated clicks both
+trigger the effect. The burst layer is decorative and hidden from assistive technology, and its
+seeded geometry stays identical during server rendering and hydration.
+
+When reduced motion is requested, no burst runs and the wrapped control continues to work normally.

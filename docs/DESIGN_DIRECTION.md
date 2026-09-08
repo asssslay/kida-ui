@@ -91,8 +91,9 @@ The first signature sequence is:
 1. `TextBloom` establishes segmentation, stagger, and the Gentle/Pop voices.
 2. `Magnetic` establishes pointer tracking and Tactile motion.
 3. `ScribbleHighlight` establishes the Drawn voice.
-4. `CandyDock` combines proximity, scale, keyboard behavior, and soft depth.
-5. `PhotoPile` brings the direction to image interaction.
-6. A `PlayfulHero` proves the pieces can compose into one editorial experience.
+4. `StickerBurst` establishes the Pop voice with a compact decorative response.
+5. `CandyDock` combines proximity, scale, keyboard behavior, and soft depth.
+6. `PhotoPile` brings the direction to image interaction.
+7. A `PlayfulHero` proves the pieces can compose into one editorial experience.
 
 `Reveal` and `Collapse` remain neutral primitives underneath this collection.

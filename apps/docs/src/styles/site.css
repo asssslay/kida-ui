@@ -730,6 +730,31 @@ a {
   font-weight: 650;
 }
 
+.demo [data-kida-photo-pile] {
+  --kida-photo-width: clamp(8.5rem, 36%, 12rem);
+
+  margin-inline: auto;
+}
+
+.demo-sticker-button {
+  min-width: 10rem;
+  min-height: 3.1rem;
+  padding: 0.75rem 1.2rem;
+  border: 1px solid #da9aae;
+  border-radius: 999px;
+  color: #442633;
+  background: #ffd3e3;
+  box-shadow: 0 5px 0 #e2a4b9;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.demo-sticker-button:active {
+  translate: 0 3px;
+  box-shadow: 0 2px 0 #e2a4b9;
+}
+
 @media (max-width: 48rem) {
   .demo-text-bloom h2 {
     font-size: 1.65rem;

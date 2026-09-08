@@ -180,4 +180,80 @@ export const registryDefinitions = [
       },
     ],
   },
+  {
+    name: 'photo-pile',
+    title: 'PhotoPile',
+    description: 'Layers draggable photos that spring back into a playful composition.',
+    category: 'image',
+    package: {
+      name: '@kida-ui/react',
+      exportName: 'PhotoPile',
+      styleImports: ['@kida-ui/styles/kida.css'],
+    },
+    dependencies: ['@kida-ui/motion'],
+    files: [
+      {
+        source: 'packages/react/src/photo-pile.tsx',
+        type: 'registry:ui',
+        target: '@ui/kida/photo-pile.tsx',
+        styleImport: './photo-pile.css',
+      },
+      {
+        source: 'packages/react/src/compose-refs.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/compose-refs.ts',
+      },
+      {
+        source: 'packages/react/src/use-isomorphic-layout-effect.ts',
+        type: 'registry:hook',
+        target: '@ui/kida/use-isomorphic-layout-effect.ts',
+      },
+      {
+        source: 'packages/styles/components/photo-pile.css',
+        type: 'registry:ui',
+        target: '@ui/kida/photo-pile.css',
+      },
+    ],
+  },
+  {
+    name: 'sticker-burst',
+    title: 'StickerBurst',
+    description: 'Bursts colorful decorative symbols around an existing control when activated.',
+    category: 'decorative',
+    package: {
+      name: '@kida-ui/react',
+      exportName: 'StickerBurst',
+      styleImports: ['@kida-ui/styles/kida.css'],
+    },
+    dependencies: ['@kida-ui/motion'],
+    files: [
+      {
+        source: 'packages/react/src/sticker-burst.tsx',
+        type: 'registry:ui',
+        target: '@ui/kida/sticker-burst.tsx',
+        styleImport: './sticker-burst.css',
+      },
+      {
+        source: 'packages/react/src/compose-refs.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/compose-refs.ts',
+      },
+      {
+        source: 'packages/react/src/use-isomorphic-layout-effect.ts',
+        type: 'registry:hook',
+        target: '@ui/kida/use-isomorphic-layout-effect.ts',
+      },
+      {
+        source: 'packages/styles/components/sticker-burst.css',
+        type: 'registry:ui',
+        target: '@ui/kida/sticker-burst.css',
+        imports: ['./tokens.css'],
+      },
+      {
+        source: 'packages/styles/tokens.css',
+        type: 'registry:ui',
+        target: '@ui/kida/tokens.css',
+      },
+    ],
+  },
 ]

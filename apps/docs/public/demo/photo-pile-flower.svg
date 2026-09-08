@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 800" role="img" aria-labelledby="title">
+  <title id="title">Pink paper flower</title>
+  <rect width="640" height="800" fill="#f9c9dc"/>
+  <circle cx="120" cy="120" r="140" fill="#f39c73" opacity=".72"/>
+  <circle cx="520" cy="680" r="190" fill="#a8dcc5" opacity=".8"/>
+  <g transform="translate(320 400)" fill="#ee6799">
+    <ellipse rx="82" ry="220" transform="rotate(0)"/>
+    <ellipse rx="82" ry="220" transform="rotate(60)"/>
+    <ellipse rx="82" ry="220" transform="rotate(120)"/>
+  </g>
+  <circle cx="320" cy="400" r="72" fill="#f5a23b"/>
+  <circle cx="320" cy="400" r="32" fill="#fff8f1"/>
+</svg>
