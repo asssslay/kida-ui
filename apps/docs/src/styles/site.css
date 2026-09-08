@@ -56,6 +56,17 @@ a {
   color: inherit;
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
@@ -642,12 +653,14 @@ a {
 }
 
 .catalog-card {
-  position: relative;
+  display: block;
   min-width: 0;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 1rem;
   background: var(--bg);
+  color: inherit;
+  text-decoration: none;
   transition:
     border-color var(--kida-duration-sm) var(--kida-ease-out),
     box-shadow var(--kida-duration-sm) var(--kida-ease-out),
@@ -672,13 +685,6 @@ a {
   background: rgb(227 242 234 / 65%);
 }
 
-.catalog-card-link {
-  position: absolute;
-  z-index: 2;
-  inset: 0;
-  border-radius: inherit;
-}
-
 .catalog-card:hover,
 .catalog-card:focus-within {
   border-color: #f9c6df;
@@ -688,6 +694,10 @@ a {
 
 .component-preview[data-component="collapse"] {
   padding: 1rem 1.5rem;
+}
+
+.catalog-preview-collapse-trigger {
+  display: inline-block;
 }
 
 .site-footer {
@@ -847,6 +857,11 @@ a {
   font: inherit;
   font-weight: 650;
   cursor: pointer;
+  transition: scale var(--kida-duration-sm) var(--kida-ease-out);
+}
+
+.catalog-card[data-active="true"] .demo-magnetic-button {
+  scale: 1.035;
 }
 
 .demo-magnetic-button:focus-visible {
@@ -870,6 +885,16 @@ a {
   color: #314c40;
   font-size: 1.7rem;
   font-weight: 650;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-magnetic-button {
+    transition: none;
+  }
+
+  .catalog-card[data-active="true"] .demo-magnetic-button {
+    scale: 1;
+  }
 }
 
 @media (max-width: 48rem) {

@@ -37,21 +37,12 @@ const groups = COMPONENT_CATEGORIES.map((category) => ({
               </div>
               <div class="catalog-grid">
                 {group.entries.map((entry) => (
-                  <article class="catalog-card">
-                    <div
-                      class="component-preview"
-                      data-component={entry.id}
-                      aria-hidden="true"
-                      inert
-                    >
-                      <CatalogCardPreview name={entry.id} client:visible />
-                    </div>
-                    <a
-                      class="catalog-card-link"
-                      href={`/docs/${entry.id}`}
-                      aria-label={`${entry.data.title}: ${entry.data.description}`}
-                    />
-                  </article>
+                  <CatalogCardPreview
+                    name={entry.id}
+                    href={`/docs/${entry.id}`}
+                    label={`${entry.data.title}: ${entry.data.description}`}
+                  client:load
+                  />
                 ))}
               </div>
             </section>
