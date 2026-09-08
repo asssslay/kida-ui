@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content'
 import { COMPONENT_CATEGORIES, categoryOrder } from '../../config/components'
+import CatalogCardPreview from '../../demos/catalog-card-preview.react.tsx'
 import Base from '../../layouts/Base.astro'
 
 const entries = (await getCollection('components')).sort(
@@ -20,7 +21,7 @@ const groups = COMPONENT_CATEGORIES.map((category) => ({
   title="Documentation — Kida UI"
   description="Component documentation for Kida UI, the animation-first component library."
 >
-  <main id="main" class="sections">
+  <main id="main" class="sections catalog-page">
     <section class="section" style="border-top: 0; padding-top: 3rem;">
       <h1>Components</h1>
       <p>
@@ -34,12 +35,23 @@ const groups = COMPONENT_CATEGORIES.map((category) => ({
               <div class="catalog-group-head">
                 <h2>{group.label}</h2>
               </div>
-              <div class="component-grid">
+              <div class="catalog-grid">
                 {group.entries.map((entry) => (
-                  <a class="component-card" href={`/docs/${entry.id}`}>
-                    <h3>{entry.data.title}</h3>
-                    <p>{entry.data.description}</p>
-                  </a>
+                  <article class="catalog-card">
+                    <div
+                      class="component-preview"
+                      data-component={entry.id}
+                      aria-hidden="true"
+                      inert
+                    >
+                      <CatalogCardPreview name={entry.id} client:visible />
+                    </div>
+                    <a
+                      class="catalog-card-link"
+                      href={`/docs/${entry.id}`}
+                      aria-label={`${entry.data.title}: ${entry.data.description}`}
+                    />
+                  </article>
                 ))}
               </div>
             </section>
