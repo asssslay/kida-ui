@@ -1,0 +1,175 @@
+---
+import type { MarkdownHeading } from 'astro'
+import CodeBlock from '../../components/CodeBlock.astro'
+import DocsLayout from '../../layouts/DocsLayout.astro'
+
+const registryUrl = new URL('/r/text-bloom.json', Astro.site).href
+const installCommand = `npx shadcn@latest add ${registryUrl}`
+const createCommand = `npx shadcn@latest init --template vite --name my-app --no-monorepo`
+const initCommand = `npx shadcn@latest init`
+const usage = `import { TextBloom } from '@/components/ui/kida/text-bloom'
+
+export default function Welcome() {
+  return (
+    <TextBloom as="h1" voice="pop">
+      Make the headline bloom.
+    </TextBloom>
+  )
+}`
+const structure = `src/components/ui/kida/
+├── text-bloom.tsx
+├── text-bloom.css
+├── compose-refs.ts
+├── use-isomorphic-layout-effect.ts
+└── motion/
+    ├── text-bloom.ts
+    └── reduced-motion.ts`
+
+const headings = [
+  { depth: 2, slug: 'before-you-start', text: 'Before you start' },
+  { depth: 2, slug: 'prepare-your-project', text: 'Prepare your project' },
+  { depth: 3, slug: 'start-a-new-project', text: 'Start a new project' },
+  { depth: 3, slug: 'use-an-existing-project', text: 'Use an existing project' },
+  { depth: 2, slug: 'install-a-component', text: 'Install a component' },
+  { depth: 2, slug: 'use-the-component', text: 'Use the component' },
+  { depth: 2, slug: 'understand-the-copied-files', text: 'Understand the copied files' },
+  { depth: 2, slug: 'copy-manually', text: 'Copy manually' },
+  { depth: 2, slug: 'troubleshooting', text: 'Troubleshooting' },
+  { depth: 2, slug: 'verify-your-installation', text: 'Verify your installation' },
+] satisfies MarkdownHeading[]
+---
+
+<DocsLayout
+  title="Installation"
+  description="Copy a Kida animation into your React project, then customize the source as your own."
+  currentPath="/docs/installation"
+  headings={headings}
+>
+  <div class="guide-callout">
+    <strong>Copy source, not a package.</strong>
+    <p>
+      Kida currently uses the shadcn CLI to place readable component files directly in your
+      project. There is no unpublished Kida package to install or keep in sync.
+    </p>
+  </div>
+
+  <h2 id="before-you-start">Before you start</h2>
+  <p>You need:</p>
+  <ul>
+    <li>a React project;</li>
+    <li>Node.js and npm, pnpm, yarn, or Bun;</li>
+    <li>a shadcn <code>components.json</code> file.</li>
+  </ul>
+  <p>
+    Kida's registry installs public runtime dependencies automatically. You do not need
+    <code>@kida-ui/react</code>, <code>@kida-ui/motion</code>, or any other unpublished Kida
+    package.
+  </p>
+
+  <h2 id="prepare-your-project">Prepare your project</h2>
+
+  <h3 id="start-a-new-project">Start a new project</h3>
+  <p>The shadcn CLI can create a configured Vite and React project for you:</p>
+  <CodeBlock code={createCommand} lang="bash" />
+  <p>
+    Choose a component library and preset when prompted, enter the generated directory, then
+    continue with the installation command below.
+  </p>
+
+  <h3 id="use-an-existing-project">Use an existing project</h3>
+  <p>From the root of a shadcn-compatible React project, initialize its configuration once:</p>
+  <CodeBlock code={initCommand} lang="bash" />
+  <p>
+    If the CLI reports missing Tailwind configuration or an import alias, complete the
+    <a href="https://ui.shadcn.com/docs/installation" target="_blank" rel="noreferrer">
+      shadcn framework setup
+    </a>
+    before continuing.
+  </p>
+
+  <h2 id="install-a-component">Install a component</h2>
+  <p>Each component page provides its own registry command. For example, install TextBloom:</p>
+  <CodeBlock code={installCommand} lang="bash" />
+  <p>The command:</p>
+  <ul>
+    <li>downloads the component from Kida's public registry;</li>
+    <li>installs its public runtime dependencies;</li>
+    <li>writes the component, styles, and local motion helpers into your project.</li>
+  </ul>
+  <p>
+    When you add another Kida component, review any overwrite prompt before accepting it if you
+    have already edited a shared helper.
+  </p>
+
+  <h2 id="use-the-component">Use the component</h2>
+  <p>Import the copied source from your project's configured alias:</p>
+  <CodeBlock code={usage} lang="tsx" />
+  <p>
+    Start your development server and refresh the page to replay viewport-triggered animations.
+    Component pages document the available props, variants, accessibility behavior, and live
+    examples.
+  </p>
+
+  <h2 id="understand-the-copied-files">Understand the copied files</h2>
+  <p>A TextBloom installation creates this structure by default:</p>
+  <CodeBlock code={structure} lang="text" />
+  <p>
+    The <code>kida</code> directory namespaces Kida source inside shadcn's conventional
+    <code>components/ui</code> directory. Keep the relative structure intact so internal imports
+    continue to resolve.
+  </p>
+
+  <h2 id="copy-manually">Copy manually</h2>
+  <p>
+    If you do not want to use the shadcn CLI, open a component page and expand
+    <strong>Copy manually</strong>. Install the listed dependencies, create every file at its shown
+    target path, and preserve the directory structure.
+  </p>
+  <p>
+    Manual copying is useful when your project does not use shadcn, but the registry command is
+    the safer default because it handles dependencies and configured aliases for you.
+  </p>
+
+  <h2 id="troubleshooting">Troubleshooting</h2>
+
+  <h3>“A components.json file is required”</h3>
+  <p>Run <code>npx shadcn@latest init</code> from your project root, then retry the Kida command.</p>
+
+  <h3>Tailwind or import-alias validation fails</h3>
+  <p>
+    Finish shadcn's setup for your framework. Confirm that <code>components.json</code> points to
+    the same alias your TypeScript and bundler configuration understand.
+  </p>
+
+  <h3>The import cannot be resolved</h3>
+  <p>
+    Check the path created by the CLI. With the default alias, TextBloom is imported from
+    <code>@/components/ui/kida/text-bloom</code>. Do not import it from an unpublished
+    <code>@kida-ui/*</code> package.
+  </p>
+
+  <h3>The component renders but does not animate</h3>
+  <p>
+    Refresh the page, make sure the element enters the viewport, and check whether your operating
+    system requests reduced motion. Kida intentionally avoids non-essential motion when
+    <code>prefers-reduced-motion: reduce</code> is active.
+  </p>
+
+  <h3>The copy button fails</h3>
+  <p>
+    Allow clipboard access for the site, or select the command directly from the code block and
+    copy it with your keyboard.
+  </p>
+
+  <h2 id="verify-your-installation">Verify your installation</h2>
+  <ol class="verification-list">
+    <li>Confirm the expected files exist under <code>src/components/ui/kida</code>.</li>
+    <li>Render the component and check the browser console for errors.</li>
+    <li>Try its documented variants or options.</li>
+    <li>Run your production build, such as <code>pnpm build</code>.</li>
+  </ol>
+  <p>
+    A successful production build confirms the copied source, imports, types, and runtime
+    dependencies work together outside the Kida repository.
+  </p>
+</DocsLayout>

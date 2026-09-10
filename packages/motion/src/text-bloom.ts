@@ -73,10 +73,18 @@ export function textBloom(element: HTMLElement, options: TextBloomOptions = {}):
 
   hide()
   let controls: ReturnType<typeof animate> | undefined
+  let settleFrame = 0
+
+  const cancelSettle = () => {
+    if (!settleFrame) return
+    cancelAnimationFrame(settleFrame)
+    settleFrame = 0
+  }
 
   const stop = inView(
     element,
     () => {
+      cancelSettle()
       element.dataset.state = 'active'
       const pop = settings.voice === 'pop'
       controls = animate(
@@ -100,14 +108,29 @@ export function textBloom(element: HTMLElement, options: TextBloomOptions = {}):
           delay: stagger(settings.stagger, { startDelay: settings.delay }),
           ease: [0.16, 1, 0.3, 1],
           times: [0, 0.72, 1],
-          onComplete: settle,
         },
       )
+
+      const currentControls = controls
+      void currentControls.finished
+        .then(() => {
+          // `animate()` creates one animation per property and segment. Wait for the whole
+          // group, then move one frame past Motion's final style commits before cleaning up.
+          if (controls !== currentControls) return
+          settleFrame = requestAnimationFrame(() => {
+            settleFrame = 0
+            if (controls === currentControls) settle()
+          })
+        })
+        .catch(() => {
+          // Cancelling a pass rejects its finished promise; the exit cleanup re-arms it.
+        })
 
       if (settings.once) stop()
       return settings.once
         ? undefined
         : () => {
+            cancelSettle()
             controls?.cancel()
             hide()
           }
@@ -117,6 +140,7 @@ export function textBloom(element: HTMLElement, options: TextBloomOptions = {}):
 
   return () => {
     stop()
+    cancelSettle()
     controls?.cancel()
   }
 }
