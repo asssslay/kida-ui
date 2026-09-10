@@ -23,7 +23,7 @@ const react = demo.react
 if (!react) throw new Error(`Demo "${name}" has no React variant.`)
 ---
 
-<figure class="demo" data-preview-only={previewOnly ? '' : undefined}>
+<figure class="demo" data-demo={name} data-preview-only={previewOnly ? '' : undefined}>
   {!previewOnly && <figcaption class="demo-head">{title ?? name}</figcaption>}
 
   <div class="demo-stage">
