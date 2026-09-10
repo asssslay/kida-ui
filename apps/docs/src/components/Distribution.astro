@@ -9,7 +9,23 @@ interface Props {
 
 const { name } = Astro.props
 const item = getRegistryItem(name)
-const registryCommand = `npx shadcn@latest add https://kida.dev/r/${item.name}.json`
+const registryUrl = new URL(`/r/${item.name}.json`, Astro.site).href
+const registryCommand = `npx shadcn@latest add ${registryUrl}`
+const dependencyCommand = `npm install ${item.dependencies.join(' ')}`
+
+function displayTarget(target: string): string {
+  const placeholders = {
+    '@ui/': 'src/components/ui/',
+    '@components/': 'src/components/',
+    '@hooks/': 'src/hooks/',
+    '@lib/': 'src/lib/',
+  }
+
+  for (const [placeholder, replacement] of Object.entries(placeholders)) {
+    if (target.startsWith(placeholder)) return target.replace(placeholder, replacement)
+  }
+  return target
+}
 
 function codeLanguage(path: string): CodeLang {
   if (path.endsWith('.css')) return 'css'
@@ -18,26 +34,56 @@ function codeLanguage(path: string): CodeLang {
 }
 ---
 
-<section class="distribution" data-distribution>
+<section class="distribution" data-distribution aria-labelledby={`copy-${item.name}`}>
   <div class="distribution-head">
-    <strong>Copy source</strong>
-    <span class="distribution-status">Package coming in v0.1</span>
+    <div>
+      <strong id={`copy-${item.name}`}>Add to your project</strong>
+      <p>Copy the component and everything it needs into your React project.</p>
+    </div>
   </div>
 
   <div class="distribution-source">
-    <CodeBlock code={registryCommand} lang="bash" />
-    <p class="distribution-meta">
-      Runtime dependencies: {item.dependencies.join(', ') || 'none'}
-    </p>
-    <div class="source-files">
-      {
-        item.files.map((file) => (
-          <details>
-            <summary>{file.target}</summary>
-            <CodeBlock code={file.content} lang={codeLanguage(file.path)} />
-          </details>
-        ))
-      }
+    <div class="distribution-label">
+      <span class="distribution-badge">Recommended</span>
+      <strong>Use the shadcn CLI</strong>
     </div>
+    <CodeBlock code={registryCommand} lang="bash" />
+    <p class="distribution-note">
+      Run this from a project with <code>components.json</code>. The CLI creates all required files
+      and installs the declared runtime dependencies. If that file does not exist yet, run
+      <code>npx shadcn@latest init</code> once first.
+    </p>
+    <a class="registry-link" href={`/r/${item.name}.json`}>View registry JSON <span aria-hidden="true">↗</span></a>
+
+    <details class="manual-source">
+      <summary>
+        <span>Copy manually</span>
+        <small>{item.files.length} files</small>
+      </summary>
+      <div class="manual-source-body">
+        {
+          item.dependencies.length > 0 && (
+            <div class="manual-step">
+              <h3>1. Install runtime dependencies</h3>
+              <CodeBlock code={dependencyCommand} lang="bash" />
+            </div>
+          )
+        }
+        <div class="manual-step">
+          <h3>{item.dependencies.length > 0 ? '2. Create the source files' : '1. Create the source files'}</h3>
+          <p>Keep this directory structure so the component's relative imports continue to work.</p>
+          <div class="source-files">
+            {
+              item.files.map((file) => (
+                <details>
+                  <summary>{displayTarget(file.target)}</summary>
+                  <CodeBlock code={file.content} lang={codeLanguage(file.path)} />
+                </details>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </details>
   </div>
 </section>
