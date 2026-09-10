@@ -160,12 +160,12 @@ required Kida source and CSS and declares only public third-party runtime packag
 path remains the future upgradeable option once the Kida packages are published.
 
 v1 needs **no Kida CLI**: emit shadcn-schema JSON and users run
-`npx shadcn@latest add https://kida.dev/r/spotlight-card.json`, or register a namespace:
+`npx shadcn@latest add https://kida-ui.onrender.com/r/reveal.json`, or register a namespace:
 
 ```jsonc
 // components.json
-"registries": { "@kida-ui": "https://kida.dev/r/{name}.json" }
-// → npx shadcn@latest add @kida-ui/spotlight-card
+"registries": { "@kida-ui": "https://kida-ui.onrender.com/r/{name}.json" }
+// → npx shadcn@latest add @kida-ui/reveal
 ```
 
 Build `packages/cli` only when framework #2 lands — that's where shadcn's CLI can't follow.

@@ -11,8 +11,10 @@ const viteCacheDir =
       ? 'node_modules/.vite-kida-check'
       : 'node_modules/.vite-kida-build'
 
+const site = process.env.SITE_URL ?? process.env.RENDER_EXTERNAL_URL ?? 'http://localhost:4321'
+
 export default defineConfig({
-  site: 'https://kida.dev',
+  site,
 
   // React is the only adapter at v1 (ADR D2). Astro was chosen precisely because adding
   // `@astrojs/svelte` here later renders Svelte demos on the same page (ADR D10).

@@ -115,7 +115,7 @@ export async function buildRegistry() {
   const registry = registrySchema.parse({
     $schema: 'https://ui.shadcn.com/schema/registry.json',
     name: 'kida-ui',
-    homepage: 'https://kida.dev',
+    homepage: 'https://kida-ui.onrender.com',
     items: items.map(({ $schema: _schema, ...item }) => item),
   })
 
