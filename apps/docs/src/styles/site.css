@@ -216,6 +216,22 @@ a {
   margin: 0 0 2rem;
 }
 
+.guide-callout {
+  padding: 1rem 1.1rem;
+  border-radius: 0.65rem;
+  background: var(--bg-subtle);
+  border-left: 3px solid var(--accent);
+}
+
+.guide-callout p {
+  margin: 0.3rem 0 0;
+}
+
+.verification-list li::marker {
+  color: var(--accent);
+  font-weight: 650;
+}
+
 .prose h2 {
   font-size: 1.25rem;
   letter-spacing: -0.01em;
@@ -624,6 +640,10 @@ a {
   gap: 3rem;
 }
 
+.catalog-actions {
+  margin: -0.75rem 0 3rem;
+}
+
 .catalog-group {
   min-width: 0;
 }
@@ -689,6 +709,9 @@ a {
 @media (max-width: 48rem) {
   .docs {
     grid-template-columns: minmax(0, 1fr);
+  }
+  .code .copy {
+    opacity: 1;
   }
   .sidebar {
     position: static;
