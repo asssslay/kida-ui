@@ -30,11 +30,11 @@ React DOM remain peer dependencies of the adapter.
 ## Copy source
 
 Every component page displays all generated source files. A shadcn-compatible registry item is
-also served at `https://kida.dev/r/<name>.json`, so users with a `components.json` file can write
+also served at `https://kida-ui.onrender.com/r/<name>.json`, so users with a `components.json` file can write
 the same source into their configured directories:
 
 ```bash
-npx shadcn@latest add https://kida.dev/r/reveal.json
+npx shadcn@latest add https://kida-ui.onrender.com/r/reveal.json
 ```
 
 This uses shadcn's existing CLI, not a Kida CLI. A Kida-specific CLI remains deferred until a
