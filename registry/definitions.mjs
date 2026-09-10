@@ -14,17 +14,28 @@ export const registryDefinitions = [
       exportName: 'Reveal',
       styleImports: [],
     },
-    dependencies: ['@kida-ui/motion'],
+    dependencies: ['motion'],
     files: [
       {
         source: 'packages/react/src/reveal.tsx',
         type: 'registry:ui',
         target: '@ui/kida/reveal.tsx',
+        importReplacements: { '@kida-ui/motion': './motion/reveal.js' },
       },
       {
         source: 'packages/react/src/use-isomorphic-layout-effect.ts',
         type: 'registry:hook',
         target: '@ui/kida/use-isomorphic-layout-effect.ts',
+      },
+      {
+        source: 'packages/motion/src/reveal.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/reveal.ts',
+      },
+      {
+        source: 'packages/motion/src/reduced-motion.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/reduced-motion.ts',
       },
     ],
   },
@@ -79,13 +90,14 @@ export const registryDefinitions = [
       exportName: 'TextBloom',
       styleImports: ['@kida-ui/styles/kida.css'],
     },
-    dependencies: ['@kida-ui/motion'],
+    dependencies: ['motion'],
     files: [
       {
         source: 'packages/react/src/text-bloom.tsx',
         type: 'registry:ui',
         target: '@ui/kida/text-bloom.tsx',
         styleImport: './text-bloom.css',
+        importReplacements: { '@kida-ui/motion': './motion/text-bloom.js' },
       },
       {
         source: 'packages/react/src/compose-refs.ts',
@@ -102,6 +114,16 @@ export const registryDefinitions = [
         type: 'registry:ui',
         target: '@ui/kida/text-bloom.css',
       },
+      {
+        source: 'packages/motion/src/text-bloom.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/text-bloom.ts',
+      },
+      {
+        source: 'packages/motion/src/reduced-motion.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/reduced-motion.ts',
+      },
     ],
   },
   {
@@ -114,13 +136,14 @@ export const registryDefinitions = [
       exportName: 'Magnetic',
       styleImports: ['@kida-ui/styles/kida.css'],
     },
-    dependencies: ['@kida-ui/motion'],
+    dependencies: ['motion'],
     files: [
       {
         source: 'packages/react/src/magnetic.tsx',
         type: 'registry:ui',
         target: '@ui/kida/magnetic.tsx',
         styleImport: './magnetic.css',
+        importReplacements: { '@kida-ui/motion': './motion/magnetic.js' },
       },
       {
         source: 'packages/react/src/compose-refs.ts',
@@ -137,6 +160,16 @@ export const registryDefinitions = [
         type: 'registry:ui',
         target: '@ui/kida/magnetic.css',
       },
+      {
+        source: 'packages/motion/src/magnetic.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/magnetic.ts',
+      },
+      {
+        source: 'packages/motion/src/reduced-motion.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/reduced-motion.ts',
+      },
     ],
   },
   {
@@ -149,13 +182,14 @@ export const registryDefinitions = [
       exportName: 'ScribbleHighlight',
       styleImports: ['@kida-ui/styles/kida.css'],
     },
-    dependencies: ['@kida-ui/motion'],
+    dependencies: ['motion'],
     files: [
       {
         source: 'packages/react/src/scribble-highlight.tsx',
         type: 'registry:ui',
         target: '@ui/kida/scribble-highlight.tsx',
         styleImport: './scribble-highlight.css',
+        importReplacements: { '@kida-ui/motion': './motion/draw-in-view.js' },
       },
       {
         source: 'packages/react/src/compose-refs.ts',
@@ -178,6 +212,16 @@ export const registryDefinitions = [
         type: 'registry:ui',
         target: '@ui/kida/tokens.css',
       },
+      {
+        source: 'packages/motion/src/draw-in-view.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/draw-in-view.ts',
+      },
+      {
+        source: 'packages/motion/src/reduced-motion.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/reduced-motion.ts',
+      },
     ],
   },
   {
@@ -190,13 +234,14 @@ export const registryDefinitions = [
       exportName: 'PhotoPile',
       styleImports: ['@kida-ui/styles/kida.css'],
     },
-    dependencies: ['@kida-ui/motion'],
+    dependencies: ['motion'],
     files: [
       {
         source: 'packages/react/src/photo-pile.tsx',
         type: 'registry:ui',
         target: '@ui/kida/photo-pile.tsx',
         styleImport: './photo-pile.css',
+        importReplacements: { '@kida-ui/motion': './motion/photo-pile.js' },
       },
       {
         source: 'packages/react/src/compose-refs.ts',
@@ -213,6 +258,16 @@ export const registryDefinitions = [
         type: 'registry:ui',
         target: '@ui/kida/photo-pile.css',
       },
+      {
+        source: 'packages/motion/src/photo-pile.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/photo-pile.ts',
+      },
+      {
+        source: 'packages/motion/src/reduced-motion.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/reduced-motion.ts',
+      },
     ],
   },
   {
@@ -225,13 +280,14 @@ export const registryDefinitions = [
       exportName: 'StickerBurst',
       styleImports: ['@kida-ui/styles/kida.css'],
     },
-    dependencies: ['@kida-ui/motion'],
+    dependencies: ['motion'],
     files: [
       {
         source: 'packages/react/src/sticker-burst.tsx',
         type: 'registry:ui',
         target: '@ui/kida/sticker-burst.tsx',
         styleImport: './sticker-burst.css',
+        importReplacements: { '@kida-ui/motion': './motion/sticker-burst.js' },
       },
       {
         source: 'packages/react/src/compose-refs.ts',
@@ -253,6 +309,16 @@ export const registryDefinitions = [
         source: 'packages/styles/tokens.css',
         type: 'registry:ui',
         target: '@ui/kida/tokens.css',
+      },
+      {
+        source: 'packages/motion/src/sticker-burst.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/sticker-burst.ts',
+      },
+      {
+        source: 'packages/motion/src/reduced-motion.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/reduced-motion.ts',
       },
     ],
   },

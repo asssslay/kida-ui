@@ -143,7 +143,7 @@ kida-ui/
 │  └─ playground/
 └─ scripts/
    ├─ build-registry.mjs  packages/* → registry/r/*.json (inline + rewrite imports)
-   ├─ check-copy-source.mjs  generated files → clean fixture typecheck
+   ├─ check-copy-source.mjs  each item → isolated import, typecheck, and bundle checks
    └─ check-parity.ts     CI gate: every framework exports the same surface
 ```
 
@@ -155,10 +155,9 @@ packages/react/src/spotlight-card.tsx      ← single source of truth
    └── build-registry.ts ──► registry/r/spotlight-card.json
 ```
 
-Split, following shadcn's own conclusion (`@shadcn/react` v0.3.0 exists for exactly this reason):
-
-- **Copy** → styled, opinionated, users will edit it (T1, T2, T4)
-- **Install** → complex, infrastructural (`@kida-ui/motion`, `@kida-ui/styles`, Zag-backed T3)
+The copy path is available for every public React component. Each registry item contains all
+required Kida source and CSS and declares only public third-party runtime packages. The package
+path remains the future upgradeable option once the Kida packages are published.
 
 v1 needs **no Kida CLI**: emit shadcn-schema JSON and users run
 `npx shadcn@latest add https://kida.dev/r/spotlight-card.json`, or register a namespace:
