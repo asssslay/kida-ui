@@ -435,6 +435,10 @@ a {
   min-height: 16rem;
 }
 
+.demo[data-demo="sticker-burst-basic"] .demo-stage {
+  min-height: 20rem;
+}
+
 /* ---------------------------------------------------------------- landing */
 
 .hero {
@@ -728,6 +732,67 @@ a {
   color: #314c40;
   font-size: 1.7rem;
   font-weight: 650;
+}
+
+.demo [data-kida-photo-pile] {
+  --kida-photo-width: clamp(8.5rem, 36%, 12rem);
+
+  margin-inline: auto;
+}
+
+.demo-sticker-button {
+  min-width: 10rem;
+  min-height: 3rem;
+  padding: 0.72rem 1.3rem;
+  border: 1px solid rgb(255 255 255 / 82%);
+  border-radius: 999px;
+  color: #292326;
+  background: rgb(255 245 248 / 78%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 92%),
+    0 1px 2px rgb(66 42 52 / 8%),
+    0 8px 24px rgb(66 42 52 / 10%);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.demo-sticker-button:hover {
+  border-color: rgb(249 198 223 / 65%);
+  background: rgb(255 250 252 / 92%);
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 2px 4px rgb(66 42 52 / 8%),
+    0 10px 28px rgb(66 42 52 / 12%);
+  transform: translateY(-1px);
+}
+
+.demo-sticker-button:focus-visible {
+  outline: 3px solid rgb(249 198 223 / 72%);
+  outline-offset: 3px;
+}
+
+.demo-sticker-button:active {
+  background: rgb(246 216 223 / 88%);
+  box-shadow:
+    inset 0 1px 2px rgb(66 42 52 / 8%),
+    0 2px 8px rgb(66 42 52 / 8%);
+  transform: translateY(0) scale(0.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-sticker-button {
+    transition: none;
+  }
 }
 
 @media (max-width: 48rem) {

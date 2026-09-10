@@ -246,6 +246,110 @@
         "decorative"
       ],
       "type": "registry:ui"
+    },
+    {
+      "name": "photo-pile",
+      "title": "PhotoPile",
+      "description": "Layers draggable photos that spring back into a playful composition.",
+      "dependencies": [
+        "@kida-ui/motion"
+      ],
+      "files": [
+        {
+          "path": "packages/react/src/photo-pile.tsx",
+          "content": "'use client'\n\nimport './photo-pile.css'\nimport { type PhotoPileOptions, photoPile } from '@kida-ui/motion'\nimport type { CSSProperties, HTMLAttributes, ImgHTMLAttributes } from 'react'\nimport { forwardRef, useRef } from 'react'\nimport { composeRefs } from './compose-refs.js'\nimport { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js'\n\nexport interface PhotoPilePhoto {\n  /** Stable key for this photo. */\n  id: string\n  src: string\n  alt: string\n  /** Horizontal offset from the center, in CSS pixels. */\n  x?: number\n  /** Vertical offset from the center, in CSS pixels. */\n  y?: number\n  /** Resting rotation in degrees. */\n  rotation?: number\n  imageProps?: Omit<ImgHTMLAttributes<HTMLImageElement>, 'src' | 'alt' | 'draggable'>\n}\n\nexport interface PhotoPileProps\n  extends PhotoPileOptions,\n    Omit<HTMLAttributes<HTMLFieldSetElement>, 'children'> {\n  photos: readonly PhotoPilePhoto[]\n  /** Multiplies the default and authored x/y offsets. @default 1 */\n  spread?: number\n}\n\nconst POSITIONS = [\n  { x: -54, y: -10, rotation: -7 },\n  { x: 52, y: -18, rotation: 6 },\n  { x: 2, y: 30, rotation: -1.5 },\n  { x: -24, y: -38, rotation: 4 },\n  { x: 38, y: 24, rotation: -5 },\n] as const\n\ntype ItemStyle = CSSProperties & {\n  '--kida-photo-x': string\n  '--kida-photo-y': string\n  '--kida-photo-rotation': string\n}\n\nexport const PhotoPile = forwardRef<HTMLFieldSetElement, PhotoPileProps>(function PhotoPile(\n  { photos, spread = 1, dragScale, tilt, 'aria-label': ariaLabel, ...props },\n  forwardedRef,\n) {\n  const ref = useRef<HTMLFieldSetElement>(null)\n  const photoKey = photos.map((photo) => photo.id).join('\\u0000')\n\n  useIsomorphicLayoutEffect(() => {\n    const root = ref.current\n    if (!root) return\n    return photoPile(root, { dragScale, tilt })\n  }, [photoKey, dragScale, tilt])\n\n  return (\n    <fieldset\n      {...props}\n      ref={composeRefs(ref, forwardedRef)}\n      aria-label={ariaLabel ?? 'Draggable photo pile'}\n      data-kida-photo-pile=\"\"\n    >\n      {photos.map((photo, index) => {\n        const fallback = POSITIONS[index % POSITIONS.length] ?? POSITIONS[0]\n        const label = photo.alt || `Photo ${index + 1}`\n        const style: ItemStyle = {\n          '--kida-photo-x': `${(photo.x ?? fallback.x) * spread}px`,\n          '--kida-photo-y': `${(photo.y ?? fallback.y) * spread}px`,\n          '--kida-photo-rotation': `${photo.rotation ?? fallback.rotation}deg`,\n          zIndex: index + 1,\n        }\n\n        return (\n          <button\n            key={photo.id}\n            type=\"button\"\n            aria-label={`Bring ${label} to front and drag`}\n            data-kida-photo-item=\"\"\n            style={style}\n          >\n            <span data-kida-photo-card=\"\">\n              <img {...photo.imageProps} src={photo.src} alt={photo.alt} draggable={false} />\n            </span>\n          </button>\n        )\n      })}\n    </fieldset>\n  )\n})\n",
+          "type": "registry:ui",
+          "target": "@ui/kida/photo-pile.tsx"
+        },
+        {
+          "path": "packages/react/src/compose-refs.ts",
+          "content": "import type { Ref } from 'react'\n\n/** Feed one node to several refs — ours for measuring, Zag's for animation detection. */\nexport function composeRefs<T>(...refs: (Ref<T> | undefined)[]) {\n  return (node: T | null) => {\n    for (const ref of refs) {\n      if (typeof ref === 'function') ref(node)\n      else if (ref) (ref as { current: T | null }).current = node\n    }\n  }\n}\n",
+          "type": "registry:lib",
+          "target": "@ui/kida/compose-refs.ts"
+        },
+        {
+          "path": "packages/react/src/use-isomorphic-layout-effect.ts",
+          "content": "'use client'\n\nimport { useEffect, useLayoutEffect } from 'react'\n\n/**\n * `useLayoutEffect` in the browser, `useEffect` on the server.\n *\n * Motion has to be applied before paint or the user sees an unstyled frame, but React\n * warns when `useLayoutEffect` runs during SSR — where it does nothing anyway.\n */\nexport const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect\n",
+          "type": "registry:hook",
+          "target": "@ui/kida/use-isomorphic-layout-effect.ts"
+        },
+        {
+          "path": "packages/styles/components/photo-pile.css",
+          "content": "[data-kida-photo-pile] {\n  --kida-photo-width: clamp(9rem, 42%, 13.5rem);\n  --kida-photo-radius: 0.55rem;\n  --kida-photo-frame: #fffafb;\n  --kida-photo-shadow: 0 0.8rem 2rem rgb(50 30 42 / 16%);\n\n  position: relative;\n  display: block;\n  min-inline-size: 0;\n  width: min(100%, 36rem);\n  min-height: 22rem;\n  margin: 0;\n  padding: 0;\n  border: 0;\n  isolation: isolate;\n}\n\n[data-kida-photo-item] {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  width: var(--kida-photo-width);\n  margin: 0;\n  padding: 0;\n  border: 0;\n  border-radius: var(--kida-photo-radius);\n  background: transparent;\n  cursor: grab;\n  touch-action: none;\n  transform: translate(-50%, -50%) translate(var(--kida-photo-x), var(--kida-photo-y))\n    rotate(var(--kida-photo-rotation));\n}\n\n[data-kida-photo-item][data-dragging] {\n  cursor: grabbing;\n}\n\n[data-kida-photo-item]:focus-visible {\n  outline: 3px solid var(--kida-photo-focus, #6d52a8);\n  outline-offset: 5px;\n}\n\n[data-kida-photo-card] {\n  display: block;\n  padding: 0.45rem 0.45rem 1.8rem;\n  border: 1px solid rgb(55 35 48 / 12%);\n  border-radius: var(--kida-photo-radius);\n  background: var(--kida-photo-frame);\n  box-shadow: var(--kida-photo-shadow);\n  user-select: none;\n}\n\n[data-kida-photo-card] img {\n  display: block;\n  width: 100%;\n  aspect-ratio: 4 / 5;\n  border-radius: calc(var(--kida-photo-radius) - 0.2rem);\n  object-fit: cover;\n  pointer-events: none;\n}\n\n@media (max-width: 32rem) {\n  [data-kida-photo-pile] {\n    --kida-photo-width: min(48%, 10.5rem);\n\n    min-height: 18rem;\n  }\n}\n\n@media (prefers-reduced-motion: reduce) {\n  [data-kida-photo-card] {\n    /* biome-ignore lint/complexity/noImportantStyles: stops an in-flight inline transform */\n    transform: none !important;\n  }\n}\n",
+          "type": "registry:ui",
+          "target": "@ui/kida/photo-pile.css"
+        }
+      ],
+      "meta": {
+        "kida": {
+          "package": {
+            "name": "@kida-ui/react",
+            "exportName": "PhotoPile",
+            "styleImports": [
+              "@kida-ui/styles/kida.css"
+            ]
+          }
+        }
+      },
+      "categories": [
+        "image"
+      ],
+      "type": "registry:ui"
+    },
+    {
+      "name": "sticker-burst",
+      "title": "StickerBurst",
+      "description": "Bursts colorful decorative symbols around an existing control when activated.",
+      "dependencies": [
+        "@kida-ui/motion"
+      ],
+      "files": [
+        {
+          "path": "packages/react/src/sticker-burst.tsx",
+          "content": "'use client'\n\nimport './sticker-burst.css'\nimport { type StickerBurstOptions, stickerBurst, stickerBurstLayout } from '@kida-ui/motion'\nimport type { CSSProperties, HTMLAttributes, ReactNode } from 'react'\nimport { forwardRef, useRef } from 'react'\nimport { composeRefs } from './compose-refs.js'\nimport { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js'\n\nexport interface StickerBurstProps\n  extends StickerBurstOptions,\n    Omit<HTMLAttributes<HTMLSpanElement>, 'children'> {\n  children?: ReactNode\n  /** Decorative symbols repeated through the burst. */\n  stickers?: readonly string[]\n}\n\nconst DEFAULT_STICKERS = ['✦', '●', '♥', '★'] as const\n\ntype PieceStyle = CSSProperties & {\n  '--kida-sticker-x': string\n  '--kida-sticker-y': string\n  '--kida-sticker-rotation': string\n  '--kida-sticker-delay': string\n  '--kida-sticker-scale': number\n}\n\nexport const StickerBurst = forwardRef<HTMLSpanElement, StickerBurstProps>(function StickerBurst(\n  { children, stickers = DEFAULT_STICKERS, count, distance, seed, ...props },\n  forwardedRef,\n) {\n  const ref = useRef<HTMLSpanElement>(null)\n  const points = stickerBurstLayout({ count, distance, seed })\n  const symbols = stickers.length > 0 ? stickers : DEFAULT_STICKERS\n\n  useIsomorphicLayoutEffect(() => {\n    const root = ref.current\n    if (!root) return\n    return stickerBurst(root)\n  }, [])\n\n  return (\n    <span\n      {...props}\n      ref={composeRefs(ref, forwardedRef)}\n      data-kida-sticker-burst=\"\"\n      data-state=\"idle\"\n    >\n      <span data-kida-sticker-content=\"\">{children}</span>\n      <span aria-hidden=\"true\" data-kida-sticker-layer=\"\">\n        {points.map((point, index) => {\n          const style: PieceStyle = {\n            '--kida-sticker-x': `${point.x}px`,\n            '--kida-sticker-y': `${point.y}px`,\n            '--kida-sticker-rotation': `${point.rotation}deg`,\n            '--kida-sticker-delay': `${point.delay}ms`,\n            '--kida-sticker-scale': point.scale,\n          }\n          return (\n            <span key={`${point.x}-${point.y}-${point.delay}`} style={style}>\n              {symbols[index % symbols.length]}\n            </span>\n          )\n        })}\n      </span>\n    </span>\n  )\n})\n",
+          "type": "registry:ui",
+          "target": "@ui/kida/sticker-burst.tsx"
+        },
+        {
+          "path": "packages/react/src/compose-refs.ts",
+          "content": "import type { Ref } from 'react'\n\n/** Feed one node to several refs — ours for measuring, Zag's for animation detection. */\nexport function composeRefs<T>(...refs: (Ref<T> | undefined)[]) {\n  return (node: T | null) => {\n    for (const ref of refs) {\n      if (typeof ref === 'function') ref(node)\n      else if (ref) (ref as { current: T | null }).current = node\n    }\n  }\n}\n",
+          "type": "registry:lib",
+          "target": "@ui/kida/compose-refs.ts"
+        },
+        {
+          "path": "packages/react/src/use-isomorphic-layout-effect.ts",
+          "content": "'use client'\n\nimport { useEffect, useLayoutEffect } from 'react'\n\n/**\n * `useLayoutEffect` in the browser, `useEffect` on the server.\n *\n * Motion has to be applied before paint or the user sees an unstyled frame, but React\n * warns when `useLayoutEffect` runs during SSR — where it does nothing anyway.\n */\nexport const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect\n",
+          "type": "registry:hook",
+          "target": "@ui/kida/use-isomorphic-layout-effect.ts"
+        },
+        {
+          "path": "packages/styles/components/sticker-burst.css",
+          "content": "@import './tokens.css';\n\n[data-kida-sticker-burst] {\n  --kida-sticker-color: #e94f86;\n  --kida-sticker-color-secondary: #a78bfa;\n  --kida-sticker-color-tertiary: #75c9a6;\n  --kida-sticker-color-fourth: #f4a261;\n  --kida-sticker-size: 1rem;\n  --kida-sticker-duration: 620ms;\n\n  position: relative;\n  display: inline-flex;\n  isolation: isolate;\n}\n\n[data-kida-sticker-content] {\n  position: relative;\n  z-index: 1;\n  display: inline-flex;\n}\n\n[data-kida-sticker-layer] {\n  position: absolute;\n  z-index: 0;\n  top: 50%;\n  left: 50%;\n  width: 0;\n  height: 0;\n  pointer-events: none;\n}\n\n[data-kida-sticker-layer] > span {\n  position: absolute;\n  top: 0;\n  left: 0;\n  color: var(--kida-sticker-color);\n  font-size: calc(var(--kida-sticker-size) * var(--kida-sticker-scale));\n  line-height: 1;\n  opacity: 0;\n  transform: translate(-50%, -50%) scale(0.3);\n}\n\n[data-kida-sticker-layer] > span:nth-child(4n + 2) {\n  color: var(--kida-sticker-color-secondary);\n}\n\n[data-kida-sticker-layer] > span:nth-child(4n + 3) {\n  color: var(--kida-sticker-color-tertiary);\n}\n\n[data-kida-sticker-layer] > span:nth-child(4n) {\n  color: var(--kida-sticker-color-fourth);\n}\n\n[data-kida-sticker-burst][data-state=\"active\"] [data-kida-sticker-layer] > span {\n  animation: kida-sticker-burst var(--kida-sticker-duration) var(--kida-ease-out)\n    var(--kida-sticker-delay) both;\n}\n\n@keyframes kida-sticker-burst {\n  0% {\n    opacity: 0;\n    transform: translate(-50%, -50%) rotate(0) scale(0.3);\n  }\n  18% {\n    opacity: 1;\n  }\n  68% {\n    opacity: 1;\n    transform: translate(calc(-50% + var(--kida-sticker-x)), calc(-50% + var(--kida-sticker-y)))\n      rotate(var(--kida-sticker-rotation)) scale(1);\n  }\n  100% {\n    opacity: 0;\n    transform: translate(calc(-50% + var(--kida-sticker-x)), calc(-50% + var(--kida-sticker-y)))\n      rotate(var(--kida-sticker-rotation)) scale(0.86);\n  }\n}\n\n@media (prefers-reduced-motion: reduce) {\n  [data-kida-sticker-burst][data-state=\"active\"] [data-kida-sticker-layer] > span {\n    animation: none;\n  }\n}\n",
+          "type": "registry:ui",
+          "target": "@ui/kida/sticker-burst.css"
+        },
+        {
+          "path": "packages/styles/tokens.css",
+          "content": "/*\n * Kida UI — motion tokens.\n * Plain CSS custom properties (ADR D7). No preprocessor, no Tailwind, no build step.\n */\n\n:root {\n  /* Durations */\n  --kida-duration-xs: 100ms;\n  --kida-duration-sm: 150ms;\n  --kida-duration-md: 300ms;\n  --kida-duration-lg: 500ms;\n  --kida-duration-xl: 800ms;\n\n  /* Easings */\n  --kida-ease-out: cubic-bezier(0.16, 1, 0.3, 1);\n  --kida-ease-in: cubic-bezier(0.7, 0, 0.84, 0);\n  --kida-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);\n  --kida-ease-spring: linear(0, 0.5, 0.9, 1.02, 1);\n\n  /* Travel distances used by the enter/exit keyframes */\n  --kida-distance-sm: 4px;\n  --kida-distance-md: 8px;\n  --kida-distance-lg: 16px;\n\n  /* Stagger step between siblings */\n  --kida-stagger: 60ms;\n}\n\n/*\n * The single reduced-motion guard for every CSS-driven animation in the library.\n * Durations collapse to ~0 instead of being disabled, so `animationend` still fires\n * and presence-based unmounts (ADR D5) never hang.\n */\n@media (prefers-reduced-motion: reduce) {\n  :root {\n    --kida-duration-xs: 1ms;\n    --kida-duration-sm: 1ms;\n    --kida-duration-md: 1ms;\n    --kida-duration-lg: 1ms;\n    --kida-duration-xl: 1ms;\n    --kida-distance-sm: 0px;\n    --kida-distance-md: 0px;\n    --kida-distance-lg: 0px;\n    --kida-stagger: 0ms;\n  }\n}\n",
+          "type": "registry:ui",
+          "target": "@ui/kida/tokens.css"
+        }
+      ],
+      "meta": {
+        "kida": {
+          "package": {
+            "name": "@kida-ui/react",
+            "exportName": "StickerBurst",
+            "styleImports": [
+              "@kida-ui/styles/kida.css"
+            ]
+          }
+        }
+      },
+      "categories": [
+        "decorative"
+      ],
+      "type": "registry:ui"
     }
   ]
 }

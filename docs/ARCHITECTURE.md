@@ -184,8 +184,8 @@ Vitest + Playwright + axe · Biome · Astro (docs) · Shiki
   categories
 - **P2 — complete:** generated copy-source path, install/copy documentation, clean fixture
   validation, and shadcn-compatible registry JSON (no custom CLI)
-- **P3 — current:** TextBloom, Magnetic, and ScribbleHighlight are complete; next are CandyDock,
-  PhotoPile, one background, and one composed hero
+- **P3 — current:** TextBloom, Magnetic, ScribbleHighlight, PhotoPile, and StickerBurst are complete;
+  next are CandyDock, one background, and one composed hero
 - **P4:** package metadata, visual regression and accessibility audit → **v0.1 alpha (React)**
 - **P5:** framework #2 (Svelte or Vue), parity checks, then evaluate a Kida CLI
 

@@ -1,0 +1,67 @@
+---
+title: PhotoPile
+description: Layers draggable photos that spring back into a playful composition.
+category: image
+tier: T2
+status: beta
+order: 1
+---
+
+import Demo from '../../components/Demo.astro'
+import Distribution from '../../components/Distribution.astro'
+import PhotoPileBasic from '../../demos/photo-pile-basic.react.tsx'
+
+<Demo name="photo-pile-basic" title="Draggable snapshots" hideSource>
+  <PhotoPileBasic client:visible />
+</Demo>
+
+## Quick start
+
+<Distribution name="photo-pile" />
+
+```tsx
+import { PhotoPile } from '@/components/ui/kida/photo-pile'
+
+const photos = [
+  { id: 'garden', src: '/garden.jpg', alt: 'Flowers in the garden' },
+  { id: 'coast', src: '/coast.jpg', alt: 'Sunset over the coast' },
+  { id: 'pool', src: '/pool.jpg', alt: 'Striped float in a pool' },
+]
+
+<PhotoPile photos={photos} />
+```
+
+## API
+
+### Props
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `photos` | `readonly PhotoPilePhoto[]` | required | Photos rendered in their initial stack order. |
+| `spread` | `number` | `1` | Multiplier for every photo's resting x/y offset. |
+| `dragScale` | `number` | `1.035` | Scale applied while a photo is dragged. |
+| `tilt` | `number` | `0.025` | Responsive rotation in degrees per horizontal pixel. |
+
+Each photo requires `id`, `src`, and `alt`. Add optional `x`, `y`, and `rotation` values to author
+its resting position, or pass `imageProps` for ordinary image attributes. The root also accepts
+fieldset attributes, `className`, `style`, event handlers, and a forwarded `ref`.
+
+### CSS custom properties
+
+| Property | Default | Description |
+| --- | --- | --- |
+| `--kida-photo-width` | `clamp(9rem, 42%, 13.5rem)` | Width of every photo. |
+| `--kida-photo-radius` | `0.55rem` | Corner radius of the photo frame. |
+| `--kida-photo-frame` | `#fffafb` | Frame background. |
+| `--kida-photo-shadow` | soft shadow | Resting shadow. |
+| `--kida-photo-focus` | `#6d52a8` | Keyboard focus outline. |
+
+## Accessibility and input behavior
+
+The pile is a labeled fieldset and every photo is a button with useful alternative text. Pointer
+users can drag a photo and release it to spring home. Focusing or clicking a photo brings it to the
+front, so keyboard users can inspect the complete stack without needing a drag equivalent. The
+resting layout does not encode information.
+
+Reduced motion keeps the pile static and removes both drag travel and spring movement. Images are
+also marked non-draggable so native browser image dragging cannot compete with the component.
