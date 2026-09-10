@@ -30,12 +30,14 @@ multi-framework cost, not how users browse the library.
 
 - One checked-in implementation is the source of truth.
 - The npm package and copyable source are generated from that implementation.
-- Copied source may depend on `@kida-ui/motion`, `@kida-ui/styles`, or a declared third-party
-  package. Copyable means owned and editable, not dependency-free.
+- Copied source includes every required Kida implementation and stylesheet and may depend on
+  declared public third-party packages. It must not require unpublished `@kida-ui/*` packages.
+  Copyable means owned and editable, not dependency-free.
 - A component declares every runtime dependency and every source file it needs.
 - Package-only imports, workspace aliases, and undocumented global CSS must not leak into copied
   output.
-- The copied result must typecheck in a clean fixture application.
+- Each copied result must pass import validation, typecheck, and bundle by itself in a clean
+  fixture application outside the monorepo.
 
 ## 3. Public API
 

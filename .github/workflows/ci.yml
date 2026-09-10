@@ -21,6 +21,10 @@ jobs:
       - name: Install Chromium for the browser tests
         run: pnpm --filter @kida-ui/react exec playwright install --with-deps chromium
       - run: pnpm lint
+      - name: Registry output is current and schema-valid
+        run: pnpm registry:check
+      - name: Copied components work as standalone consumer source
+        run: pnpm registry:check-copy
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm build
