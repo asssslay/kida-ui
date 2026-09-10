@@ -4,6 +4,7 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
+      "env": ["SITE_URL", "RENDER_EXTERNAL_URL"],
       "inputs": [
         "src/**",
         "public/**",
