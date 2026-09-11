@@ -1,7 +1,9 @@
 ---
 import { getCollection } from 'astro:content'
 import { COMPONENT_CATEGORIES, categoryOrder } from '../../config/components'
-import CatalogCardPreview from '../../demos/catalog-card-preview.react.tsx'
+import CatalogCardPreview, {
+  assertCatalogPreviewCoverage,
+} from '../../demos/catalog-card-preview.react.tsx'
 import Base from '../../layouts/Base.astro'
 
 const entries = (await getCollection('components')).sort(
@@ -15,6 +17,8 @@ const groups = COMPONENT_CATEGORIES.map((category) => ({
   ...category,
   entries: entries.filter((entry) => entry.data.category === category.id),
 })).filter((group) => group.entries.length > 0)
+
+assertCatalogPreviewCoverage(entries.map((entry) => entry.id))
 ---
 
 <Base
@@ -44,7 +48,7 @@ const groups = COMPONENT_CATEGORIES.map((category) => ({
                     name={entry.id}
                     href={`/docs/${entry.id}`}
                     label={`${entry.data.title}: ${entry.data.description}`}
-                  client:load
+                  client:visible
                   />
                 ))}
               </div>

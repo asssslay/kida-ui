@@ -1,5 +1,6 @@
-import { Collapse, Magnetic, Reveal, ScribbleHighlight, TextBloom } from '@kida-ui/react'
-import { useEffect, useRef, useState } from 'react'
+import type { ComponentType, FocusEvent, PointerEvent } from 'react'
+import { useState } from 'react'
+import type { CatalogPreviewProps } from './catalog-preview-types'
 
 export interface CatalogCardPreviewProps {
   name: string
@@ -7,105 +8,78 @@ export interface CatalogCardPreviewProps {
   label: string
 }
 
-function Preview({ name, active }: { name: string; active: boolean }) {
-  if (name === 'reveal') {
-    const content = (
-      <>
-        <strong>Scrolled into view</strong>
-        <span>Rises 8px and fades in, the first time it enters the viewport.</span>
-      </>
-    )
-    return active ? (
-      <Reveal className="demo-card">{content}</Reveal>
-    ) : (
-      <div className="demo-card">{content}</div>
-    )
-  }
+type CatalogPreviewModule = {
+  default: ComponentType<CatalogPreviewProps>
+}
 
-  if (name === 'collapse') {
-    return (
-      <div className="demo-stack">
-        <span className="demo-button catalog-preview-collapse-trigger">Details</span>
-        <Collapse open={active}>
-          <div className="demo-panel">
-            <p>The node stays mounted until the close keyframes finish.</p>
-            <p>Its natural height is measured into --kida-collapse-height.</p>
-          </div>
-        </Collapse>
-      </div>
-    )
-  }
+const modules = import.meta.glob<CatalogPreviewModule>('./catalog-previews/*.react.tsx', {
+  eager: true,
+})
+const previewPath = /^\.\/catalog-previews\/(.+)\.react\.tsx$/
+const previews = new Map<string, ComponentType<CatalogPreviewProps>>()
 
-  if (name === 'text-bloom') {
-    return (
-      <div className="demo-feature demo-text-bloom">
-        {active ? (
-          <TextBloom as="h2" voice="pop">
-            Make the headline bloom.
-          </TextBloom>
-        ) : (
-          <h2>Make the headline bloom.</h2>
-        )}
-      </div>
-    )
-  }
+for (const [path, module] of Object.entries(modules)) {
+  const name = previewPath.exec(path)?.[1]
+  if (name) previews.set(name, module.default)
+}
 
-  if (name === 'magnetic') {
-    return (
-      <Magnetic maxDistance={20} strength={0.24}>
-        <span className="demo-magnetic-button">Come closer</span>
-      </Magnetic>
-    )
-  }
+/** Keep the documented catalog and its purpose-built previews in lockstep. */
+export function assertCatalogPreviewCoverage(componentNames: readonly string[]) {
+  const documented = new Set(componentNames)
+  const missing = componentNames.filter((name) => !previews.has(name))
+  const orphaned = [...previews.keys()].filter((name) => !documented.has(name))
 
-  if (name === 'scribble-highlight') {
-    return (
-      <p className="demo-scribble-copy">
-        Keep the layout precise, then add one{' '}
-        {active ? <ScribbleHighlight>imperfect detail</ScribbleHighlight> : 'imperfect detail'}.
-      </p>
-    )
-  }
+  if (missing.length === 0 && orphaned.length === 0) return
 
-  return null
+  const problems = [
+    missing.length > 0 ? `missing previews: ${missing.join(', ')}` : '',
+    orphaned.length > 0 ? `orphaned previews: ${orphaned.join(', ')}` : '',
+  ].filter(Boolean)
+
+  throw new Error(`Catalog preview coverage is incomplete (${problems.join('; ')}).`)
 }
 
 export default function CatalogCardPreview({ name, href, label }: CatalogCardPreviewProps) {
-  const cardRef = useRef<HTMLAnchorElement>(null)
   const [hovered, setHovered] = useState(false)
   const [focused, setFocused] = useState(false)
   const active = hovered || focused
+  const Preview = previews.get(name)
 
-  useEffect(() => {
-    const card = cardRef.current
-    if (!card) return
+  if (!Preview) {
+    throw new Error(
+      `Missing catalog preview for "${name}". Add demos/catalog-previews/${name}.react.tsx.`,
+    )
+  }
 
-    const handleFocus = () => setFocused(true)
-    const handleBlur = () => setFocused(false)
+  const handlePointerEnter = (event: PointerEvent<HTMLElement>) => {
+    if (event.pointerType !== 'touch') setHovered(true)
+  }
 
-    card.addEventListener('focus', handleFocus)
-    card.addEventListener('blur', handleBlur)
-
-    return () => {
-      card.removeEventListener('focus', handleFocus)
-      card.removeEventListener('blur', handleBlur)
-    }
-  }, [])
+  const handleBlur = (event: FocusEvent<HTMLAnchorElement>) => {
+    const link = event.currentTarget
+    requestAnimationFrame(() => setFocused(document.activeElement === link))
+  }
 
   return (
-    <a
-      ref={cardRef}
+    <article
       className="catalog-card"
-      href={href}
-      aria-label={label}
       data-active={active ? 'true' : 'false'}
-      onPointerEnter={() => setHovered(true)}
+      onPointerEnter={handlePointerEnter}
       onPointerLeave={() => setHovered(false)}
+      onPointerCancel={() => setHovered(false)}
     >
-      <div className="component-preview" data-component={name} aria-hidden="true">
-        <Preview name={name} active={active} />
+      <div className="component-preview" data-component={name} aria-hidden="true" inert>
+        <Preview active={active} />
       </div>
-      <span className="visually-hidden">{label}</span>
-    </a>
+      <a
+        className="catalog-card-link"
+        href={href}
+        aria-label={label}
+        onFocus={() => setFocused(true)}
+        onBlur={handleBlur}
+      >
+        <span className="visually-hidden">{label}</span>
+      </a>
+    </article>
   )
 }
