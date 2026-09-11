@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 800" role="img" aria-labelledby="title">
+  <title id="title">Orange sunset over mint hills</title>
+  <rect width="640" height="800" fill="#fff7f2"/>
+  <rect width="640" height="520" fill="#f7b080"/>
+  <circle cx="330" cy="320" r="135" fill="#fff2ba"/>
+  <path d="M0 490C120 400 218 430 318 506s206 39 322-72v366H0Z" fill="#aadfc5"/>
+  <path d="M0 602c127-71 215-48 315 23 102 73 204 69 325-4v179H0Z" fill="#5ca783"/>
+  <path d="M0 690c132-36 238-19 332 28 96 48 190 37 308 6v76H0Z" fill="#da668f"/>
+</svg>

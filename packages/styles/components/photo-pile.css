@@ -1,0 +1,75 @@
+[data-kida-photo-pile] {
+  --kida-photo-width: clamp(9rem, 42%, 13.5rem);
+  --kida-photo-radius: 0.55rem;
+  --kida-photo-frame: #fffafb;
+  --kida-photo-shadow: 0 0.8rem 2rem rgb(50 30 42 / 16%);
+
+  position: relative;
+  display: block;
+  min-inline-size: 0;
+  width: min(100%, 36rem);
+  min-height: 22rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  isolation: isolate;
+}
+
+[data-kida-photo-item] {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--kida-photo-width);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--kida-photo-radius);
+  background: transparent;
+  cursor: grab;
+  touch-action: none;
+  transform: translate(-50%, -50%) translate(var(--kida-photo-x), var(--kida-photo-y))
+    rotate(var(--kida-photo-rotation));
+}
+
+[data-kida-photo-item][data-dragging] {
+  cursor: grabbing;
+}
+
+[data-kida-photo-item]:focus-visible {
+  outline: 3px solid var(--kida-photo-focus, #6d52a8);
+  outline-offset: 5px;
+}
+
+[data-kida-photo-card] {
+  display: block;
+  padding: 0.45rem 0.45rem 1.8rem;
+  border: 1px solid rgb(55 35 48 / 12%);
+  border-radius: var(--kida-photo-radius);
+  background: var(--kida-photo-frame);
+  box-shadow: var(--kida-photo-shadow);
+  user-select: none;
+}
+
+[data-kida-photo-card] img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: calc(var(--kida-photo-radius) - 0.2rem);
+  object-fit: cover;
+  pointer-events: none;
+}
+
+@media (max-width: 32rem) {
+  [data-kida-photo-pile] {
+    --kida-photo-width: min(48%, 10.5rem);
+
+    min-height: 18rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-kida-photo-card] {
+    /* biome-ignore lint/complexity/noImportantStyles: stops an in-flight inline transform */
+    transform: none !important;
+  }
+}

@@ -10,20 +10,30 @@ const root = fileURLToPath(new URL('..', import.meta.url))
 const outputDir = join(root, 'registry/r')
 const checkOnly = process.argv.includes('--check')
 
-const packageManifest = JSON.parse(
-  await readFile(join(root, 'packages/react/package.json'), 'utf8'),
+const packageManifests = await Promise.all(
+  ['packages/react/package.json', 'packages/motion/package.json'].map(async (path) =>
+    JSON.parse(await readFile(join(root, path), 'utf8')),
+  ),
 )
-const declaredDependencies = {
-  ...packageManifest.dependencies,
-  ...packageManifest.peerDependencies,
-}
+const declaredDependencies = Object.assign(
+  {},
+  ...packageManifests.map((manifest) => ({
+    ...manifest.dependencies,
+    ...manifest.peerDependencies,
+  })),
+)
 
 function dependencySpecifier(name) {
   const version = declaredDependencies[name]
   if (!version) {
-    throw new Error(`Registry dependency "${name}" is not declared by @kida-ui/react.`)
+    throw new Error(`Registry dependency "${name}" is not declared by a source package.`)
   }
-  return version.startsWith('workspace:') ? name : `${name}@${version}`
+  if (version.startsWith('workspace:')) {
+    throw new Error(
+      `Registry dependency "${name}" is workspace-only. Copy its required source or publish it first.`,
+    )
+  }
+  return `${name}@${version}`
 }
 
 function assertInsideRoot(path) {
@@ -48,6 +58,15 @@ function addCssImports(source, imports = []) {
   return `${imports.map((path) => `@import '${path}';`).join('\n')}\n\n${source}`
 }
 
+function replaceImports(source, replacements = {}) {
+  for (const [from, to] of Object.entries(replacements)) {
+    const escaped = from.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const specifier = new RegExp(`(['"])${escaped}\\1`, 'g')
+    source = source.replace(specifier, (_match, quote) => `${quote}${to}${quote}`)
+  }
+  return source
+}
+
 async function createItem(definition) {
   const files = await Promise.all(
     definition.files.map(async (file) => {
@@ -55,6 +74,7 @@ async function createItem(definition) {
       assertInsideRoot(sourcePath)
 
       let content = await readFile(sourcePath, 'utf8')
+      content = replaceImports(content, file.importReplacements)
       content = addStyleImport(content, file.styleImport)
       content = addCssImports(content, file.imports)
 
@@ -95,7 +115,7 @@ export async function buildRegistry() {
   const registry = registrySchema.parse({
     $schema: 'https://ui.shadcn.com/schema/registry.json',
     name: 'kida-ui',
-    homepage: 'https://kida.dev',
+    homepage: 'https://kida-ui.onrender.com',
     items: items.map(({ $schema: _schema, ...item }) => item),
   })
 

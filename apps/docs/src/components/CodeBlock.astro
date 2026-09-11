@@ -13,22 +13,40 @@ const { code, lang = 'tsx' } = Astro.props
 <div class="code">
   {/* Theme is passed explicitly: `<Code>` does not inherit `markdown.shikiConfig`. */}
   <Code code={code.trim()} lang={lang} theme="github-light" />
-  <button type="button" class="copy" data-copy>Copy</button>
+  <button type="button" class="copy" data-copy aria-label="Copy code to clipboard">Copy</button>
 </div>
 
 <script>
+  async function copyText(text: string) {
+    if (!navigator.clipboard) throw new Error('Clipboard API is unavailable')
+    await navigator.clipboard.writeText(text)
+  }
+
   // Hoisted and bundled once by Astro, however many code blocks a page renders.
   for (const button of document.querySelectorAll<HTMLButtonElement>('[data-copy]')) {
     button.addEventListener('click', async () => {
       const pre = button.closest('.code')?.querySelector('pre')
       if (!pre) return
-      await navigator.clipboard.writeText(pre.textContent ?? '')
-      button.dataset.copied = ''
-      button.textContent = 'Copied'
-      setTimeout(() => {
-        delete button.dataset.copied
-        button.textContent = 'Copy'
-      }, 1200)
+      try {
+        await copyText(pre.textContent ?? '')
+        button.dataset.copied = ''
+        button.textContent = 'Copied'
+        button.setAttribute('aria-label', 'Copied to clipboard')
+        setTimeout(() => {
+          delete button.dataset.copied
+          button.textContent = 'Copy'
+          button.setAttribute('aria-label', 'Copy code to clipboard')
+        }, 1200)
+      } catch {
+        button.dataset.copyError = ''
+        button.textContent = 'Copy failed'
+        button.setAttribute('aria-label', 'Copy failed. Try again')
+        setTimeout(() => {
+          delete button.dataset.copyError
+          button.textContent = 'Copy'
+          button.setAttribute('aria-label', 'Copy code to clipboard')
+        }, 1600)
+      }
     })
   }
 </script>

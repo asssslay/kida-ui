@@ -143,7 +143,7 @@ kida-ui/
 │  └─ playground/
 └─ scripts/
    ├─ build-registry.mjs  packages/* → registry/r/*.json (inline + rewrite imports)
-   ├─ check-copy-source.mjs  generated files → clean fixture typecheck
+   ├─ check-copy-source.mjs  each item → isolated import, typecheck, and bundle checks
    └─ check-parity.ts     CI gate: every framework exports the same surface
 ```
 
@@ -155,18 +155,17 @@ packages/react/src/spotlight-card.tsx      ← single source of truth
    └── build-registry.ts ──► registry/r/spotlight-card.json
 ```
 
-Split, following shadcn's own conclusion (`@shadcn/react` v0.3.0 exists for exactly this reason):
-
-- **Copy** → styled, opinionated, users will edit it (T1, T2, T4)
-- **Install** → complex, infrastructural (`@kida-ui/motion`, `@kida-ui/styles`, Zag-backed T3)
+The copy path is available for every public React component. Each registry item contains all
+required Kida source and CSS and declares only public third-party runtime packages. The package
+path remains the future upgradeable option once the Kida packages are published.
 
 v1 needs **no Kida CLI**: emit shadcn-schema JSON and users run
-`npx shadcn@latest add https://kida.dev/r/spotlight-card.json`, or register a namespace:
+`npx shadcn@latest add https://kida-ui.onrender.com/r/reveal.json`, or register a namespace:
 
 ```jsonc
 // components.json
-"registries": { "@kida-ui": "https://kida.dev/r/{name}.json" }
-// → npx shadcn@latest add @kida-ui/spotlight-card
+"registries": { "@kida-ui": "https://kida-ui.onrender.com/r/{name}.json" }
+// → npx shadcn@latest add @kida-ui/reveal
 ```
 
 Build `packages/cli` only when framework #2 lands — that's where shadcn's CLI can't follow.
@@ -184,8 +183,8 @@ Vitest + Playwright + axe · Biome · Astro (docs) · Shiki
   categories
 - **P2 — complete:** generated copy-source path, install/copy documentation, clean fixture
   validation, and shadcn-compatible registry JSON (no custom CLI)
-- **P3 — current:** TextBloom, Magnetic, and ScribbleHighlight are complete; next are CandyDock,
-  PhotoPile, one background, and one composed hero
+- **P3 — current:** TextBloom, Magnetic, ScribbleHighlight, PhotoPile, and StickerBurst are complete;
+  next are CandyDock, one background, and one composed hero
 - **P4:** package metadata, visual regression and accessibility audit → **v0.1 alpha (React)**
 - **P5:** framework #2 (Svelte or Vue), parity checks, then evaluate a Kida CLI
 

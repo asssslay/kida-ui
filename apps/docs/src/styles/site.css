@@ -230,6 +230,22 @@ a {
   margin: 0 0 2rem;
 }
 
+.guide-callout {
+  padding: 1rem 1.1rem;
+  border-radius: 0.65rem;
+  background: var(--bg-subtle);
+  border-left: 3px solid var(--accent);
+}
+
+.guide-callout p {
+  margin: 0.3rem 0 0;
+}
+
+.verification-list li::marker {
+  color: var(--accent);
+  font-weight: 650;
+}
+
 .prose h2 {
   font-size: 1.25rem;
   letter-spacing: -0.01em;
@@ -345,20 +361,25 @@ a {
   opacity: 1;
 }
 
+.code .copy[data-copy-error] {
+  color: #9f243f;
+  border-color: #d9a0ad;
+  opacity: 1;
+}
+
 /* ---------------------------------------------------------------- distribution */
 
 .distribution {
   margin: 1.25rem 0 2rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  overflow: hidden;
 }
 
 .distribution-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding-bottom: 0.65rem;
+  padding: 1rem 1.1rem;
   border-bottom: 1px solid var(--line);
-  font-size: 0.8125rem;
+  background: var(--bg-subtle);
 }
 
 .distribution-head strong {
@@ -366,21 +387,106 @@ a {
   font-weight: 600;
 }
 
-.distribution-status {
+.distribution-head p {
+  margin: 0.2rem 0 0;
   color: var(--muted);
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
 }
 
 .distribution-source {
-  padding-top: 0.25rem;
+  padding: 1.1rem;
 }
 
-.distribution-meta {
-  margin: 1rem 0;
+.distribution-label {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.8125rem;
+}
+
+.distribution-badge {
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 9%, var(--bg));
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.distribution .code .copy {
+  opacity: 1;
+}
+
+.distribution-note {
+  margin: 0.75rem 0 0;
   color: var(--muted);
-  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+}
+
+.registry-link {
+  display: inline-block;
+  margin-top: 0.65rem;
+  color: var(--muted);
   font-size: 0.75rem;
-  overflow-wrap: anywhere;
+  text-underline-offset: 0.18em;
+}
+
+.registry-link:hover {
+  color: var(--fg);
+}
+
+.manual-source {
+  margin-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.manual-source > summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 0 0;
+  color: var(--fg);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+
+.manual-source > summary::-webkit-details-marker {
+  display: none;
+}
+
+.manual-source > summary::after {
+  content: "+";
+  color: var(--muted);
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.manual-source[open] > summary::after {
+  content: "−";
+}
+
+.manual-source > summary small {
+  margin-left: auto;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.manual-source-body {
+  padding-top: 0.5rem;
+}
+
+.manual-step h3 {
+  margin: 1.25rem 0 0.35rem;
+  font-size: 0.8125rem;
+}
+
+.manual-step p {
+  margin: 0 0 0.75rem;
+  color: var(--muted);
+  font-size: 0.8125rem;
 }
 
 .source-files {
@@ -398,6 +504,10 @@ a {
   font-size: 0.75rem;
   cursor: pointer;
   overflow-wrap: anywhere;
+}
+
+.source-files details[open] > summary {
+  color: var(--accent);
 }
 
 .source-files .code {
@@ -447,6 +557,10 @@ a {
 
 .demo[data-preview-only] .demo-stage {
   min-height: 16rem;
+}
+
+.demo[data-demo="sticker-burst-basic"] .demo-stage {
+  min-height: 20rem;
 }
 
 /* ---------------------------------------------------------------- landing */
@@ -599,6 +713,10 @@ a {
   max-width: 76rem;
 }
 
+.catalog-actions {
+  margin: -0.75rem 0 3rem;
+}
+
 .catalog-group {
   min-width: 0;
 }
@@ -730,6 +848,9 @@ a {
 
   .docs {
     grid-template-columns: minmax(0, 1fr);
+  }
+  .code .copy {
+    opacity: 1;
   }
   .sidebar {
     position: static;
@@ -887,8 +1008,64 @@ a {
   font-weight: 650;
 }
 
+.demo [data-kida-photo-pile] {
+  --kida-photo-width: clamp(8.5rem, 36%, 12rem);
+
+  margin-inline: auto;
+}
+
+.demo-sticker-button {
+  min-width: 10rem;
+  min-height: 3rem;
+  padding: 0.72rem 1.3rem;
+  border: 1px solid rgb(255 255 255 / 82%);
+  border-radius: 999px;
+  color: #292326;
+  background: rgb(255 245 248 / 78%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 92%),
+    0 1px 2px rgb(66 42 52 / 8%),
+    0 8px 24px rgb(66 42 52 / 10%);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.demo-sticker-button:hover {
+  border-color: rgb(249 198 223 / 65%);
+  background: rgb(255 250 252 / 92%);
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 2px 4px rgb(66 42 52 / 8%),
+    0 10px 28px rgb(66 42 52 / 12%);
+  transform: translateY(-1px);
+}
+
+.demo-sticker-button:focus-visible {
+  outline: 3px solid rgb(249 198 223 / 72%);
+  outline-offset: 3px;
+}
+
+.demo-sticker-button:active {
+  background: rgb(246 216 223 / 88%);
+  box-shadow:
+    inset 0 1px 2px rgb(66 42 52 / 8%),
+    0 2px 8px rgb(66 42 52 / 8%);
+  transform: translateY(0) scale(0.97);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .demo-magnetic-button {
+  .demo-magnetic-button,
+  .demo-sticker-button {
     transition: none;
   }
 

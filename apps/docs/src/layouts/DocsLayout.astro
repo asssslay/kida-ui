@@ -1,15 +1,17 @@
 ---
-import { type CollectionEntry, getCollection } from 'astro:content'
+import { getCollection } from 'astro:content'
 import type { MarkdownHeading } from 'astro'
 import { COMPONENT_CATEGORIES, categoryOrder } from '../config/components'
 import Base from './Base.astro'
 
 interface Props {
-  entry: CollectionEntry<'components'>
+  title: string
+  description: string
+  currentPath: string
   headings: MarkdownHeading[]
 }
 
-const { entry, headings } = Astro.props
+const { title, description, currentPath, headings } = Astro.props
 
 const entries = (await getCollection('components')).sort(
   (a, b) =>
@@ -28,10 +30,28 @@ const groups = COMPONENT_CATEGORIES.map((category) => ({
 const toc = headings.filter((heading) => heading.depth === 2 || heading.depth === 3)
 ---
 
-<Base title={`${entry.data.title} — Kida UI`} description={entry.data.description}>
+<Base title={`${title} — Kida UI`} description={description}>
   <div class="docs">
     <aside class="sidebar">
-      <h2>Components</h2>
+      <h2>Documentation</h2>
+      <section class="sidebar-group">
+        <h3>Getting started</h3>
+        <ul>
+          <li>
+            <a href="/docs" aria-current={currentPath === '/docs' ? 'page' : undefined}>
+              Components
+            </a>
+          </li>
+          <li>
+            <a
+              href="/docs/installation"
+              aria-current={currentPath === '/docs/installation' ? 'page' : undefined}
+            >
+              Installation
+            </a>
+          </li>
+        </ul>
+      </section>
       {
         groups.map((group) => (
           <section class="sidebar-group">
@@ -41,7 +61,7 @@ const toc = headings.filter((heading) => heading.depth === 2 || heading.depth ==
                 <li>
                   <a
                     href={`/docs/${item.id}`}
-                    aria-current={item.id === entry.id ? 'page' : undefined}
+                    aria-current={currentPath === `/docs/${item.id}` ? 'page' : undefined}
                   >
                     {item.data.title}
                   </a>
@@ -54,8 +74,8 @@ const toc = headings.filter((heading) => heading.depth === 2 || heading.depth ==
     </aside>
 
     <main class="prose" id="main">
-      <h1>{entry.data.title}</h1>
-      <p class="lede">{entry.data.description}</p>
+      <h1>{title}</h1>
+      <p class="lede">{description}</p>
       <slot />
     </main>
 

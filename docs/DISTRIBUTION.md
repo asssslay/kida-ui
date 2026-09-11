@@ -30,19 +30,21 @@ React DOM remain peer dependencies of the adapter.
 ## Copy source
 
 Every component page displays all generated source files. A shadcn-compatible registry item is
-also served at `https://kida.dev/r/<name>.json`, so users with a `components.json` file can write
+also served at `https://kida-ui.onrender.com/r/<name>.json`, so users with a `components.json` file can write
 the same source into their configured directories:
 
 ```bash
-npx shadcn@latest add https://kida.dev/r/reveal.json
+npx shadcn@latest add https://kida-ui.onrender.com/r/reveal.json
 ```
 
 This uses shadcn's existing CLI, not a Kida CLI. A Kida-specific CLI remains deferred until a
 second framework makes framework selection necessary.
 
 Copied components are owned by the consuming application, but they are not dependency-free.
-Their registry JSON declares the runtime packages it needs. For example, copied `Reveal` depends
-on `@kida-ui/motion`, while copied `Collapse` includes its CSS and depends on Zag presence.
+Each registry item includes the Kida source and CSS it needs and declares only public runtime
+packages. For example, copied `Reveal` includes its small motion helper and depends on the public
+`motion` package, while copied `Collapse` includes its CSS and depends on Zag presence. Copied
+source never requires an unpublished `@kida-ui/*` package.
 
 ## Maintainer workflow
 
@@ -55,17 +57,20 @@ on `@kida-ui/motion`, while copied `Collapse` includes its CSS and depends on Za
 5. Run `pnpm verify`.
 
 `pnpm registry:check` validates the output with the official `shadcn/schema` API and fails when a
-generated file is missing, stale, or orphaned. `pnpm registry:check-copy` installs the generated
-files into a temporary clean React source tree and typechecks them. The fixture is deleted after
-every run.
+generated file is missing, stale, or orphaned. `pnpm registry:check-copy` installs each registry
+item by itself into a separate temporary React source tree. It rejects unpublished or undeclared
+runtime imports, verifies every local file import, typechecks the result, and bundles it with Vite.
+The fixtures are created outside the workspace and deleted after every run, so another component
+or workspace package cannot accidentally hide a missing copied file or dependency.
 
 ## Generation rules
 
 - Package source is read verbatim whenever possible.
 - File targets use shadcn placeholders such as `@ui/`, so the consumer's `components.json`
   controls the real destination.
-- Dependency ranges come from `packages/react/package.json`; workspace packages are emitted
-  without the internal `workspace:*` protocol.
-- Copy-only imports are deterministic generator transforms. Today these add local CSS imports to
-  copied components and token imports to copied stylesheets.
+- Dependency ranges come from the React and motion source-package manifests. Workspace-only
+  dependencies are rejected: their required source must be copied or their package published.
+- Copy-only imports are deterministic generator transforms. Today these redirect Kida motion
+  imports to copied helpers, add local CSS imports to copied components, and add token imports to
+  copied stylesheets.
 - `registry/r` is generated output and must never be edited by hand.

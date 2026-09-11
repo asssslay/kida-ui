@@ -1,0 +1,82 @@
+[data-kida-sticker-burst] {
+  --kida-sticker-color: #e94f86;
+  --kida-sticker-color-secondary: #a78bfa;
+  --kida-sticker-color-tertiary: #75c9a6;
+  --kida-sticker-color-fourth: #f4a261;
+  --kida-sticker-size: 1rem;
+  --kida-sticker-duration: 620ms;
+
+  position: relative;
+  display: inline-flex;
+  isolation: isolate;
+}
+
+[data-kida-sticker-content] {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+}
+
+[data-kida-sticker-layer] {
+  position: absolute;
+  z-index: 0;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+[data-kida-sticker-layer] > span {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: var(--kida-sticker-color);
+  font-size: calc(var(--kida-sticker-size) * var(--kida-sticker-scale));
+  line-height: 1;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.3);
+}
+
+[data-kida-sticker-layer] > span:nth-child(4n + 2) {
+  color: var(--kida-sticker-color-secondary);
+}
+
+[data-kida-sticker-layer] > span:nth-child(4n + 3) {
+  color: var(--kida-sticker-color-tertiary);
+}
+
+[data-kida-sticker-layer] > span:nth-child(4n) {
+  color: var(--kida-sticker-color-fourth);
+}
+
+[data-kida-sticker-burst][data-state="active"] [data-kida-sticker-layer] > span {
+  animation: kida-sticker-burst var(--kida-sticker-duration) var(--kida-ease-out)
+    var(--kida-sticker-delay) both;
+}
+
+@keyframes kida-sticker-burst {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(0) scale(0.3);
+  }
+  18% {
+    opacity: 1;
+  }
+  68% {
+    opacity: 1;
+    transform: translate(calc(-50% + var(--kida-sticker-x)), calc(-50% + var(--kida-sticker-y)))
+      rotate(var(--kida-sticker-rotation)) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--kida-sticker-x)), calc(-50% + var(--kida-sticker-y)))
+      rotate(var(--kida-sticker-rotation)) scale(0.86);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-kida-sticker-burst][data-state="active"] [data-kida-sticker-layer] > span {
+    animation: none;
+  }
+}
