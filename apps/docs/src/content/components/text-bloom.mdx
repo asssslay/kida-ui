@@ -9,6 +9,7 @@ order: 1
 
 import Demo from '../../components/Demo.astro'
 import Distribution from '../../components/Distribution.astro'
+import QuickStart from '../../components/QuickStart.astro'
 import TextBloomBasic from '../../demos/text-bloom-basic.react.tsx'
 import TextBloomCharacters from '../../demos/text-bloom-characters.react.tsx'
 
@@ -20,15 +21,9 @@ import TextBloomCharacters from '../../demos/text-bloom-characters.react.tsx'
 
 <Distribution name="text-bloom" />
 
-```tsx
-import { TextBloom } from '@/components/ui/kida/text-bloom'
+<QuickStart name="text-bloom" />
 
-<TextBloom as="h1" voice="pop">
-  Make the headline bloom.
-</TextBloom>
-```
-
-## Additional examples
+## Customization
 
 <Demo name="text-bloom-characters" title="Gentle by character">
   <TextBloomCharacters client:visible />
@@ -63,3 +58,8 @@ text remains selectable and copyable.
 
 Under reduced motion, every segment renders immediately at its settled position. The server output
 uses deterministic segments and keys, so hydration does not change the text structure.
+
+## Troubleshooting
+
+> `children` must be a string so TextBloom can create deterministic, accessible segments. Refresh
+> or change the component's `key` to replay a one-time bloom that has already entered the viewport.

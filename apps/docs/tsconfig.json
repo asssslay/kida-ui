@@ -10,6 +10,11 @@
     "jsxImportSource": "react",
     // `astro/client` pulls in Vite's ambient types, which is what declares `?raw` imports.
     "types": ["astro/client"],
+    // Quick starts use the default path created by the registry. Resolve that public-facing
+    // path to the canonical React source so ordinary workspace typechecking covers them too.
+    "paths": {
+      "@/components/ui/kida/*": ["../../packages/react/src/*"]
+    },
     // The repo base turns declaration emit on for the publishable packages. An app never
     // emits types, and leaving it on makes TypeScript demand that every inferred export be
     // nameable in a `.d.ts` — which a zod schema's internals are not.

@@ -9,6 +9,7 @@ order: 1
 
 import Demo from '../../components/Demo.astro'
 import Distribution from '../../components/Distribution.astro'
+import QuickStart from '../../components/QuickStart.astro'
 import ScribbleHighlightBasic from '../../demos/scribble-highlight-basic.react.tsx'
 import ScribbleHighlightCircle from '../../demos/scribble-highlight-circle.react.tsx'
 
@@ -20,13 +21,9 @@ import ScribbleHighlightCircle from '../../demos/scribble-highlight-circle.react
 
 <Distribution name="scribble-highlight" />
 
-```tsx
-import { ScribbleHighlight } from '@/components/ui/kida/scribble-highlight'
+<QuickStart name="scribble-highlight" />
 
-<ScribbleHighlight>imperfect detail</ScribbleHighlight>
-```
-
-## Additional examples
+## Customization
 
 <Demo name="scribble-highlight-circle" title="Mint circle">
   <ScribbleHighlightCircle client:visible />
@@ -57,3 +54,8 @@ The root accepts span attributes, `className`, `style`, and a forwarded `ref`.
 The SVG is decorative and hidden from assistive technology; the wrapped text remains ordinary,
 readable content. Static paths avoid generated IDs and remain deterministic during server rendering.
 Reduced motion displays the completed mark without running the draw animation.
+
+## Troubleshooting
+
+> The mark is positioned around the component's inline box. Wrap only the words you want marked,
+> and check reduced-motion settings if the completed stroke appears without drawing.
