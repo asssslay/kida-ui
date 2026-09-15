@@ -9,6 +9,7 @@ order: 2
 
 import Demo from '../../components/Demo.astro'
 import Distribution from '../../components/Distribution.astro'
+import QuickStart from '../../components/QuickStart.astro'
 import StickerBurstBasic from '../../demos/sticker-burst-basic.react.tsx'
 
 <Demo name="sticker-burst-basic" title="Click to celebrate" hideSource>
@@ -19,13 +20,7 @@ import StickerBurstBasic from '../../demos/sticker-burst-basic.react.tsx'
 
 <Distribution name="sticker-burst" />
 
-```tsx
-import { StickerBurst } from '@/components/ui/kida/sticker-burst'
-
-<StickerBurst stickers={['✦', '🐈‍⬛', '♥', '★']}>
-  <button type="button">Celebrate</button>
-</StickerBurst>
-```
+<QuickStart name="sticker-burst" />
 
 ## API
 
@@ -52,6 +47,12 @@ The root also accepts span attributes, `className`, `style`, event handlers, and
 | `--kida-sticker-size` | `1rem` | Base size of each symbol. |
 | `--kida-sticker-duration` | `620ms` | Burst duration. |
 
+## Customization
+
+Pass a short `stickers` set to change the visual language, then tune `count`, `distance`, and
+`seed` to control density and layout. The four color variables cycle through the generated pieces;
+`--kida-sticker-size` and `--kida-sticker-duration` control their scale and timing.
+
 ## Accessibility and input behavior
 
 StickerBurst does not replace the wrapped control's semantics or click handler. Wrap a native
@@ -60,3 +61,8 @@ trigger the effect. The burst layer is decorative and hidden from assistive tech
 seeded geometry stays identical during server rendering and hydration.
 
 When reduced motion is requested, no burst runs and the wrapped control continues to work normally.
+
+## Troubleshooting
+
+> StickerBurst responds to click events from its child. Wrap a native button or another element
+> that produces keyboard clicks, and check ancestor `overflow` rules if distant pieces are clipped.

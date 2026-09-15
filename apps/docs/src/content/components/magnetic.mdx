@@ -9,6 +9,7 @@ order: 1
 
 import Demo from '../../components/Demo.astro'
 import Distribution from '../../components/Distribution.astro'
+import QuickStart from '../../components/QuickStart.astro'
 import MagneticBasic from '../../demos/magnetic-basic.react.tsx'
 
 <Demo name="magnetic-basic" title="Restrained pull" hideSource>
@@ -19,13 +20,7 @@ import MagneticBasic from '../../demos/magnetic-basic.react.tsx'
 
 <Distribution name="magnetic" />
 
-```tsx
-import { Magnetic } from '@/components/ui/kida/magnetic'
-
-<Magnetic>
-  <button type="button">Come closer</button>
-</Magnetic>
-```
+<QuickStart name="magnetic" />
 
 ## API
 
@@ -45,6 +40,12 @@ The root also accepts span attributes, `className`, `style`, event handlers, and
 | --- | --- | --- |
 | `--kida-magnetic-activation-distance` | `2rem` | Stable pointer area around the stationary root. |
 
+## Customization
+
+Use `strength` to tune how closely the child follows the pointer and `maxDistance` to cap its
+travel. `--kida-magnetic-activation-distance` controls the stationary hover area; keep it large
+enough that the moving child cannot escape the pointer too easily.
+
 ## Accessibility and input behavior
 
 Only mouse and pen movement activate the effect. Touch input is ignored, and the wrapped control
@@ -53,3 +54,8 @@ no keyboard-only motion is required.
 
 When reduced motion is requested, pointer tracking is disabled and the child stays in its natural
 position. The stationary root keeps the hit area predictable while the visible child moves.
+
+## Troubleshooting
+
+> Magnetic intentionally ignores touch input and does not move under reduced motion. Test with a
+> mouse or pen, and avoid applying another `transform` directly to the generated target layer.

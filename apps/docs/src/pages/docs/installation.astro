@@ -1,21 +1,13 @@
 ---
 import type { MarkdownHeading } from 'astro'
 import CodeBlock from '../../components/CodeBlock.astro'
+import QuickStart from '../../components/QuickStart.astro'
 import DocsLayout from '../../layouts/DocsLayout.astro'
 
 const registryUrl = new URL('/r/text-bloom.json', Astro.site).href
 const installCommand = `npx shadcn@latest add ${registryUrl}`
 const createCommand = `npx shadcn@latest init --template vite --name my-app --no-monorepo`
 const initCommand = `npx shadcn@latest init`
-const usage = `import { TextBloom } from '@/components/ui/kida/text-bloom'
-
-export default function Welcome() {
-  return (
-    <TextBloom as="h1" voice="pop">
-      Make the headline bloom.
-    </TextBloom>
-  )
-}`
 const structure = `src/components/ui/kida/
 ├── text-bloom.tsx
 ├── text-bloom.css
@@ -103,7 +95,7 @@ const headings = [
 
   <h2 id="use-the-component">Use the component</h2>
   <p>Import the copied source from your project's configured alias:</p>
-  <CodeBlock code={usage} lang="tsx" />
+  <QuickStart name="text-bloom" />
   <p>
     Start your development server and refresh the page to replay viewport-triggered animations.
     Component pages document the available props, variants, accessibility behavior, and live

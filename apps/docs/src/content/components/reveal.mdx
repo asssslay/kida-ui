@@ -9,6 +9,7 @@ order: 1
 
 import Demo from '../../components/Demo.astro'
 import Distribution from '../../components/Distribution.astro'
+import QuickStart from '../../components/QuickStart.astro'
 import RevealBasic from '../../demos/reveal-basic.react.tsx'
 import RevealOptions from '../../demos/reveal-options.react.tsx'
 
@@ -24,17 +25,11 @@ import RevealOptions from '../../demos/reveal-options.react.tsx'
 
 <Distribution name="reveal" />
 
-```tsx
-import { Reveal } from '@/components/ui/kida/reveal'
-
-<Reveal>
-  <h2>Rises into place</h2>
-</Reveal>
-```
+<QuickStart name="reveal" />
 
 The copied component does not need a stylesheet.
 
-## Additional examples
+## Customization
 
 <Demo name="reveal-options" title="Travel, timing and repetition">
   <RevealOptions client:visible={{ rootMargin: '200px' }} />

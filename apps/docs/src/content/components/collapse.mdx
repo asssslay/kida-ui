@@ -9,6 +9,7 @@ order: 2
 
 import Demo from '../../components/Demo.astro'
 import Distribution from '../../components/Distribution.astro'
+import QuickStart from '../../components/QuickStart.astro'
 import CollapseBasic from '../../demos/collapse-basic.react.tsx'
 
 <Demo name="collapse-basic" title="Basic" hideSource>
@@ -19,13 +20,7 @@ import CollapseBasic from '../../demos/collapse-basic.react.tsx'
 
 <Distribution name="collapse" />
 
-```tsx
-import { Collapse } from '@/components/ui/kida/collapse'
-
-<Collapse open={open}>
-  <div>Anything at all.</div>
-</Collapse>
-```
+<QuickStart name="collapse" />
 
 The copy-source command includes the required styles.
 
@@ -46,6 +41,12 @@ The copy-source command includes the required styles.
 | --- | --- | --- |
 | `--kida-collapse-duration` | `--kida-duration-md` | Applies to both directions. |
 | `--kida-collapse-ease` | `--kida-ease-out` opening, `--kida-ease-in-out` closing | Easing for each direction. |
+
+## Customization
+
+Set `--kida-collapse-duration` or `--kida-collapse-ease` on the Collapse root through a class or
+the `style` prop. Put visual borders, backgrounds, and padding on the inner content so the root can
+shrink cleanly to zero.
 
 ## Accessibility and input behavior
 
