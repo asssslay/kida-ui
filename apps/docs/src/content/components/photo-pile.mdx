@@ -9,6 +9,7 @@ order: 1
 
 import Demo from '../../components/Demo.astro'
 import Distribution from '../../components/Distribution.astro'
+import QuickStart from '../../components/QuickStart.astro'
 import PhotoPileBasic from '../../demos/photo-pile-basic.react.tsx'
 
 <Demo name="photo-pile-basic" title="Draggable snapshots" hideSource>
@@ -19,17 +20,7 @@ import PhotoPileBasic from '../../demos/photo-pile-basic.react.tsx'
 
 <Distribution name="photo-pile" />
 
-```tsx
-import { PhotoPile } from '@/components/ui/kida/photo-pile'
-
-const photos = [
-  { id: 'garden', src: '/garden.jpg', alt: 'Flowers in the garden' },
-  { id: 'coast', src: '/coast.jpg', alt: 'Sunset over the coast' },
-  { id: 'pool', src: '/pool.jpg', alt: 'Striped float in a pool' },
-]
-
-<PhotoPile photos={photos} />
-```
+<QuickStart name="photo-pile" />
 
 ## API
 
@@ -56,6 +47,12 @@ fieldset attributes, `className`, `style`, event handlers, and a forwarded `ref`
 | `--kida-photo-shadow` | soft shadow | Resting shadow. |
 | `--kida-photo-focus` | `#6d52a8` | Keyboard focus outline. |
 
+## Customization
+
+Set `x`, `y`, and `rotation` on individual photos to author the resting composition, then use
+`spread` to tighten or expand all offsets together. The `--kida-photo-*` properties control frame
+size, color, radius, shadow, and focus treatment without changing drag behavior.
+
 ## Accessibility and input behavior
 
 The pile is a labeled fieldset and every photo is a button with useful alternative text. Pointer
@@ -65,3 +62,8 @@ resting layout does not encode information.
 
 Reduced motion keeps the pile static and removes both drag travel and spring movement. Images are
 also marked non-draggable so native browser image dragging cannot compete with the component.
+
+## Troubleshooting
+
+> Give the pile enough surrounding room for its absolutely positioned photos. If images look
+> cropped, adjust their source composition or override `object-fit` on `[data-kida-photo-card] img`.

@@ -25,6 +25,8 @@ jobs:
         run: pnpm registry:check
       - name: Copied components work as standalone consumer source
         run: pnpm registry:check-copy
+      - name: Documentation examples match copied component source
+        run: pnpm docs:check-examples
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm build

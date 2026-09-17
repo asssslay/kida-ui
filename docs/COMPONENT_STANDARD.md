@@ -108,7 +108,8 @@ multi-framework cost, not how users browse the library.
 Every component page includes:
 
 1. A real, replayable preview.
-2. Minimal usage through `@kida-ui/react`.
+2. Minimal usage through the currently supported distribution path. Until packages are published,
+   examples import the source installed by the registry through the project's configured alias.
 3. Complete copyable source and required CSS.
 4. Runtime and registry dependencies.
 5. Props and CSS custom properties.
@@ -124,6 +125,11 @@ Every cataloged component also has one purpose-built preview at
 prop and stays still until its card is hovered or focused. Preview modules are discovered by
 filename; the docs build fails when a documented component is missing one or when an orphaned
 preview no longer has a component page.
+
+Quick-start examples live in `apps/docs/src/examples/quick-start` and are rendered directly from
+those files. Handwritten TypeScript or JavaScript fences are not allowed on component pages. CI
+must typecheck the examples against the combined generated registry output so displayed imports,
+public props, and shared copied files cannot drift independently.
 
 ## 9. Verification
 
