@@ -838,6 +838,25 @@ a {
   padding: 1rem 1.5rem;
 }
 
+.catalog-card-copy {
+  padding: 1rem 1.05rem 1.1rem;
+  border-top: 1px solid var(--line);
+}
+
+.catalog-card-copy h3 {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+}
+
+.catalog-card-copy p {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
 .catalog-preview-collapse-trigger {
   display: inline-block;
 }
@@ -1124,5 +1143,887 @@ a {
 
   .demo-scribble-copy {
     font-size: 1.35rem;
+  }
+}
+
+/* ---------------------------------------------------------------- Soft Orbit homepage */
+
+.soft-orbit-page {
+  --orbit-paper: #fff9f6;
+  --orbit-surface: #fffefd;
+  --orbit-surface-muted: #f7f1ef;
+  --orbit-ink: #2a2024;
+  --orbit-muted: #776a70;
+  --orbit-pink: #f05a93;
+  --orbit-pink-soft: #f9c6da;
+  --orbit-peach: #ff986d;
+  --orbit-peach-soft: #ffd8c2;
+  --orbit-lilac: #b8a7ff;
+  --orbit-mint: #b9decf;
+  --orbit-line: #eadfda;
+  --orbit-shadow: 0 1.5rem 4rem rgb(74 43 56 / 10%);
+  --font-display: ui-rounded, "SF Pro Rounded", "Avenir Next", var(--font-sans);
+
+  overflow-x: hidden;
+  background: var(--orbit-paper);
+  color: var(--orbit-ink);
+}
+
+.soft-orbit-page .site-header {
+  top: 0;
+  width: 100%;
+  min-height: var(--site-header-height);
+  margin: 0;
+  padding: 1rem clamp(1.25rem, 5vw, 5.25rem);
+  border: 0;
+  border-radius: 0;
+  background: rgb(248 245 242 / 72%);
+  box-shadow: none;
+  -webkit-backdrop-filter: blur(22px);
+  backdrop-filter: blur(22px);
+}
+
+.soft-orbit-page :focus-visible {
+  outline-color: var(--orbit-pink);
+}
+
+.soft-orbit-home {
+  position: relative;
+  overflow: clip;
+  background:
+    radial-gradient(circle at 18% 7%, rgb(249 198 218 / 32%), transparent 24rem),
+    radial-gradient(circle at 86% 20%, rgb(255 216 194 / 44%), transparent 27rem),
+    linear-gradient(180deg, #fffaf7 0%, #fffefd 42%, #f8f3f1 100%);
+}
+
+.soft-orbit-home h1,
+.soft-orbit-home h2 {
+  font-family: var(--font-display);
+}
+
+.orbit-hero {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  width: min(calc(100% - 2rem), 90rem);
+  min-height: calc(100svh - 5.75rem);
+  margin: 0 auto;
+  padding: 7rem 1.5rem 8rem;
+}
+
+.orbit-ambient,
+.orbit-previews {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+}
+
+.orbit-previews {
+  z-index: 1;
+}
+
+.orbit-glow {
+  position: absolute;
+  width: 18rem;
+  height: 18rem;
+  border-radius: 50%;
+  filter: blur(10px);
+  opacity: 0.5;
+}
+
+.orbit-glow-pink {
+  top: 18%;
+  left: 26%;
+  background: radial-gradient(circle, rgb(249 198 218 / 62%), transparent 68%);
+}
+
+.orbit-glow-peach {
+  right: 22%;
+  bottom: 16%;
+  background: radial-gradient(circle, rgb(255 191 153 / 55%), transparent 68%);
+}
+
+.orbit-line {
+  position: absolute;
+  border: 1px solid rgb(220 187 193 / 34%);
+  border-radius: 50%;
+  rotate: -8deg;
+}
+
+.orbit-line-one {
+  inset: 8% 5% 12%;
+}
+
+.orbit-line-two {
+  inset: 19% 15% 22%;
+  border-style: dashed;
+  rotate: 11deg;
+}
+
+.orbit-copy {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 47rem);
+  text-align: center;
+}
+
+.orbit-eyebrow,
+.orbit-section-kicker {
+  margin: 0;
+  color: #8e526b;
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.orbit-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid rgb(240 90 147 / 18%);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 62%);
+  box-shadow: inset 0 1px 0 #fff;
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+.soft-orbit-page .soft-orbit-home .orbit-eyebrow > span {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--orbit-pink), var(--orbit-peach));
+  box-shadow: 0 0 0 0.22rem rgb(240 90 147 / 10%);
+}
+
+.orbit-copy h1 {
+  max-width: 12ch;
+  margin: 1.5rem auto 0;
+  font-size: clamp(3rem, 6.4vw, 6.6rem);
+  font-weight: 720;
+  line-height: 0.94;
+  letter-spacing: -0.065em;
+  text-wrap: balance;
+}
+
+.orbit-copy h1 em {
+  position: relative;
+  display: inline-block;
+  font-style: normal;
+  color: var(--orbit-pink);
+}
+
+.orbit-copy h1 em::after {
+  position: absolute;
+  z-index: -1;
+  right: -0.12em;
+  bottom: -0.02em;
+  left: -0.08em;
+  height: 0.17em;
+  border-radius: 50%;
+  background: var(--orbit-peach-soft);
+  content: "";
+  rotate: -2deg;
+}
+
+.orbit-lede {
+  max-width: 36rem;
+  margin: 1.5rem auto 0;
+  color: var(--orbit-muted);
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  line-height: 1.65;
+  text-wrap: balance;
+}
+
+.orbit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+.orbit-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 3rem;
+  padding: 0.72rem 1.15rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    box-shadow 180ms var(--kida-ease-out),
+    transform 180ms var(--kida-ease-out),
+    background-color 180ms var(--kida-ease-out);
+}
+
+.orbit-button:hover {
+  transform: translateY(-2px);
+}
+
+.orbit-button-primary {
+  background: var(--orbit-ink);
+  box-shadow: 0 0.65rem 1.5rem rgb(42 32 36 / 16%);
+  color: #fff;
+}
+
+.orbit-button-primary:hover {
+  background: #413137;
+  box-shadow: 0 0.85rem 1.8rem rgb(42 32 36 / 20%);
+}
+
+.soft-orbit-page .soft-orbit-home .orbit-button-primary span {
+  color: var(--orbit-peach-soft);
+}
+
+.orbit-button-secondary {
+  border-color: rgb(234 223 218 / 85%);
+  background: rgb(255 255 255 / 70%);
+  box-shadow: inset 0 1px 0 #fff;
+  color: var(--orbit-ink);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+.orbit-button-secondary:hover {
+  background: #fff;
+}
+
+.orbit-signals {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.65rem 1.25rem;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  color: var(--orbit-muted);
+  font-size: 0.75rem;
+  list-style: none;
+}
+
+.orbit-signals li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.soft-orbit-page .soft-orbit-home .orbit-signals li span {
+  color: var(--orbit-pink);
+}
+
+.orbit-preview {
+  position: absolute;
+  width: clamp(12.5rem, 17vw, 17rem);
+  pointer-events: auto;
+  transition: transform 220ms var(--kida-ease-out);
+}
+
+.orbit-preview:hover,
+.orbit-preview:focus-within {
+  z-index: 3;
+}
+
+.orbit-preview-1 {
+  top: 12%;
+  left: 1%;
+  rotate: -4deg;
+}
+
+.orbit-preview-2 {
+  top: 10%;
+  right: 1%;
+  rotate: 3.5deg;
+}
+
+.orbit-preview-3 {
+  bottom: 10%;
+  left: 3%;
+  width: clamp(14rem, 19vw, 19rem);
+  rotate: 3deg;
+}
+
+.orbit-preview-4 {
+  right: 2%;
+  bottom: 11%;
+  width: clamp(14rem, 20vw, 20rem);
+  rotate: -3deg;
+}
+
+.orbit-preview-label {
+  position: absolute;
+  z-index: 4;
+  top: -0.7rem;
+  left: 1rem;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid rgb(255 255 255 / 90%);
+  border-radius: 999px;
+  background: rgb(255 253 251 / 88%);
+  box-shadow: 0 0.35rem 1rem rgb(83 48 62 / 10%);
+  color: var(--orbit-muted);
+  font-size: 0.65rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.orbit-preview .catalog-card {
+  overflow: visible;
+  border-color: rgb(255 255 255 / 90%);
+  border-radius: 1.35rem;
+  background: rgb(255 255 255 / 78%);
+  box-shadow: var(--orbit-shadow);
+  -webkit-backdrop-filter: blur(20px) saturate(120%);
+  backdrop-filter: blur(20px) saturate(120%);
+}
+
+.orbit-preview .catalog-card:hover,
+.orbit-preview .catalog-card:focus-within {
+  border-color: rgb(240 90 147 / 26%);
+  box-shadow: 0 1.75rem 4.5rem rgb(74 43 56 / 16%);
+  transform: translateY(-0.25rem) scale(1.02);
+}
+
+.orbit-preview .component-preview {
+  aspect-ratio: 4 / 3;
+  border-radius: 1.25rem;
+}
+
+.orbit-preview-3 .component-preview {
+  aspect-ratio: 16 / 10;
+}
+
+.orbit-preview .demo-text-bloom h2 {
+  font-size: clamp(1rem, 1.55vw, 1.4rem);
+}
+
+.orbit-preview .demo-scribble-copy {
+  font-size: 1.15rem;
+}
+
+.orbit-scroll-cue {
+  position: absolute;
+  z-index: 2;
+  bottom: 1.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--orbit-muted);
+  font-size: 0.72rem;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.soft-orbit-page .soft-orbit-home .orbit-scroll-cue span {
+  color: var(--orbit-pink);
+}
+
+.orbit-manifesto,
+.orbit-library,
+.orbit-install,
+.orbit-closing {
+  width: min(calc(100% - 2rem), 76rem);
+  margin-inline: auto;
+}
+
+.orbit-manifesto {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(3rem, 7vw, 6rem);
+  border: 1px solid rgb(255 255 255 / 80%);
+  border-radius: clamp(2rem, 5vw, 4rem);
+  background:
+    radial-gradient(circle at 90% 10%, rgb(240 90 147 / 18%), transparent 18rem),
+    linear-gradient(135deg, #ffe7db, #fff5f1 58%, #f4eeff);
+  box-shadow: inset 0 1px 0 #fff;
+  text-align: center;
+}
+
+.orbit-manifesto::after {
+  position: absolute;
+  right: -3rem;
+  bottom: -4rem;
+  width: 13rem;
+  height: 13rem;
+  border: 1px solid rgb(240 90 147 / 24%);
+  border-radius: 45% 55% 62% 38%;
+  content: "";
+  rotate: 18deg;
+}
+
+.orbit-manifesto h2,
+.orbit-section-head h2,
+.orbit-install h2,
+.orbit-closing h2 {
+  margin: 0.55rem 0 0;
+  font-size: clamp(2rem, 4.4vw, 4.25rem);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.055em;
+  text-wrap: balance;
+}
+
+.orbit-manifesto > p:not(.orbit-section-kicker) {
+  max-width: 42rem;
+  margin: 1.25rem auto 0;
+  color: var(--orbit-muted);
+  font-size: 1.05rem;
+}
+
+.orbit-traits {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.65rem;
+  margin-top: 2rem;
+}
+
+.soft-orbit-page .soft-orbit-home .orbit-traits span {
+  padding: 0.5rem 0.8rem;
+  border: 1px solid rgb(255 255 255 / 92%);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 56%);
+  box-shadow: inset 0 1px 0 #fff;
+  color: #65585d;
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.orbit-library {
+  padding-block: clamp(6rem, 10vw, 9rem);
+  scroll-margin-top: 6rem;
+}
+
+.orbit-section-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.orbit-section-head h2 {
+  max-width: 12ch;
+}
+
+.orbit-section-head > a,
+.orbit-install-copy > a {
+  flex: none;
+  padding-bottom: 0.2rem;
+  color: var(--orbit-ink);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration-color: var(--orbit-pink-soft);
+  text-decoration-thickness: 0.18rem;
+  text-underline-offset: 0.25rem;
+}
+
+.orbit-library-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 1.2rem;
+}
+
+.orbit-library-grid .catalog-card {
+  grid-column: span 4;
+  border-color: rgb(255 255 255 / 82%);
+  border-radius: 1.5rem;
+  background: rgb(255 255 255 / 46%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 88%),
+    0 1rem 3rem rgb(76 50 61 / 7%);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+
+.orbit-library-grid .catalog-card:nth-child(1),
+.orbit-library-grid .catalog-card:nth-child(5) {
+  grid-column: span 5;
+}
+
+.orbit-library-grid .catalog-card:nth-child(2),
+.orbit-library-grid .catalog-card:nth-child(6) {
+  grid-column: span 7;
+}
+
+.orbit-library-grid .catalog-card:hover,
+.orbit-library-grid .catalog-card:focus-within {
+  border-color: rgb(240 90 147 / 28%);
+  box-shadow: 0 1.2rem 3rem rgb(75 45 58 / 10%);
+  transform: translateY(-0.3rem);
+}
+
+.orbit-library-grid .component-preview {
+  min-height: 13rem;
+  border-radius: 1.4rem 1.4rem 0 0;
+  background: rgb(255 255 255 / 23%);
+}
+
+.orbit-library-grid .catalog-card-copy {
+  min-height: 7.5rem;
+  padding: 1.15rem 1.25rem 1.35rem;
+  border-color: rgb(255 255 255 / 72%);
+}
+
+.orbit-library-grid .catalog-card-copy h3 {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  letter-spacing: -0.025em;
+}
+
+.orbit-install {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(2rem, 7vw, 7rem);
+  align-items: center;
+  padding: clamp(3rem, 7vw, 6rem);
+  border: 1px solid rgb(255 255 255 / 88%);
+  border-radius: clamp(2rem, 5vw, 4rem);
+  background:
+    radial-gradient(circle at 85% 20%, rgb(255 255 255 / 70%), transparent 18rem),
+    linear-gradient(135deg, #f8d1df, #ffe0cc);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 95%),
+    0 1.5rem 4rem rgb(89 51 64 / 8%);
+}
+
+.orbit-install h2 {
+  max-width: 10ch;
+  font-size: clamp(2.15rem, 4vw, 3.75rem);
+}
+
+.orbit-install-copy > p:not(.orbit-section-kicker) {
+  max-width: 29rem;
+  margin: 1.25rem 0 1.5rem;
+  color: #6f5861;
+}
+
+.orbit-command-island {
+  min-width: 0;
+  padding: 0.75rem;
+  border: 1px solid rgb(255 255 255 / 75%);
+  border-radius: 1.5rem;
+  background: rgb(45 35 40 / 92%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 12%),
+    0 1.5rem 3.5rem rgb(79 45 58 / 18%);
+  color: #fff;
+}
+
+.orbit-command-head {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.35rem 0.45rem 0.65rem;
+  color: #d7c8ce;
+  font-size: 0.68rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.orbit-command-head span:last-child {
+  color: var(--orbit-peach);
+  letter-spacing: 0.15em;
+}
+
+.orbit-command-island .code {
+  margin: 0;
+}
+
+.orbit-command-island .code pre {
+  border-color: rgb(255 255 255 / 10%);
+  border-radius: 1rem;
+  /* biome-ignore lint/complexity/noImportantStyles: overrides Astro Code's inline light theme */
+  background: rgb(25 20 23 / 72%) !important;
+  /* biome-ignore lint/complexity/noImportantStyles: overrides Astro Code's inline light theme */
+  color: #fff4f8 !important;
+  color-scheme: dark;
+  scrollbar-color: var(--orbit-pink) rgb(255 255 255 / 8%);
+  scrollbar-width: thin;
+}
+
+.orbit-command-island .code pre span {
+  /* biome-ignore lint/complexity/noImportantStyles: overrides Shiki's inline token colors */
+  color: inherit !important;
+}
+
+.orbit-command-island .code pre::-webkit-scrollbar {
+  height: 0.55rem;
+}
+
+.orbit-command-island .code pre::-webkit-scrollbar-track {
+  margin-inline: 0.75rem;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 8%);
+}
+
+.orbit-command-island .code pre::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--orbit-pink), var(--orbit-peach)) border-box;
+}
+
+.orbit-command-island .code pre::-webkit-scrollbar-thumb:hover {
+  background: var(--orbit-pink) border-box;
+}
+
+.orbit-command-island .code .copy {
+  border-color: rgb(255 255 255 / 14%);
+  background: rgb(255 255 255 / 9%);
+  color: #fff;
+  opacity: 1;
+}
+
+.orbit-command-island > p {
+  margin: 0;
+  padding: 0.75rem 0.45rem 0.35rem;
+  color: #d7c8ce;
+  font-size: 0.72rem;
+}
+
+.soft-orbit-page .soft-orbit-home .orbit-command-island > p span {
+  color: #9fd3bd;
+}
+
+.orbit-closing {
+  position: relative;
+  margin-bottom: 7rem;
+  padding: clamp(4rem, 9vw, 8rem) 1.5rem;
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 90%);
+  border-radius: clamp(2rem, 5vw, 4rem);
+  background:
+    radial-gradient(circle at 20% 75%, rgb(255 92 154 / 20%), transparent 24rem),
+    radial-gradient(circle at 80% 20%, rgb(255 176 124 / 28%), transparent 26rem),
+    rgb(255 255 255 / 44%);
+  box-shadow: inset 0 1px 0 #fff;
+  text-align: center;
+}
+
+.orbit-closing-spark {
+  display: inline-grid;
+  place-items: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  margin-bottom: 1.2rem;
+  border-radius: 1.1rem;
+  background: linear-gradient(135deg, var(--orbit-pink-soft), var(--orbit-peach-soft));
+  box-shadow: 0 0.7rem 1.8rem rgb(104 57 74 / 12%);
+  color: #8d385b;
+  font-size: 1.25rem;
+  rotate: 8deg;
+}
+
+.orbit-closing h2 {
+  font-size: clamp(2.5rem, 5vw, 5rem);
+}
+
+.orbit-closing > p:not(.orbit-section-kicker) {
+  margin: 1rem auto 1.75rem;
+  color: var(--orbit-muted);
+}
+
+.soft-orbit-page .site-footer {
+  border-color: var(--orbit-line);
+  background: #f8f3f1;
+  color: var(--orbit-muted);
+}
+
+@media (max-width: 72rem) {
+  .orbit-hero {
+    min-height: auto;
+    padding-top: 6rem;
+  }
+
+  .orbit-copy {
+    margin-bottom: 4rem;
+  }
+
+  .orbit-previews {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .orbit-preview {
+    position: relative;
+    inset: auto;
+    width: auto;
+    rotate: 0deg;
+  }
+
+  .orbit-preview-1,
+  .orbit-preview-3 {
+    rotate: -1.5deg;
+  }
+
+  .orbit-preview-2,
+  .orbit-preview-4 {
+    rotate: 1.5deg;
+  }
+
+  .orbit-preview .component-preview {
+    aspect-ratio: 4 / 3;
+    padding: 0.9rem;
+  }
+
+  .orbit-scroll-cue {
+    display: none;
+  }
+}
+
+@media (max-width: 58rem) {
+  .orbit-hero {
+    padding: 5rem 0.25rem 6rem;
+  }
+
+  .orbit-copy {
+    margin-bottom: 3rem;
+  }
+
+  .orbit-previews {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .orbit-preview:nth-child(n + 3) {
+    margin-top: 0.5rem;
+  }
+
+  .orbit-library-grid .catalog-card,
+  .orbit-library-grid .catalog-card:nth-child(1),
+  .orbit-library-grid .catalog-card:nth-child(2),
+  .orbit-library-grid .catalog-card:nth-child(5),
+  .orbit-library-grid .catalog-card:nth-child(6),
+  .orbit-library-grid .catalog-card:nth-child(7) {
+    grid-column: span 6;
+  }
+
+  .orbit-install {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 40rem) {
+  .orbit-hero,
+  .orbit-manifesto,
+  .orbit-library,
+  .orbit-install,
+  .orbit-closing {
+    width: min(calc(100% - 1rem), 76rem);
+  }
+
+  .orbit-copy h1 {
+    font-size: clamp(2.7rem, 14vw, 4.5rem);
+  }
+
+  .orbit-actions {
+    align-items: stretch;
+    flex-direction: column;
+    width: min(100%, 18rem);
+    margin-inline: auto;
+  }
+
+  .orbit-signals {
+    gap: 0.5rem 0.8rem;
+  }
+
+  .orbit-previews {
+    gap: 0.65rem;
+  }
+
+  .orbit-preview-label {
+    top: -0.45rem;
+    left: 0.6rem;
+    padding: 0.2rem 0.4rem;
+    font-size: 0.55rem;
+  }
+
+  .orbit-preview .component-preview {
+    min-height: 8rem;
+    padding: 0.6rem;
+  }
+
+  .orbit-preview .demo-card {
+    padding: 0.6rem;
+    font-size: 0.65rem;
+  }
+
+  .orbit-preview .demo-magnetic-button,
+  .orbit-preview .demo-sticker-button {
+    min-width: 0;
+    min-height: 2.4rem;
+    padding: 0.5rem 0.65rem;
+    font-size: 0.7rem;
+  }
+
+  .orbit-preview .demo-text-bloom h2 {
+    font-size: 0.9rem;
+  }
+
+  .orbit-manifesto,
+  .orbit-install {
+    padding: 2.5rem 1.25rem;
+    border-radius: 2rem;
+  }
+
+  .orbit-section-head {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .orbit-library-grid {
+    gap: 0.85rem;
+  }
+
+  .orbit-library-grid .catalog-card,
+  .orbit-library-grid .catalog-card:nth-child(1),
+  .orbit-library-grid .catalog-card:nth-child(2),
+  .orbit-library-grid .catalog-card:nth-child(5),
+  .orbit-library-grid .catalog-card:nth-child(6),
+  .orbit-library-grid .catalog-card:nth-child(7) {
+    grid-column: 1 / -1;
+  }
+
+  .orbit-library-grid .catalog-card-copy {
+    min-height: 0;
+  }
+
+  .orbit-command-island {
+    margin-inline: -0.5rem;
+  }
+
+  .orbit-closing {
+    margin-bottom: 4rem;
+    padding-inline: 1.25rem;
+    border-radius: 2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orbit-button,
+  .orbit-preview,
+  .orbit-preview .catalog-card,
+  .orbit-library-grid .catalog-card {
+    transition: none;
+  }
+
+  .orbit-button:hover,
+  .orbit-preview .catalog-card:hover,
+  .orbit-preview .catalog-card:focus-within,
+  .orbit-library-grid .catalog-card:hover,
+  .orbit-library-grid .catalog-card:focus-within {
+    transform: none;
   }
 }

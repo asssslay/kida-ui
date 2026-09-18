@@ -6,6 +6,8 @@ export interface CatalogCardPreviewProps {
   name: string
   href: string
   label: string
+  title?: string
+  description?: string
 }
 
 type CatalogPreviewModule = {
@@ -39,7 +41,13 @@ export function assertCatalogPreviewCoverage(componentNames: readonly string[]) 
   throw new Error(`Catalog preview coverage is incomplete (${problems.join('; ')}).`)
 }
 
-export default function CatalogCardPreview({ name, href, label }: CatalogCardPreviewProps) {
+export default function CatalogCardPreview({
+  name,
+  href,
+  label,
+  title,
+  description,
+}: CatalogCardPreviewProps) {
   const [hovered, setHovered] = useState(false)
   const [focused, setFocused] = useState(false)
   const active = hovered || focused
@@ -71,6 +79,12 @@ export default function CatalogCardPreview({ name, href, label }: CatalogCardPre
       <div className="component-preview" data-component={name} aria-hidden="true" inert>
         <Preview active={active} />
       </div>
+      {title && (
+        <div className="catalog-card-copy">
+          <h3>{title}</h3>
+          {description && <p>{description}</p>}
+        </div>
+      )}
       <a
         className="catalog-card-link"
         href={href}

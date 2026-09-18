@@ -48,7 +48,9 @@ assertCatalogPreviewCoverage(entries.map((entry) => entry.id))
                     name={entry.id}
                     href={`/docs/${entry.id}`}
                     label={`${entry.data.title}: ${entry.data.description}`}
-                  client:visible
+                    title={entry.data.title}
+                    description={entry.data.description}
+                    client:visible
                   />
                 ))}
               </div>

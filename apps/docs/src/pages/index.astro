@@ -1,56 +1,152 @@
 ---
 import { getCollection } from 'astro:content'
-import Demo from '../components/Demo.astro'
-import TextBloomBasic from '../demos/text-bloom-basic.react.tsx'
+import CodeBlock from '../components/CodeBlock.astro'
+import CatalogCardPreview, {
+  assertCatalogPreviewCoverage,
+} from '../demos/catalog-card-preview.react.tsx'
 import Base from '../layouts/Base.astro'
 
-const shipped = (await getCollection('components')).sort(
+const entries = (await getCollection('components')).sort(
   (a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title),
 )
+const entriesByName = new Map(entries.map((entry) => [entry.id, entry]))
+const orbitNames = ['reveal', 'magnetic', 'photo-pile', 'text-bloom'] as const
+const orbitEntries = orbitNames.map((name) => {
+  const entry = entriesByName.get(name)
+  if (!entry) throw new Error(`Homepage orbit is missing component "${name}".`)
+  return entry
+})
+
+assertCatalogPreviewCoverage(entries.map((entry) => entry.id))
+
+const registryUrl = new URL('/r/text-bloom.json', Astro.site).href
+const installCommand = `npx shadcn@latest add ${registryUrl}`
 ---
 
 <Base
-  title="Kida UI — animation-first components, built to reach every stack"
-  description="Animation-first UI components. Motion quality and genuine multi-stack reach, from a framework-agnostic core."
+  title="Kida UI — expressive motion components for React"
+  description="Playful, accessible React animation components you can copy, customize, and make your own."
+  bodyClass="soft-orbit-page"
 >
-  <main id="main">
-    <section class="hero">
-      <div class="hero-copy">
-        <h1>Animation-first components, built to reach <em>every stack</em>.</h1>
-        <p>
-          Polished motion components you can install, customize, and keep accessible.
+  <main id="main" class="soft-orbit-home">
+    <section class="orbit-hero" aria-labelledby="orbit-title">
+      <div class="orbit-ambient" aria-hidden="true">
+        <span class="orbit-glow orbit-glow-pink"></span>
+        <span class="orbit-glow orbit-glow-peach"></span>
+        <span class="orbit-line orbit-line-one"></span>
+        <span class="orbit-line orbit-line-two"></span>
+      </div>
+
+      <div class="orbit-copy">
+        <p class="orbit-eyebrow"><span aria-hidden="true"></span> Motion, with a point of view</p>
+        <h1 id="orbit-title">Interfaces should feel <em>alive</em>—not busy.</h1>
+        <p class="orbit-lede">
+          Playful React components with thoughtful motion, accessible defaults, and source code
+          that becomes yours.
         </p>
-        <div class="actions">
-          <a class="button primary" href="/docs">
-            Browse components <span aria-hidden="true">→</span>
+        <div class="orbit-actions">
+          <a class="orbit-button orbit-button-primary" href="/docs">
+            Explore components <span aria-hidden="true">↗</span>
+          </a>
+          <a class="orbit-button orbit-button-secondary" href="/docs/installation">
+            Start building
           </a>
         </div>
+        <ul class="orbit-signals" aria-label="Library qualities">
+          <li><span aria-hidden="true">✦</span> Copy-source</li>
+          <li><span aria-hidden="true">○</span> React</li>
+          <li><span aria-hidden="true">⌁</span> Reduced-motion ready</li>
+        </ul>
+      </div>
+
+      <div class="orbit-previews" aria-label="Featured component previews">
+        {
+          orbitEntries.map((entry, index) => (
+            <div class={`orbit-preview orbit-preview-${index + 1}`}>
+              <span class="orbit-preview-label">{entry.data.title}</span>
+              <CatalogCardPreview
+                name={entry.id}
+                href={`/docs/${entry.id}`}
+                label={`${entry.data.title}: ${entry.data.description}`}
+                client:visible
+              />
+            </div>
+          ))
+        }
+      </div>
+
+      <a class="orbit-scroll-cue" href="#components">
+        Meet the collection <span aria-hidden="true">↓</span>
+      </a>
+    </section>
+
+    <section class="orbit-manifesto" aria-labelledby="manifesto-title">
+      <p class="orbit-section-kicker">Calm at rest. Expressive on cue.</p>
+      <h2 id="manifesto-title">Small motions. Distinct personalities.</h2>
+      <p>
+        Each component solves one interaction well—from a headline that blooms to a photo pile you
+        can actually pick up. Nothing loops just to ask for attention.
+      </p>
+      <div class="orbit-traits" aria-label="Design principles">
+        <span>Intent-led motion</span>
+        <span>Source you can shape</span>
+        <span>Accessible by default</span>
       </div>
     </section>
 
-    <div class="sections">
-      <section class="section featured">
-        <h2>Made to move</h2>
-        <p>Thoughtful motion that feels expressive without getting in the way.</p>
-        <Demo name="text-bloom-basic" previewOnly>
-          <TextBloomBasic client:visible />
-        </Demo>
-      </section>
-
-      <section class="section">
-        <h2>Available components</h2>
-        <p>Start with a focused primitive or add an expressive finishing detail.</p>
-        <div class="component-grid">
-          {
-            shipped.map((entry) => (
-              <a class="component-card" href={`/docs/${entry.id}`}>
-                <h3>{entry.data.title}</h3>
-                <p>{entry.data.description}</p>
-              </a>
-            ))
-          }
+    <section id="components" class="orbit-library" aria-labelledby="library-title">
+      <div class="orbit-section-head">
+        <div>
+          <p class="orbit-section-kicker">The collection</p>
+          <h2 id="library-title">Seven components. No filler.</h2>
         </div>
-      </section>
-    </div>
+        <a href="/docs">Browse all docs <span aria-hidden="true">→</span></a>
+      </div>
+
+      <div class="orbit-library-grid">
+        {
+          entries.map((entry) => (
+            <CatalogCardPreview
+              name={entry.id}
+              href={`/docs/${entry.id}`}
+              label={`${entry.data.title}: ${entry.data.description}`}
+              title={entry.data.title}
+              description={entry.data.description}
+              client:visible
+            />
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="orbit-install" aria-labelledby="install-title">
+      <div class="orbit-install-copy">
+        <p class="orbit-section-kicker">Make it yours</p>
+        <h2 id="install-title">One command. Every file included.</h2>
+        <p>
+          Add a component through the shadcn CLI, then keep the readable React, motion, and CSS
+          source inside your own project.
+        </p>
+        <a href="/docs/installation">Read the installation guide <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="orbit-command-island">
+        <div class="orbit-command-head">
+          <span>Terminal</span>
+          <span aria-hidden="true">• • •</span>
+        </div>
+        <CodeBlock code={installCommand} lang="bash" />
+        <p><span aria-hidden="true">✓</span> Component, styles, and public dependencies included</p>
+      </div>
+    </section>
+
+    <section class="orbit-closing" aria-labelledby="closing-title">
+      <span class="orbit-closing-spark" aria-hidden="true">✦</span>
+      <p class="orbit-section-kicker">Ready when you are</p>
+      <h2 id="closing-title">Give your interface a pulse.</h2>
+      <p>Start with one small interaction and make it unmistakably yours.</p>
+      <a class="orbit-button orbit-button-primary" href="/docs">
+        Find your component <span aria-hidden="true">↗</span>
+      </a>
+    </section>
   </main>
 </Base>
