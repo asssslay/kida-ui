@@ -809,6 +809,14 @@ a {
   user-select: none;
 }
 
+/* Pointer-driven demos sit above the full-card link so they can receive movement events.
+   The card copy remains linked, and decorative previews stay inert. */
+.component-preview[data-interactive="true"] {
+  position: relative;
+  z-index: 3;
+  pointer-events: auto;
+}
+
 .component-preview[data-component="text-bloom"],
 .component-preview[data-component="magnetic"] {
   background: #fff5f8;

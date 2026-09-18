@@ -19,6 +19,7 @@ const modules = import.meta.glob<CatalogPreviewModule>('./catalog-previews/*.rea
 })
 const previewPath = /^\.\/catalog-previews\/(.+)\.react\.tsx$/
 const previews = new Map<string, ComponentType<CatalogPreviewProps>>()
+const interactivePreviews = new Set(['magnetic'])
 
 for (const [path, module] of Object.entries(modules)) {
   const name = previewPath.exec(path)?.[1]
@@ -52,6 +53,7 @@ export default function CatalogCardPreview({
   const [focused, setFocused] = useState(false)
   const active = hovered || focused
   const Preview = previews.get(name)
+  const isInteractivePreview = interactivePreviews.has(name)
 
   if (!Preview) {
     throw new Error(
@@ -76,7 +78,13 @@ export default function CatalogCardPreview({
       onPointerLeave={() => setHovered(false)}
       onPointerCancel={() => setHovered(false)}
     >
-      <div className="component-preview" data-component={name} aria-hidden="true" inert>
+      <div
+        className="component-preview"
+        data-component={name}
+        data-interactive={isInteractivePreview ? 'true' : undefined}
+        aria-hidden="true"
+        inert={!isInteractivePreview}
+      >
         <Preview active={active} />
       </div>
       {title && (
