@@ -1,0 +1,58 @@
+---
+import CatalogCardPreview from '../demos/catalog-card-preview.react.tsx'
+import HeroGlyphField from './HeroGlyphField.astro'
+
+interface Props {
+  variant: 'stage' | 'glyphs'
+}
+
+const { variant } = Astro.props
+const isStage = variant === 'stage'
+---
+
+<main id="main" class={`hero-study-main hero-study-${variant}`}>
+  <section class="hero-study" aria-labelledby="hero-study-title">
+    <nav class="hero-study-switcher" aria-label="Hero concept switcher">
+      <a href="/concepts/hero-stage" aria-current={isStage ? 'page' : undefined}>Stage</a>
+      <a href="/concepts/hero-glyphs" aria-current={!isStage ? 'page' : undefined}>Glyphs</a>
+    </nav>
+
+    {!isStage && <HeroGlyphField />}
+
+    <div class="hero-study-copy">
+      <p class="hero-study-concept">Concept {isStage ? '01' : '02'}</p>
+      <h1 id="hero-study-title">Interfaces should feel <em>alive</em>, not busy.</h1>
+      <p class="hero-study-lede">
+        An expressive UI animation library for React, with source code you can make your own.
+        Support for more frameworks is planned.
+      </p>
+      <div class="hero-study-actions">
+        <a class="orbit-button orbit-button-primary" href="/docs">
+          Explore components <span aria-hidden="true">↗</span>
+        </a>
+        <a class="orbit-action-link" href="/docs/installation">
+          Install for React <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    </div>
+
+    {
+      isStage && (
+        <div class="hero-component-stage" aria-label="TextBloom component preview">
+          <div class="hero-stage-bar" aria-hidden="true">
+            <span>text-bloom.tsx</span>
+            <span>React · source included</span>
+          </div>
+          <div class="hero-stage-preview">
+            <CatalogCardPreview
+              name="text-bloom"
+              href="/docs/text-bloom"
+              label="TextBloom: animate segmented text with a playful bloom"
+              client:visible
+            />
+          </div>
+        </div>
+      )
+    }
+  </section>
+</main>

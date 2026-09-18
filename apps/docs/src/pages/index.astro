@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content'
 import CodeBlock from '../components/CodeBlock.astro'
+import HeroGlyphField from '../components/HeroGlyphField.astro'
 import CatalogCardPreview, {
   assertCatalogPreviewCoverage,
 } from '../demos/catalog-card-preview.react.tsx'
@@ -9,14 +10,6 @@ import Base from '../layouts/Base.astro'
 const entries = (await getCollection('components')).sort(
   (a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title),
 )
-const entriesByName = new Map(entries.map((entry) => [entry.id, entry]))
-const orbitNames = ['reveal', 'magnetic', 'photo-pile', 'text-bloom'] as const
-const orbitEntries = orbitNames.map((name) => {
-  const entry = entriesByName.get(name)
-  if (!entry) throw new Error(`Homepage orbit is missing component "${name}".`)
-  return entry
-})
-
 assertCatalogPreviewCoverage(entries.map((entry) => entry.id))
 
 const registryUrl = new URL('/r/text-bloom.json', Astro.site).href
@@ -30,54 +23,23 @@ const installCommand = `npx shadcn@latest add ${registryUrl}`
 >
   <main id="main" class="soft-orbit-home">
     <section class="orbit-hero" aria-labelledby="orbit-title">
-      <div class="orbit-ambient" aria-hidden="true">
-        <span class="orbit-glow orbit-glow-pink"></span>
-        <span class="orbit-glow orbit-glow-peach"></span>
-        <span class="orbit-line orbit-line-one"></span>
-        <span class="orbit-line orbit-line-two"></span>
-      </div>
+      <HeroGlyphField />
 
       <div class="orbit-copy">
-        <p class="orbit-eyebrow"><span aria-hidden="true"></span> Motion, with a point of view</p>
-        <h1 id="orbit-title">Interfaces should feel <em>alive</em>—not busy.</h1>
+        <h1 id="orbit-title">Interfaces should feel <em>alive</em>, not busy.</h1>
         <p class="orbit-lede">
-          Playful React components with thoughtful motion, accessible defaults, and source code
-          that becomes yours.
+          An expressive UI animation library for React, with source code you can make your own.
+          Support for more frameworks is planned.
         </p>
         <div class="orbit-actions">
           <a class="orbit-button orbit-button-primary" href="/docs">
             Explore components <span aria-hidden="true">↗</span>
           </a>
-          <a class="orbit-button orbit-button-secondary" href="/docs/installation">
-            Start building
+          <a class="orbit-action-link" href="/docs/installation">
+            Install for React <span aria-hidden="true">→</span>
           </a>
         </div>
-        <ul class="orbit-signals" aria-label="Library qualities">
-          <li><span aria-hidden="true">✦</span> Copy-source</li>
-          <li><span aria-hidden="true">○</span> React</li>
-          <li><span aria-hidden="true">⌁</span> Reduced-motion ready</li>
-        </ul>
       </div>
-
-      <div class="orbit-previews" aria-label="Featured component previews">
-        {
-          orbitEntries.map((entry, index) => (
-            <div class={`orbit-preview orbit-preview-${index + 1}`}>
-              <span class="orbit-preview-label">{entry.data.title}</span>
-              <CatalogCardPreview
-                name={entry.id}
-                href={`/docs/${entry.id}`}
-                label={`${entry.data.title}: ${entry.data.description}`}
-                client:visible
-              />
-            </div>
-          ))
-        }
-      </div>
-
-      <a class="orbit-scroll-cue" href="#components">
-        Meet the collection <span aria-hidden="true">↓</span>
-      </a>
     </section>
 
     <section class="orbit-manifesto" aria-labelledby="manifesto-title">
