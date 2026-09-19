@@ -120,6 +120,12 @@ Every component page includes:
 The preview and displayed source must be read from real checked-in files. Documentation examples
 must typecheck as part of the workspace.
 
+Every cataloged component also has one purpose-built preview at
+`apps/docs/src/demos/catalog-previews/<component-slug>.react.tsx`. It accepts the shared `active`
+prop and stays still until its card is hovered or focused. Preview modules are discovered by
+filename; the docs build fails when a documented component is missing one or when an orphaned
+preview no longer has a component page.
+
 Quick-start examples live in `apps/docs/src/examples/quick-start` and are rendered directly from
 those files. Handwritten TypeScript or JavaScript fences are not allowed on component pages. CI
 must typecheck the examples against the combined generated registry output so displayed imports,
@@ -142,5 +148,6 @@ A component is ready to list as `beta` only when:
 - package and copy paths work from the same source;
 - accessibility and reduced-motion behavior are explicit;
 - browser behavior is tested at mobile and desktop sizes;
+- its catalog preview is representative, keyboard-activated, and safe inside the full-card link;
 - documentation is complete enough to use without reading implementation code; and
 - no known failure can leave content hidden, focus lost, or background work running after unmount.

@@ -1,8 +1,12 @@
 import { Collapse } from '@kida-ui/react'
 import { useState } from 'react'
 
-export default function CollapseBasic() {
-  const [open, setOpen] = useState(false)
+interface CollapseBasicProps {
+  initialOpen?: boolean
+}
+
+export default function CollapseBasic({ initialOpen = false }: CollapseBasicProps) {
+  const [open, setOpen] = useState(initialOpen)
 
   return (
     <div className="demo-stack">

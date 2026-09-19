@@ -1,6 +1,9 @@
 ---
 import { getCollection } from 'astro:content'
 import { COMPONENT_CATEGORIES, categoryOrder } from '../../config/components'
+import CatalogCardPreview, {
+  assertCatalogPreviewCoverage,
+} from '../../demos/catalog-card-preview.react.tsx'
 import Base from '../../layouts/Base.astro'
 
 const entries = (await getCollection('components')).sort(
@@ -14,41 +17,58 @@ const groups = COMPONENT_CATEGORIES.map((category) => ({
   ...category,
   entries: entries.filter((entry) => entry.data.category === category.id),
 })).filter((group) => group.entries.length > 0)
+
+assertCatalogPreviewCoverage(entries.map((entry) => entry.id))
 ---
 
 <Base
   title="Documentation — Kida UI"
   description="Component documentation for Kida UI, the animation-first component library."
+  bodyClass="soft-orbit-page docs-catalog-page"
 >
-  <main id="main" class="sections">
-    <section class="section" style="border-top: 0; padding-top: 3rem;">
-      <h1>Components</h1>
-      <p>
-        Add polished entrances, text motion, tactile interaction, and hand-drawn details to your
-        interface. Choose a component to see it live and copy it into your project.
+  <main id="main" class="docs-catalog">
+    <header class="docs-catalog-hero">
+      <p class="docs-catalog-kicker">
+        <span>Documentation</span>
+        <span aria-hidden="true">/</span>
+        <span>{entries.length.toString().padStart(2, '0')} components</span>
       </p>
-      <div class="catalog-actions">
-        <a class="button primary" href="/docs/installation">Read the installation guide</a>
+      <h1>Give your interface<br /><em>a pulse.</em></h1>
+      <div class="docs-catalog-intro">
+        <p>
+          Add polished entrances, text motion, tactile interaction, and hand-drawn details to your
+          interface. Every component arrives as readable source you can make your own.
+        </p>
+        <a class="docs-catalog-action" href="/docs/installation">
+          Start with installation <span aria-hidden="true">↗</span>
+        </a>
       </div>
-      <div class="catalog-groups">
-        {
-          groups.map((group) => (
-            <section class="catalog-group">
-              <div class="catalog-group-head">
-                <h2>{group.label}</h2>
-              </div>
-              <div class="component-grid">
-                {group.entries.map((entry) => (
-                  <a class="component-card" href={`/docs/${entry.id}`}>
-                    <h3>{entry.data.title}</h3>
-                    <p>{entry.data.description}</p>
-                  </a>
-                ))}
-              </div>
-            </section>
-          ))
-        }
-      </div>
-    </section>
+    </header>
+
+    <div class="docs-catalog-groups">
+      {
+        groups.map((group, index) => (
+          <section class="docs-catalog-group" data-group-index={index + 1}>
+            <header class="docs-catalog-group-head">
+              <p>{String(index + 1).padStart(2, '0')}</p>
+              <h2>{group.label}</h2>
+              <span>{String(group.entries.length).padStart(2, '0')}</span>
+            </header>
+            <div class="docs-catalog-grid">
+              {group.entries.map((entry) => (
+                <CatalogCardPreview
+                  name={entry.id}
+                  href={`/docs/${entry.id}`}
+                  label={`${entry.data.title}: ${entry.data.description}`}
+                  title={entry.data.title}
+                  description={entry.data.description}
+                  client:visible
+                />
+              ))}
+            </div>
+          </section>
+        ))
+      }
+    </div>
   </main>
 </Base>

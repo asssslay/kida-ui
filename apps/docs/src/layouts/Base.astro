@@ -1,14 +1,17 @@
 ---
 import '@kida-ui/styles/kida.css'
+import '@fontsource-variable/instrument-sans'
+import '@fontsource-variable/instrument-sans/wght-italic.css'
 import '../styles/site.css'
 import Nav from '../components/Nav.astro'
 
 interface Props {
   title: string
   description: string
+  bodyClass?: string
 }
 
-const { title, description } = Astro.props
+const { title, description, bodyClass } = Astro.props
 const canonical = new URL(Astro.url.pathname, Astro.site)
 ---
 
@@ -26,7 +29,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
   </head>
-  <body>
+  <body class={bodyClass}>
     <a class="skip-link" href="#main">Skip to content</a>
     <Nav />
     <slot />
