@@ -30,7 +30,11 @@ const groups = COMPONENT_CATEGORIES.map((category) => ({
 const toc = headings.filter((heading) => heading.depth === 2 || heading.depth === 3)
 ---
 
-<Base title={`${title} — Kida UI`} description={description}>
+<Base
+  title={`${title} — Kida UI`}
+  description={description}
+  bodyClass="soft-orbit-page docs-reference-page"
+>
   <div class="docs">
     <aside class="sidebar">
       <h2>Documentation</h2>
@@ -74,8 +78,13 @@ const toc = headings.filter((heading) => heading.depth === 2 || heading.depth ==
     </aside>
 
     <main class="prose" id="main">
-      <h1>{title}</h1>
-      <p class="lede">{description}</p>
+      <header class="docs-prose-head">
+        <p class="docs-prose-kicker">
+          <a href="/docs">Documentation</a><span aria-hidden="true">/</span>{title}
+        </p>
+        <h1>{title}</h1>
+        <p class="lede">{description}</p>
+      </header>
       <slot />
     </main>
 
