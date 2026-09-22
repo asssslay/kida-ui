@@ -54,6 +54,8 @@ The copied component does not need a stylesheet.
 | `className` | `string` | — | Passed straight through. |
 | `style` | `CSSProperties` | — | Merged over the pre-animation state. |
 
+Safe native attributes, event handlers, and a forwarded `ref` are passed to the root.
+
 ### Easing values
 
 `ease` accepts `'linear'`, `'easeIn'`, `'easeOut'`, `'easeInOut'`, a four-number cubic
@@ -68,5 +70,5 @@ Under `prefers-reduced-motion: reduce`, content renders immediately in its final
 
 ## Troubleshooting
 
-Options are read when Reveal mounts. To intentionally replay it with different options, change the
-element's `key`.
+Changing a motion option cleans up the current controller and re-arms Reveal with the new behavior.
+Equivalent inline cubic-bézier tuples are compared by value and do not restart the animation.
