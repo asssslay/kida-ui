@@ -2,17 +2,15 @@
 
 import * as presence from '@zag-js/presence'
 import { normalizeProps, useMachine } from '@zag-js/react'
-import type { CSSProperties, ReactNode } from 'react'
-import { useRef } from 'react'
+import type { HTMLAttributes, ReactNode } from 'react'
+import { forwardRef, useRef } from 'react'
 import { composeRefs } from './compose-refs.js'
 import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js'
 
-export interface CollapseProps {
+export interface CollapseProps extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
   /** Whether the content is shown. */
   open: boolean
   children?: ReactNode
-  className?: string
-  style?: CSSProperties
   /** Fires after the exit animation has finished and the node has been removed. */
   onExitComplete?: () => void
 }
@@ -41,7 +39,10 @@ interface Frame {
  * The natural height is measured into `--kida-collapse-height`, because CSS cannot
  * animate to `height: auto`.
  */
-export function Collapse({ open, children, className, style, onExitComplete }: CollapseProps) {
+export const Collapse = forwardRef<HTMLDivElement, CollapseProps>(function Collapse(
+  { open, children, onExitComplete, ...props },
+  forwardedRef,
+) {
   const service = useMachine(presence.machine, { present: open, onExitComplete })
   const api = presence.connect(service, normalizeProps)
 
@@ -111,16 +112,15 @@ export function Collapse({ open, children, className, style, onExitComplete }: C
 
   return (
     <div
-      ref={composeRefs(nodeRef, api.setNode)}
+      {...props}
+      ref={composeRefs(nodeRef, api.setNode, forwardedRef)}
       data-kida-collapse=""
       data-state={open ? 'open' : 'closed'}
       // Set on the very first paint when the content starts open: there is nothing to
       // animate from, and playing the enter keyframes would be a spurious flash.
       data-skip-animation={api.skip ? '' : undefined}
-      className={className}
-      style={style}
     >
       <div ref={contentRef}>{children}</div>
     </div>
   )
-}
+})

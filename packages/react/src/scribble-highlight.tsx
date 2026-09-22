@@ -25,13 +25,12 @@ export const ScribbleHighlight = forwardRef<HTMLSpanElement, ScribbleHighlightPr
     forwardedRef,
   ) {
     const ref = useRef<HTMLSpanElement>(null)
-    const optionsRef = useRef({ once, amount })
 
     useIsomorphicLayoutEffect(() => {
       const element = ref.current
       if (!element) return
-      return drawInView(element, optionsRef.current)
-    }, [])
+      return drawInView(element, { once, amount })
+    }, [amount, once, variant])
 
     return (
       <span

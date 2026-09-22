@@ -1,4 +1,5 @@
 import '@kida-ui/styles/kida.css'
+import { createRef } from 'react'
 import { expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 import { Collapse } from './collapse.js'
@@ -56,6 +57,32 @@ test('stays mounted through the exit animation, then unmounts', async () => {
 
   await expect.poll(query).toBe(null)
   expect(onExitComplete).toHaveBeenCalledTimes(1)
+})
+
+test('forwards native attributes, events, and its ref through the presence lifecycle', async () => {
+  const ref = createRef<HTMLDivElement>()
+  const onClick = vi.fn()
+  const { rerender } = await render(
+    <Collapse open ref={ref} id="details-panel" aria-label="Details" onClick={onClick}>
+      {CONTENT}
+    </Collapse>,
+  )
+
+  const el = node()
+  expect(el.id).toBe('details-panel')
+  expect(el.getAttribute('aria-label')).toBe('Details')
+  expect(ref.current).toBe(el)
+
+  el.click()
+  expect(onClick).toHaveBeenCalledOnce()
+
+  await rerender(
+    <Collapse open={false} ref={ref} id="details-panel" onClick={onClick}>
+      {CONTENT}
+    </Collapse>,
+  )
+  await expect.poll(query).toBe(null)
+  expect(ref.current).toBe(null)
 })
 
 // `border-box` is what every CSS reset sets, but a bare page is `content-box`, and the
