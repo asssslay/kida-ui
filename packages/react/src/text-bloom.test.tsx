@@ -51,3 +51,29 @@ test('blooms on viewport entry and settles without a transform', async () => {
   expect(getComputedStyle(first).opacity).toBe('1')
   expect(getComputedStyle(first).transform).toBe('none')
 })
+
+test('rebuilds the controller when the rendered text segments change', async () => {
+  const view = await render(
+    <TextBloom duration={0.08} stagger={0}>
+      First words
+    </TextBloom>,
+  )
+
+  await expect.poll(() => root().dataset.state).toBe('settled')
+
+  await view.rerender(
+    <TextBloom by="character" voice="pop" duration={0.08} stagger={0}>
+      New text
+    </TextBloom>,
+  )
+
+  const element = root()
+  expect(element.getAttribute('aria-label')).toBe('New text')
+  expect(element.querySelectorAll('[data-kida-text-bloom-segment]')).toHaveLength(7)
+  await expect.poll(() => element.dataset.state).toBe('settled')
+
+  for (const segment of element.querySelectorAll<HTMLElement>('[data-kida-text-bloom-segment]')) {
+    expect(getComputedStyle(segment).opacity).toBe('1')
+    expect(getComputedStyle(segment).transform).toBe('none')
+  }
+})

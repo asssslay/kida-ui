@@ -101,13 +101,23 @@ export function reveal(element: HTMLElement, options: RevealOptions = {}): () =>
   // Bumped on every entry and every exit, so a settle scheduled by a pass that has since
   // been superseded — or re-hidden — is dropped instead of flashing the element visible.
   let pass = 0
+  let animation: ReturnType<typeof animate> | undefined
+  let settleFrame = 0
+
+  const cancelSettle = () => {
+    if (!settleFrame) return
+    cancelAnimationFrame(settleFrame)
+    settleFrame = 0
+  }
 
   const stop = inView(
     element,
     () => {
+      cancelSettle()
+      animation?.cancel()
       const generation = ++pass
       const from = revealInitialStyle(options)
-      const animation = animate(
+      const currentAnimation = animate(
         element,
         // Both ends spelled out. The engine caches what it last animated an element to, so
         // after a completed reveal it believes opacity is already 1 — and `hide()` writing
@@ -124,12 +134,15 @@ export function reveal(element: HTMLElement, options: RevealOptions = {}): () =>
           delay,
           ease,
           onComplete: () => {
-            requestAnimationFrame(() => {
+            cancelSettle()
+            settleFrame = requestAnimationFrame(() => {
+              settleFrame = 0
               if (generation === pass) settle()
             })
           },
         },
       )
+      animation = currentAnimation
 
       if (once) {
         stop()
@@ -140,12 +153,20 @@ export function reveal(element: HTMLElement, options: RevealOptions = {}): () =>
       // would replay an animation from visible to visible, which is no animation at all.
       return () => {
         pass++
-        animation.cancel()
+        cancelSettle()
+        currentAnimation.cancel()
+        if (animation === currentAnimation) animation = undefined
         hide()
       }
     },
     { amount, ...(margin ? { margin } : {}) },
   )
 
-  return stop
+  return () => {
+    pass++
+    stop()
+    cancelSettle()
+    animation?.cancel()
+    animation = undefined
+  }
 }
