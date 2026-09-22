@@ -36,13 +36,12 @@ export const TextBloom = forwardRef<HTMLElement, TextBloomProps>(function TextBl
   forwardedRef,
 ) {
   const ref = useRef<HTMLElement>(null)
-  const optionsRef = useRef({ voice, stagger, delay, duration, once, amount })
 
   useIsomorphicLayoutEffect(() => {
     const element = ref.current
     if (!element) return
-    return textBloom(element, optionsRef.current)
-  }, [])
+    return textBloom(element, { voice, stagger, delay, duration, once, amount })
+  }, [Tag, amount, by, children, delay, duration, once, stagger, voice])
 
   let cursor = 0
   return (
