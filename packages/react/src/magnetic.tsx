@@ -17,14 +17,13 @@ export const Magnetic = forwardRef<HTMLSpanElement, MagneticProps>(function Magn
 ) {
   const rootRef = useRef<HTMLSpanElement>(null)
   const targetRef = useRef<HTMLSpanElement>(null)
-  const optionsRef = useRef({ strength, maxDistance })
 
   useIsomorphicLayoutEffect(() => {
     const root = rootRef.current
     const target = targetRef.current
     if (!root || !target) return
-    return magnetic(root, target, optionsRef.current)
-  }, [])
+    return magnetic(root, target, { strength, maxDistance })
+  }, [maxDistance, strength])
 
   return (
     <span {...props} ref={composeRefs(rootRef, forwardedRef)} data-kida-magnetic="">

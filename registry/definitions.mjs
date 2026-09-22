@@ -23,6 +23,11 @@ export const registryDefinitions = [
         importReplacements: { '@kida-ui/motion': './motion/reveal.js' },
       },
       {
+        source: 'packages/react/src/compose-refs.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/compose-refs.ts',
+      },
+      {
         source: 'packages/react/src/use-isomorphic-layout-effect.ts',
         type: 'registry:hook',
         target: '@ui/kida/use-isomorphic-layout-effect.ts',

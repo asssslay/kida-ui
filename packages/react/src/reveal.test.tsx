@@ -1,4 +1,5 @@
-import { expect, test } from 'vitest'
+import { createRef } from 'react'
+import { expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 import { Reveal } from './reveal.js'
 
@@ -43,7 +44,7 @@ test('stays hidden until it is scrolled into view, then settles visible', async 
 })
 
 test('the pre-animation transform reflects the options', async () => {
-  await render(
+  const view = await render(
     <Offscreen>
       <Reveal x={-32} y={0} scale={0.9}>
         content
@@ -52,6 +53,41 @@ test('the pre-animation transform reflects the options', async () => {
   )
 
   expect(getComputedStyle(node()).transform).toBe('matrix(0.9, 0, 0, 0.9, -32, 0)')
+
+  await view.rerender(
+    <Offscreen>
+      <Reveal x={24} y={0} scale={0.9}>
+        content
+      </Reveal>
+    </Offscreen>,
+  )
+
+  expect(getComputedStyle(node()).transform).toBe('matrix(0.9, 0, 0, 0.9, 24, 0)')
+})
+
+test('forwards its ref and safe native attributes to the rendered element', async () => {
+  const ref = createRef<HTMLElement>()
+  const onClick = vi.fn()
+  await render(
+    <Reveal
+      as="section"
+      ref={ref}
+      id="featured-reveal"
+      aria-label="Featured content"
+      onClick={onClick}
+    >
+      content
+    </Reveal>,
+  )
+
+  const el = node()
+  expect(el.tagName).toBe('SECTION')
+  expect(el.id).toBe('featured-reveal')
+  expect(el.getAttribute('aria-label')).toBe('Featured content')
+  expect(ref.current).toBe(el)
+
+  el.click()
+  expect(onClick).toHaveBeenCalledOnce()
 })
 
 test('once: false re-hides on exit and animates again on re-entry', async () => {

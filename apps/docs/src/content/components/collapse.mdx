@@ -35,6 +35,9 @@ The copy-source command includes the required styles.
 | `className` | `string` | — | Applied to the collapsing root. |
 | `style` | `CSSProperties` | — | Applied to the collapsing root. |
 
+Safe div attributes, event handlers, and a forwarded `ref` are passed to the collapsing root. The
+ref becomes `null` after the closed panel finishes its exit animation and unmounts.
+
 ### CSS custom properties
 
 | Property | Default | Description |

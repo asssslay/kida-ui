@@ -53,6 +53,19 @@ multi-framework cost, not how users browse the library.
   intended design.
 - Public names describe the result (`TextBloom`), not the technique (`ClipPathSpanAnimation`).
 
+### Prop reactivity
+
+- Authored content, controlled state, native attributes, styles, and event handlers update on every
+  render without requiring a replacement `key`.
+- When a public option changes the behavior of an imperative controller, the adapter cleans up the
+  old controller and initializes a new one with the updated option.
+- Options that only affect rendered markup or CSS update through normal framework rendering and do
+  not restart an unrelated controller.
+- Structured values use semantic dependencies where practical. Recreating an equivalent tuple or
+  object during render must not restart motion solely because its reference changed.
+- A controller restart begins from its documented deterministic initial state and must not leave
+  listeners, observers, animation frames, or engine controls from the previous pass active.
+
 ## 4. Styling
 
 - Plain CSS and custom properties are the source of truth. Tailwind remains optional.

@@ -32,3 +32,28 @@ test('draws when scrolled into view', async () => {
   await expect.poll(() => element.dataset.state).toBe('active')
   expect(element.querySelector('path')?.getAnimations().length).toBeGreaterThan(0)
 })
+
+test('re-arms viewport behavior when its motion options change', async () => {
+  const view = await render(
+    <>
+      <div style={{ height: '150vh' }} />
+      <ScribbleHighlight once>Drawn again</ScribbleHighlight>
+      <div style={{ height: '150vh' }} />
+    </>,
+  )
+
+  root().scrollIntoView()
+  await expect.poll(() => root().dataset.state).toBe('active')
+
+  await view.rerender(
+    <>
+      <div style={{ height: '150vh' }} />
+      <ScribbleHighlight once={false}>Drawn again</ScribbleHighlight>
+      <div style={{ height: '150vh' }} />
+    </>,
+  )
+  await expect.poll(() => root().dataset.state).toBe('active')
+
+  window.scrollTo(0, 0)
+  await expect.poll(() => root().dataset.state).toBe('idle')
+})
