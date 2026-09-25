@@ -54,7 +54,7 @@ shrink cleanly to zero.
 ## Accessibility and input behavior
 
 Collapse preserves its children's semantics and focus behavior while open. When reduced motion is
-requested, the transition finishes almost immediately while still unmounting the panel and calling
+requested, the transition is skipped while still unmounting the panel and calling
 `onExitComplete`.
 
 ## Troubleshooting

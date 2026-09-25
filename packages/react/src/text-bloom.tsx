@@ -45,14 +45,8 @@ export const TextBloom = forwardRef<HTMLElement, TextBloomProps>(function TextBl
 
   let cursor = 0
   return (
-    <Tag
-      {...props}
-      ref={composeRefs(ref, forwardedRef)}
-      data-kida-text-bloom=""
-      data-state="idle"
-      aria-label={props['aria-label'] ?? children}
-    >
-      <span aria-hidden="true">
+    <Tag {...props} ref={composeRefs(ref, forwardedRef)} data-kida-text-bloom="" data-state="idle">
+      <span>
         {splitText(children, by).map((segment) => {
           const key = `${cursor}-${segment}`
           cursor += segment.length

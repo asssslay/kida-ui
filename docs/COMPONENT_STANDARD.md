@@ -98,8 +98,9 @@ multi-framework cost, not how users browse the library.
 - Hover behavior has a keyboard equivalent when it reveals information or performs an action.
 - Pointer interactions account for touch and coarse pointers; essential behavior never requires
   hover.
-- Animated text remains readable, selectable, copyable, and correctly announced. Decorative split
-  spans are hidden from assistive technology without duplicating the accessible text.
+- Animated text remains readable, selectable, copyable, and correctly announced. Split spans either
+  preserve one authored DOM text sequence or are hidden from assistive technology and replaced by
+  one valid accessible equivalent; they must not duplicate the announced text.
 - Focus order and visible focus are preserved. Animation must not move focus silently.
 - Meaningful controls use native elements before ARIA recreations.
 - Color and animation are not the only indicators of state.

@@ -78,3 +78,37 @@ test('ignores touch movement', async () => {
   await new Promise((resolve) => requestAnimationFrame(resolve))
   expect(getComputedStyle(target).transform).toBe('none')
 })
+
+test('uses updated motion options without retaining the previous controller', async () => {
+  const view = await render(
+    <Magnetic strength={1} maxDistance={20}>
+      <button type="button" style={{ width: 120, height: 48 }}>
+        Pull me
+      </button>
+    </Magnetic>,
+  )
+
+  await view.rerender(
+    <Magnetic strength={1} maxDistance={4}>
+      <button type="button" style={{ width: 120, height: 48 }}>
+        Pull me
+      </button>
+    </Magnetic>,
+  )
+
+  const { root, target } = parts()
+  const bounds = root.getBoundingClientRect()
+  root.dispatchEvent(new PointerEvent('pointerenter', { pointerType: 'mouse' }))
+  root.dispatchEvent(
+    new PointerEvent('pointermove', {
+      pointerType: 'mouse',
+      clientX: bounds.right + 100,
+      clientY: bounds.bottom + 100,
+    }),
+  )
+
+  await expect.poll(() => getComputedStyle(target).transform).not.toBe('none')
+  const transform = new DOMMatrix(getComputedStyle(target).transform)
+  expect(Math.abs(transform.m41)).toBeLessThanOrEqual(4)
+  expect(Math.abs(transform.m42)).toBeLessThanOrEqual(4)
+})

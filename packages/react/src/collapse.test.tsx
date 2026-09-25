@@ -59,6 +59,33 @@ test('stays mounted through the exit animation, then unmounts', async () => {
   expect(onExitComplete).toHaveBeenCalledTimes(1)
 })
 
+test('cancels a pending exit when reopened before the close animation finishes', async () => {
+  const onExitComplete = vi.fn()
+  const view = await render(
+    <Collapse open onExitComplete={onExitComplete}>
+      {CONTENT}
+    </Collapse>,
+  )
+  await expect.poll(() => node().getAnimations().length).toBe(0)
+
+  await view.rerender(
+    <Collapse open={false} onExitComplete={onExitComplete}>
+      {CONTENT}
+    </Collapse>,
+  )
+  expect(node().dataset.state).toBe('closed')
+
+  await view.rerender(
+    <Collapse open onExitComplete={onExitComplete}>
+      {CONTENT}
+    </Collapse>,
+  )
+  await expect.poll(() => node().getAnimations().length).toBe(0)
+  expect(node().dataset.state).toBe('open')
+  expect(node().getBoundingClientRect().height).toBe(40)
+  expect(onExitComplete).not.toHaveBeenCalled()
+})
+
 test('forwards native attributes, events, and its ref through the presence lifecycle', async () => {
   const ref = createRef<HTMLDivElement>()
   const onClick = vi.fn()

@@ -28,6 +28,12 @@ interface Frame {
   borderBox: boolean
 }
 
+const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
+
+function prefersReducedMotion() {
+  return typeof window !== 'undefined' && window.matchMedia?.(REDUCED_MOTION_QUERY).matches
+}
+
 /**
  * Height collapse with a real exit animation.
  *
@@ -49,6 +55,13 @@ export const Collapse = forwardRef<HTMLDivElement, CollapseProps>(function Colla
   const nodeRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const frameRef = useRef<Frame | null>(null)
+
+  useIsomorphicLayoutEffect(() => {
+    // A reduced-motion exit has no CSS animation to produce the animationend event that
+    // presence normally waits for. Complete the lifecycle synchronously instead of leaving
+    // an invisible closed node mounted indefinitely.
+    if (!open && prefersReducedMotion()) api.unmount()
+  }, [open])
 
   useIsomorphicLayoutEffect(() => {
     const node = nodeRef.current

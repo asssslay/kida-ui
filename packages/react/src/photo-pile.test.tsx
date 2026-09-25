@@ -77,3 +77,41 @@ test('brings a keyboard-focused photo to the front', async () => {
   items[0]?.focus()
   await expect.poll(() => Number(items[0]?.style.zIndex)).toBeGreaterThan(2)
 })
+
+test('rebinds interaction when photos are removed and reordered', async () => {
+  const view = await render(<PhotoPile photos={photos} />)
+  const reordered = [...photos].reverse()
+  await view.rerender(<PhotoPile photos={reordered} />)
+  expect(parts().items[0]?.getAttribute('aria-label')).toContain('Orange sky')
+
+  const updated = reordered.slice(0, 1)
+  await view.rerender(<PhotoPile photos={updated} />)
+
+  const items = [...document.querySelectorAll<HTMLButtonElement>('[data-kida-photo-item]')]
+  expect(items).toHaveLength(1)
+  const item = items[0]
+  const card = item?.querySelector<HTMLElement>('[data-kida-photo-card]')
+  if (!item || !card) throw new Error('Updated photo is not mounted')
+  expect(item.getAttribute('aria-label')).toContain('Orange sky')
+
+  item.dispatchEvent(
+    new PointerEvent('pointerdown', {
+      bubbles: true,
+      button: 0,
+      clientX: 20,
+      clientY: 20,
+      pointerId: 7,
+      pointerType: 'mouse',
+    }),
+  )
+  window.dispatchEvent(
+    new PointerEvent('pointermove', {
+      clientX: 50,
+      clientY: 40,
+      pointerId: 7,
+      pointerType: 'mouse',
+    }),
+  )
+  await expect.poll(() => getComputedStyle(card).transform).not.toBe('none')
+  window.dispatchEvent(new PointerEvent('pointerup', { pointerId: 7, pointerType: 'mouse' }))
+})

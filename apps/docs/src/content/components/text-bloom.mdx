@@ -52,9 +52,9 @@ Safe native attributes, `className`, `style`, and a forwarded `ref` are passed t
 
 ## Accessibility and input behavior
 
-The authored string remains the root's accessible label. Visual segments are hidden from assistive
-technology, preventing screen readers from announcing one word or character at a time. The visual
-text remains selectable and copyable.
+The animated segments remain in authored order as one DOM text sequence, without replacing the
+text with an ARIA label on a generic element. The same text is therefore available to assistive
+technology, selection, and copy operations without a duplicated accessible copy.
 
 Under reduced motion, every segment renders immediately at its settled position. The server output
 uses deterministic segments and keys, so hydration does not change the text structure.

@@ -46,6 +46,15 @@
   animation: none;
 }
 
+/* Presence checks computed animation styles before deciding whether to hold the node for an
+   exit. A 1ms reduced-motion animation can finish before that listener is attached, leaving the
+   closed node mounted forever. With no animation, presence removes it immediately. */
+@media (prefers-reduced-motion: reduce) {
+  [data-kida-collapse] {
+    animation: none;
+  }
+}
+
 /*
  * The root's vertical frame collapses with the content, because `height: 0` does not mean
  * "invisible": a root with a 1px border still renders a 2px box, and one with

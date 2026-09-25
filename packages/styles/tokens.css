@@ -27,9 +27,9 @@
 }
 
 /*
- * The single reduced-motion guard for every CSS-driven animation in the library.
- * Durations collapse to ~0 instead of being disabled, so `animationend` still fires
- * and presence-based unmounts (ADR D5) never hang.
+ * The shared reduced-motion guard for CSS-driven animation in the library.
+ * Durations collapse to ~0 by default. Components whose presence lifecycle cannot safely observe
+ * a 1ms animation, such as Collapse, disable it explicitly and complete presence in their adapter.
  */
 @media (prefers-reduced-motion: reduce) {
   :root {

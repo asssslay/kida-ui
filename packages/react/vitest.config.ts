@@ -29,6 +29,11 @@ export default defineConfig({
       headless: true,
       provider: playwright({ launchOptions: { channel } }),
       instances: [{ browser: 'chromium' }],
+      commands: {
+        setReducedMotion: async ({ page }, reduced: boolean) => {
+          await page.emulateMedia({ reducedMotion: reduced ? 'reduce' : 'no-preference' })
+        },
+      },
     },
   },
 })
