@@ -43,3 +43,26 @@ test('bursts on native clicks without swallowing the authored handler', async ()
     .poll(() => element.querySelector('[data-kida-sticker-layer] > span')?.getAnimations().length)
     .toBeGreaterThan(0)
 })
+
+test('updates deterministic layout props while keeping click behavior active', async () => {
+  const view = await render(
+    <StickerBurst count={3} seed={1} stickers={['A']}>
+      <button type="button">Celebrate</button>
+    </StickerBurst>,
+  )
+  const before = root().querySelector('span > span')?.getAttribute('style')
+
+  await view.rerender(
+    <StickerBurst count={5} seed={2} stickers={['B']}>
+      <button type="button">Celebrate</button>
+    </StickerBurst>,
+  )
+
+  const pieces = root().querySelectorAll('[data-kida-sticker-layer] > span')
+  expect(pieces).toHaveLength(5)
+  expect(pieces[0]?.textContent).toBe('B')
+  expect(pieces[0]?.getAttribute('style')).not.toBe(before)
+
+  root().querySelector('button')?.click()
+  expect(root().dataset.state).toBe('active')
+})

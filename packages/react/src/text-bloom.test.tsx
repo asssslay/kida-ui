@@ -19,14 +19,15 @@ function root() {
   return element
 }
 
-test('keeps one accessible label while rendering animated word segments', async () => {
+test('keeps its authored text accessible while rendering animated word segments', async () => {
   await render(
     <Offscreen>
       <TextBloom>Soft motion, clearly spoken.</TextBloom>
     </Offscreen>,
   )
 
-  expect(root().getAttribute('aria-label')).toBe('Soft motion, clearly spoken.')
+  expect(root().hasAttribute('aria-label')).toBe(false)
+  expect(root().querySelector('[aria-hidden="true"]')).toBe(null)
   expect(root().querySelectorAll('[data-kida-text-bloom-segment]')).toHaveLength(4)
   expect(root().textContent).toBe('Soft motion, clearly spoken.')
 })
@@ -54,12 +55,12 @@ test('blooms on viewport entry and settles without a transform', async () => {
 
 test('rebuilds the controller when the rendered text segments change', async () => {
   const view = await render(
-    <TextBloom duration={0.08} stagger={0}>
+    <TextBloom duration={1} stagger={0.1}>
       First words
     </TextBloom>,
   )
 
-  await expect.poll(() => root().dataset.state).toBe('settled')
+  await expect.poll(() => root().dataset.state).toBe('active')
 
   await view.rerender(
     <TextBloom by="character" voice="pop" duration={0.08} stagger={0}>
@@ -68,7 +69,7 @@ test('rebuilds the controller when the rendered text segments change', async () 
   )
 
   const element = root()
-  expect(element.getAttribute('aria-label')).toBe('New text')
+  expect(element.textContent).toBe('New text')
   expect(element.querySelectorAll('[data-kida-text-bloom-segment]')).toHaveLength(7)
   await expect.poll(() => element.dataset.state).toBe('settled')
 
