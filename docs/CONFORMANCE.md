@@ -23,6 +23,7 @@ Cross-component gates also verify:
 
 - React Strict Mode's setup-cleanup-setup lifecycle;
 - deterministic server markup and hydration without recoverable errors;
+- Reveal's default transform, single-entry behavior, and reduced-motion visibility before hydration;
 - zero serious automated axe violations in the representative showcase; and
 - real Chromium reduced-motion media emulation, including retained PhotoPile interaction and
   immediate Collapse removal.

@@ -1,5 +1,10 @@
 'use client'
 
+import {
+  type CollapseSizeObserver,
+  observeCollapseSize,
+  prefersReducedMotion,
+} from '@kida-ui/motion'
 import * as presence from '@zag-js/presence'
 import { normalizeProps, useMachine } from '@zag-js/react'
 import type { HTMLAttributes, ReactNode } from 'react'
@@ -13,25 +18,6 @@ export interface CollapseProps extends Omit<HTMLAttributes<HTMLDivElement>, 'chi
   children?: ReactNode
   /** Fires after the exit animation has finished and the node has been removed. */
   onExitComplete?: () => void
-}
-
-/**
- * The root's own vertical frame: the border widths and padding the consumer styled it
- * with. `height: 0` is not the same as invisible — a bordered root still renders that
- * much box — so the keyframes collapse these too, and they need real values to do it.
- */
-interface Frame {
-  paddingTop: number
-  paddingBottom: number
-  borderTopWidth: number
-  borderBottomWidth: number
-  borderBox: boolean
-}
-
-const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
-
-function prefersReducedMotion() {
-  return typeof window !== 'undefined' && window.matchMedia?.(REDUCED_MOTION_QUERY).matches
 }
 
 /**
@@ -54,7 +40,7 @@ export const Collapse = forwardRef<HTMLDivElement, CollapseProps>(function Colla
 
   const nodeRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
-  const frameRef = useRef<Frame | null>(null)
+  const sizeRef = useRef<CollapseSizeObserver | null>(null)
 
   useIsomorphicLayoutEffect(() => {
     // A reduced-motion exit has no CSS animation to produce the animationend event that
@@ -68,57 +54,16 @@ export const Collapse = forwardRef<HTMLDivElement, CollapseProps>(function Colla
     const content = contentRef.current
     if (!node || !content) return
 
-    const readFrame = (): Frame => {
-      // `getComputedStyle` reports whatever the keyframes are currently applying, and the
-      // frame is exactly what they drive. Read straight, an opening collapse would measure
-      // its own first keyframe — a zeroed border — and animate towards that instead of
-      // away from it, so the animation is suppressed across the read.
-      const restore = node.style.animationName
-      node.style.animationName = 'none'
-      const rootStyle = getComputedStyle(node)
-      const frame = {
-        paddingTop: Number.parseFloat(rootStyle.paddingTop),
-        paddingBottom: Number.parseFloat(rootStyle.paddingBottom),
-        borderTopWidth: Number.parseFloat(rootStyle.borderTopWidth),
-        borderBottomWidth: Number.parseFloat(rootStyle.borderBottomWidth),
-        borderBox: rootStyle.boxSizing === 'border-box',
-      }
-      node.style.animationName = restore
-      return frame
+    const size = observeCollapseSize(node, content)
+    sizeRef.current = size
+    return () => {
+      size.disconnect()
+      sizeRef.current = null
     }
+  }, [api.present])
 
-    const measure = () => {
-      // Refreshed only while nothing is in flight: suppressing a running animation to
-      // measure would restart it, and the frame cannot meaningfully change mid-collapse.
-      if (frameRef.current === null || node.getAnimations().length === 0) {
-        frameRef.current = readFrame()
-      }
-      const frame = frameRef.current
-
-      // The keyframes animate `height` on the root, so the value has to be expressed in
-      // whatever box the root's own `box-sizing` measures. Under the near-universal
-      // `border-box`, a root with a border or padding of its own would otherwise clip the
-      // content by exactly that much and then snap to its natural height when the
-      // animation ends. Measuring the content and adding the root's frame keeps the two in
-      // step whatever the consumer styles the root with.
-      let height = content.getBoundingClientRect().height
-      if (frame.borderBox) {
-        height +=
-          frame.paddingTop + frame.paddingBottom + frame.borderTopWidth + frame.borderBottomWidth
-      }
-
-      node.style.setProperty('--kida-collapse-height', `${height}px`)
-      // Handed to the keyframes, which cannot read the root's own frame themselves.
-      node.style.setProperty('--kida-collapse-padding-top', `${frame.paddingTop}px`)
-      node.style.setProperty('--kida-collapse-padding-bottom', `${frame.paddingBottom}px`)
-      node.style.setProperty('--kida-collapse-border-top-width', `${frame.borderTopWidth}px`)
-      node.style.setProperty('--kida-collapse-border-bottom-width', `${frame.borderBottomWidth}px`)
-    }
-    measure()
-
-    const observer = new ResizeObserver(measure)
-    observer.observe(content)
-    return () => observer.disconnect()
+  useIsomorphicLayoutEffect(() => {
+    sizeRef.current?.measure()
   })
 
   if (!api.present) return null

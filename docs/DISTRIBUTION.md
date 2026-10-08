@@ -42,9 +42,10 @@ second framework makes framework selection necessary.
 
 Copied components are owned by the consuming application, but they are not dependency-free.
 Each registry item includes the Kida source and CSS it needs and declares only public runtime
-packages. For example, copied `Reveal` includes its small motion helper and depends on the public
-`motion` package, while copied `Collapse` includes its CSS and depends on Zag presence. Copied
-source never requires an unpublished `@kida-ui/*` package.
+packages. For example, copied `Reveal` includes its small motion helper and reduced-motion
+stylesheet and depends on the public `motion` package, while copied `Collapse` includes its shared
+measurement helper and CSS and depends on Zag presence. Copied source never requires an
+unpublished `@kida-ui/*` package.
 
 ## Maintainer workflow
 

@@ -165,34 +165,50 @@ test('all components survive the Strict Mode setup-cleanup-setup cycle', async (
   error.mockRestore()
 })
 
-test('server markup is deterministic and hydrates without recoverable errors', async () => {
-  const first = renderToString(<Showcase />)
-  const second = renderToString(<Showcase />)
-  expect(second).toBe(first)
+test.each([false, true])(
+  'server markup remains accessible before hydration and hydrates without errors (reduced motion: %s)',
+  async (reduced) => {
+    await commands.setReducedMotion(reduced)
+    const first = renderToString(<Showcase />)
+    const second = renderToString(<Showcase />)
+    expect(second).toBe(first)
+    expect(first).not.toContain('undefined')
 
-  const container = document.createElement('div')
-  container.innerHTML = first
-  document.body.append(container)
-  const recoverableErrors: unknown[] = []
-  let root: ReturnType<typeof hydrateRoot> | undefined
-  const actEnvironment = globalThis as typeof globalThis & {
-    IS_REACT_ACT_ENVIRONMENT?: boolean
-  }
-  const previousActEnvironment = actEnvironment.IS_REACT_ACT_ENVIRONMENT
-  actEnvironment.IS_REACT_ACT_ENVIRONMENT = true
+    const container = document.createElement('div')
+    container.innerHTML = first
+    document.body.append(container)
+    const recoverableErrors: unknown[] = []
+    let root: ReturnType<typeof hydrateRoot> | undefined
+    const actEnvironment = globalThis as typeof globalThis & {
+      IS_REACT_ACT_ENVIRONMENT?: boolean
+    }
+    const previousActEnvironment = actEnvironment.IS_REACT_ACT_ENVIRONMENT
+    actEnvironment.IS_REACT_ACT_ENVIRONMENT = true
 
-  await act(async () => {
-    root = hydrateRoot(container, <Showcase />, {
-      onRecoverableError: (error) => recoverableErrors.push(error),
-    })
-    await new Promise((resolve) => requestAnimationFrame(resolve))
-  })
+    try {
+      // These checks run on server markup before mounting any imperative controllers. The CSS
+      // fallback must preserve reduced-motion content even if hydration never arrives.
+      const reveal = container.querySelector<HTMLElement>('[data-kida-reveal]')
+      if (!reveal) throw new Error('The server-rendered Reveal is missing')
+      const style = getComputedStyle(reveal)
+      expect(style.opacity).toBe(reduced ? '1' : '0')
+      expect(style.transform).toBe(reduced ? 'none' : 'matrix(1, 0, 0, 1, 0, 8)')
+      expect(style.willChange).toBe(reduced ? 'auto' : 'transform, opacity')
 
-  expect(recoverableErrors).toEqual([])
-  expect(container.querySelectorAll('[data-kida-photo-item]')).toHaveLength(2)
-  expect(container.querySelectorAll('[data-kida-sticker-layer] > span')).toHaveLength(8)
+      await act(async () => {
+        root = hydrateRoot(container, <Showcase />, {
+          onRecoverableError: (error) => recoverableErrors.push(error),
+        })
+        await new Promise((resolve) => requestAnimationFrame(resolve))
+      })
 
-  await act(async () => root?.unmount())
-  actEnvironment.IS_REACT_ACT_ENVIRONMENT = previousActEnvironment
-  container.remove()
-})
+      expect(recoverableErrors).toEqual([])
+      expect(container.querySelectorAll('[data-kida-photo-item]')).toHaveLength(2)
+      expect(container.querySelectorAll('[data-kida-sticker-layer] > span')).toHaveLength(8)
+    } finally {
+      await act(async () => root?.unmount())
+      actEnvironment.IS_REACT_ACT_ENVIRONMENT = previousActEnvironment
+      container.remove()
+    }
+  },
+)
