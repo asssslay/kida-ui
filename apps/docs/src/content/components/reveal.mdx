@@ -27,7 +27,8 @@ import RevealOptions from '../../demos/reveal-options.react.tsx'
 
 <QuickStart name="reveal" />
 
-The copied component does not need a stylesheet.
+The copy-source command includes the stylesheet that keeps server-rendered content visible under
+reduced motion before hydration. Package consumers must import `@kida-ui/styles/kida.css` once.
 
 ## Customization
 
@@ -66,7 +67,8 @@ underlying engine accepts.
 
 Reveal does not change the semantics or focus order of its content. Server-rendered output includes
 the starting visual state, so hydration does not flash visible content before the animation begins.
-Under `prefers-reduced-motion: reduce`, content renders immediately in its final, visible state.
+Under `prefers-reduced-motion: reduce`, the required stylesheet makes content visible before
+hydration, and the controller skips animation when it mounts.
 
 ## Troubleshooting
 

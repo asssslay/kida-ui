@@ -112,6 +112,34 @@ test('forwards native attributes, events, and its ref through the presence lifec
   expect(ref.current).toBe(null)
 })
 
+test('updates measured root styles while open and measures a fresh node after reopening', async () => {
+  const view = await render(
+    <Collapse open style={{ boxSizing: 'border-box', paddingTop: 10 }}>
+      {CONTENT}
+    </Collapse>,
+  )
+  const original = node()
+  expect(original.style.getPropertyValue('--kida-collapse-height')).toBe('50px')
+
+  await view.rerender(
+    <Collapse open style={{ boxSizing: 'border-box', paddingTop: 20 }}>
+      {CONTENT}
+    </Collapse>,
+  )
+  expect(node().style.getPropertyValue('--kida-collapse-height')).toBe('60px')
+
+  await view.rerender(<Collapse open={false}>{CONTENT}</Collapse>)
+  await expect.poll(query).toBe(null)
+  await view.rerender(
+    <Collapse open style={{ boxSizing: 'border-box', paddingTop: 15 }}>
+      {CONTENT}
+    </Collapse>,
+  )
+  expect(node()).not.toBe(original)
+  await expect.poll(() => node().getAnimations().length).toBe(0)
+  expect(node().style.getPropertyValue('--kida-collapse-height')).toBe('55px')
+})
+
 // `border-box` is what every CSS reset sets, but a bare page is `content-box`, and the
 // two disagree about what `height` even means. The measurement has to hold in both.
 test.each(['border-box', 'content-box'] as const)(

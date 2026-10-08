@@ -12,7 +12,7 @@ export const registryDefinitions = [
     package: {
       name: '@kida-ui/react',
       exportName: 'Reveal',
-      styleImports: [],
+      styleImports: ['@kida-ui/styles/kida.css'],
     },
     dependencies: ['motion'],
     files: [
@@ -20,6 +20,7 @@ export const registryDefinitions = [
         source: 'packages/react/src/reveal.tsx',
         type: 'registry:ui',
         target: '@ui/kida/reveal.tsx',
+        styleImport: './reveal.css',
         importReplacements: { '@kida-ui/motion': './motion/reveal.js' },
       },
       {
@@ -31,6 +32,11 @@ export const registryDefinitions = [
         source: 'packages/react/src/use-isomorphic-layout-effect.ts',
         type: 'registry:hook',
         target: '@ui/kida/use-isomorphic-layout-effect.ts',
+      },
+      {
+        source: 'packages/styles/components/reveal.css',
+        type: 'registry:ui',
+        target: '@ui/kida/reveal.css',
       },
       {
         source: 'packages/motion/src/reveal.ts',
@@ -61,6 +67,7 @@ export const registryDefinitions = [
         type: 'registry:ui',
         target: '@ui/kida/collapse.tsx',
         styleImport: './collapse.css',
+        importReplacements: { '@kida-ui/motion': './motion/collapse.js' },
       },
       {
         source: 'packages/react/src/compose-refs.ts',
@@ -71,6 +78,21 @@ export const registryDefinitions = [
         source: 'packages/react/src/use-isomorphic-layout-effect.ts',
         type: 'registry:hook',
         target: '@ui/kida/use-isomorphic-layout-effect.ts',
+      },
+      {
+        source: 'packages/motion/src/collapse-size.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/collapse-size.ts',
+      },
+      {
+        source: 'packages/motion/src/collapse.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/collapse.ts',
+      },
+      {
+        source: 'packages/motion/src/reduced-motion.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/reduced-motion.ts',
       },
       {
         source: 'packages/styles/components/collapse.css',

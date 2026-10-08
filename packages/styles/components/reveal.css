@@ -1,0 +1,11 @@
+/* Server markup has the initial inline state before any adapter has hydrated. */
+@media (prefers-reduced-motion: reduce) {
+  [data-kida-reveal] {
+    /* biome-ignore lint/complexity/noImportantStyles: overrides the SSR inline initial state */
+    opacity: 1 !important;
+    /* biome-ignore lint/complexity/noImportantStyles: overrides the SSR inline initial state */
+    transform: none !important;
+    /* biome-ignore lint/complexity/noImportantStyles: clears the SSR animation hint before hydration */
+    will-change: auto !important;
+  }
+}

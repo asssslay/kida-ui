@@ -22,6 +22,9 @@ const bundled = (() => {
 const channel = bundled && existsSync(bundled) ? undefined : 'chrome'
 
 export default defineConfig({
+  // Discover both renderers before tests start; late optimization can reload the hydration
+  // suite with a second React instance and trigger invalid-hook errors.
+  optimizeDeps: { include: ['react-dom/client', 'react-dom/server'] },
   test: {
     include: ['src/**/*.test.{ts,tsx}'],
     exclude: ['src/**/*.visual.test.{ts,tsx}', 'src/responsive.test.tsx'],

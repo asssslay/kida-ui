@@ -43,6 +43,25 @@ test('stays hidden until it is scrolled into view, then settles visible', async 
   expect(el.getBoundingClientRect().height).toBeGreaterThan(0)
 })
 
+test('uses the default transform and stays visible after its first viewport entry', async () => {
+  await render(
+    <Offscreen>
+      <Reveal>content</Reveal>
+    </Offscreen>,
+  )
+
+  const el = node()
+  expect(getComputedStyle(el).transform).toBe('matrix(1, 0, 0, 1, 0, 8)')
+  el.scrollIntoView()
+  await expect.poll(() => el.style.willChange).toBe('auto')
+
+  window.scrollTo(0, 0)
+  // Give IntersectionObserver time to deliver the viewport exit; once=true must not re-hide.
+  await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+  expect(getComputedStyle(el).opacity).toBe('1')
+  expect(getComputedStyle(el).transform).toBe('none')
+})
+
 test('the pre-animation transform reflects the options', async () => {
   const view = await render(
     <Offscreen>

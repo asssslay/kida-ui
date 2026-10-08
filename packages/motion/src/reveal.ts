@@ -57,7 +57,7 @@ const IDENTITY_TRANSFORM = 'translate3d(0px, 0px, 0) scale(1)'
 
 /** The pre-animation state. Exported so adapters can render it on the very first paint. */
 export function revealInitialStyle(options: RevealOptions = {}) {
-  const { y, x, scale } = { ...DEFAULTS, ...options }
+  const { y = DEFAULTS.y, x = DEFAULTS.x, scale = DEFAULTS.scale } = options
   return {
     opacity: 0,
     transform: `translate3d(${x}px, ${y}px, 0) scale(${scale})`,
@@ -75,7 +75,14 @@ export function revealInitialStyle(options: RevealOptions = {}) {
  * immediately — visible, unanimated. It is never left hidden.
  */
 export function reveal(element: HTMLElement, options: RevealOptions = {}): () => void {
-  const { duration, delay, ease, once, amount, margin } = { ...DEFAULTS, ...options }
+  const {
+    duration = DEFAULTS.duration,
+    delay = DEFAULTS.delay,
+    ease = DEFAULTS.ease,
+    once = DEFAULTS.once,
+    amount = DEFAULTS.amount,
+    margin,
+  } = options
 
   // `transform: none` rather than an identity matrix: any transform value other than
   // `none` makes the element a containing block for fixed-position descendants, which

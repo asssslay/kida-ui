@@ -4,6 +4,7 @@
  */
 @import "./tokens.css";
 @import "./keyframes.css";
+@import "./components/reveal.css";
 @import "./components/collapse.css";
 @import "./components/text-bloom.css";
 @import "./components/magnetic.css";
