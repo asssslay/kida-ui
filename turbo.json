@@ -12,11 +12,15 @@
         "package.json",
         "tsdown.config.ts",
         "tsconfig.json",
+        "tsconfig.build.json",
+        "vite.config.ts",
+        "scripts/**",
         "astro.config.mjs"
       ],
       "outputs": ["dist/**"]
     },
     "typecheck": { "dependsOn": ["^build"] },
+    "@kida-ui/vue#typecheck": { "dependsOn": ["build"] },
     "test": { "dependsOn": ["^build"] },
     "dev": { "cache": false, "persistent": true }
   }

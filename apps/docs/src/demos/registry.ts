@@ -1,13 +1,11 @@
 import type { CodeLang } from '../components/code-lang'
 
 /**
- * The frameworks a demo can be written in. React is the only adapter at v1 (ADR D2), so
- * this union has one member today — but every consumer already reads it as a set, which
- * is what keeps adding Svelte a new glob rather than a rewrite (ADR D10).
+ * Available demo frameworks. Vue is experimental and currently covers Reveal and Collapse.
  */
-export type Framework = 'react'
+export type Framework = 'react' | 'vue'
 
-export const FRAMEWORKS: readonly Framework[] = ['react']
+export const FRAMEWORKS: readonly Framework[] = ['react', 'vue']
 
 export interface DemoVariant {
   /** The demo file's own text, verbatim, for the code block beside it. */
@@ -48,6 +46,16 @@ for (const [path, source] of Object.entries(sources)) {
   const name = NAME.exec(path)?.[1]
   if (!name) continue
   demos.set(name, { ...demos.get(name), react: { source, lang: 'tsx' } })
+}
+
+const vueSources = import.meta.glob<string>('./*.vue', {
+  eager: true,
+  query: '?raw',
+  import: 'default',
+})
+for (const [path, source] of Object.entries(vueSources)) {
+  const name = path.slice(2, -'.vue'.length)
+  demos.set(name, { ...demos.get(name), vue: { source, lang: 'vue' } })
 }
 
 /**

@@ -2,6 +2,19 @@
 
 Status: **implemented for React components** (2026-09-03)
 
+Vue's first milestone is package-only and experimental: `@kida-ui/vue` exports Reveal and Collapse
+for Vue 3.5+, with the same `@kida-ui/styles/kida.css` import. npm publication is pending. Vue live
+demos and complete usage are at `/docs/vue`; the existing registry and shadcn commands remain
+React-only. Do not advertise Vue copied-source support until its installation and validation path
+is implemented.
+
+`pnpm check:vue-consumer` packs the Vue, motion, and styles packages, extracts them into an isolated
+temporary consumer outside the workspace, and checks the displayed Vue demos against the packed
+declarations. It validates bundler and NodeNext type resolution, production bundling with the real
+styles, and Node SSR without DOM globals. Only declared third-party runtime dependencies and the
+Vue host are linked from the locked installation; no Kida source aliases or workspace package
+links are available. Run it after the package builds; it is also part of `pnpm verify` and CI.
+
 Kida supports two consumption models from one implementation. The npm package is the stable,
 upgradeable option. The registry gives users the React component source when they need to own and
 edit it. Kida does not maintain a second hand-written copy of a component.

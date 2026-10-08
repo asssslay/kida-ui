@@ -1,6 +1,7 @@
 // @ts-check
 import mdx from '@astrojs/mdx'
 import react from '@astrojs/react'
+import vue from '@astrojs/vue'
 import { defineConfig } from 'astro/config'
 
 const lifecycle = process.env.npm_lifecycle_event
@@ -16,9 +17,8 @@ const site = process.env.SITE_URL ?? process.env.RENDER_EXTERNAL_URL ?? 'http://
 export default defineConfig({
   site,
 
-  // React is the only adapter at v1 (ADR D2). Astro was chosen precisely because adding
-  // `@astrojs/svelte` here later renders Svelte demos on the same page (ADR D10).
-  integrations: [react(), mdx()],
+  // Keep React transforms and renderer detection out of Vue SFCs and their virtual modules.
+  integrations: [react({ exclude: [/\.vue(?:\?|$)/] }), vue(), mdx()],
 
   // The docs consume built workspace packages, so their browser dependencies are one level
   // removed from the demo entrypoints. Keep development and production optimizer output separate:
@@ -29,6 +29,7 @@ export default defineConfig({
       include: [
         '@kida-ui/react > @zag-js/presence',
         '@kida-ui/react > @zag-js/react',
+        '@kida-ui/vue > @zag-js/vue',
         '@kida-ui/motion > motion',
       ],
     },

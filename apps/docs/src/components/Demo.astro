@@ -1,10 +1,11 @@
 ---
-import { getDemo } from '../demos/registry'
+import { type Framework, getDemo } from '../demos/registry'
 import CodeBlock from './CodeBlock.astro'
 
 interface Props {
-  /** Basename of a file in `src/demos`, without the `.react.tsx` suffix. */
+  /** Basename of a file in `src/demos`, without its framework suffix or extension. */
   name: string
+  framework?: Framework
   /** Shown above the stage. Defaults to the demo's name. */
   title?: string
   /** Render only the live stage, for marketing surfaces where source would distract. */
@@ -13,14 +14,14 @@ interface Props {
   hideSource?: boolean
 }
 
-const { name, title, previewOnly = false, hideSource = false } = Astro.props
+const { name, title, framework = 'react', previewOnly = false, hideSource = false } = Astro.props
 
 // Throws on an unknown name, so a typo fails the build instead of shipping a code block
 // that belongs to nothing.
 const demo = getDemo(name)
 
-const react = demo.react
-if (!react) throw new Error(`Demo "${name}" has no React variant.`)
+const variant = demo[framework]
+if (!variant) throw new Error(`Demo "${name}" has no ${framework} variant.`)
 ---
 
 <figure class="demo" data-demo={name} data-preview-only={previewOnly ? '' : undefined}>
@@ -30,5 +31,5 @@ if (!react) throw new Error(`Demo "${name}" has no React variant.`)
     <slot />
   </div>
 
-  {!previewOnly && !hideSource && <CodeBlock code={react.source} lang={react.lang} />}
+  {!previewOnly && !hideSource && <CodeBlock code={variant.source} lang={variant.lang} />}
 </figure>

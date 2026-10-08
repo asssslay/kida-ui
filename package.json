@@ -17,8 +17,10 @@
     "registry:check": "node scripts/build-registry.mjs --check",
     "registry:check-copy": "node scripts/check-copy-source.mjs",
     "docs:check-examples": "node scripts/check-doc-examples.mjs",
+    "docs:check-dev": "node scripts/check-docs-dev.mjs",
     "gate:agnostic": "node scripts/check-framework-deps.mjs",
-    "verify": "pnpm lint && pnpm registry:check && pnpm registry:check-copy && pnpm docs:check-examples && pnpm typecheck && pnpm test && pnpm build && pnpm gate:agnostic",
+    "check:vue-consumer": "pnpm --filter @kida-ui/vue check:consumer",
+    "verify": "pnpm lint && pnpm registry:check && pnpm registry:check-copy && pnpm docs:check-examples && pnpm typecheck && pnpm test && pnpm build && pnpm check:vue-consumer && pnpm docs:check-dev && pnpm gate:agnostic",
     "changeset": "changeset",
     "release": "turbo run build && changeset publish"
   },

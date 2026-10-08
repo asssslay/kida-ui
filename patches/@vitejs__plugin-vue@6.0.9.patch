@@ -1,0 +1,15 @@
+diff --git a/dist/index.mjs b/dist/index.mjs
+index b7653bc26d08486fc1e880ccb14aa889b7ea1784..fb2b70b4a0bbeeef9f8f2f35d625a063572e254f 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -1434,6 +1434,10 @@ async function transformMain(code, filename, options, pluginContext, ssr, custom
+ 		if (transformWithOxc) {
+ 			const { code, map } = await transformWithOxc(resolvedCode, filename, {
+ 				...options.devServer?.config.oxc,
++				jsx: {
++					...typeof options.devServer?.config.oxc?.jsx === "object" ? options.devServer.config.oxc.jsx : {},
++					refresh: false
++				},
+ 				lang: "ts",
+ 				sourcemap: options.sourceMap
+ 			}, resolvedMap);
