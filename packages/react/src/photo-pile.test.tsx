@@ -34,6 +34,47 @@ test('renders an accessible group of draggable photos', async () => {
   expect(root.querySelector('img')?.getAttribute('draggable')).toBe('false')
 })
 
+test('anchors its positioned cards to the pile instead of the page', async () => {
+  await render(
+    <div style={{ paddingTop: 240 }}>
+      <PhotoPile photos={photos} />
+    </div>,
+  )
+
+  const { root, items } = parts()
+  const item = items[0]
+  if (!item) throw new Error('Photo is not mounted')
+  expect(item.getBoundingClientRect().top).toBeGreaterThan(root.getBoundingClientRect().top - 48)
+})
+
+test.each([
+  { width: 480, height: 320 },
+  { width: 320, height: 240 },
+])('centers cards in a percentage-height preview at $width px', async ({ width, height }) => {
+  await render(
+    <div style={{ paddingTop: 240 }}>
+      <div style={{ display: 'grid', placeItems: 'center', width, height, overflow: 'hidden' }}>
+        <PhotoPile photos={photos} style={{ width: '100%', height: '100%', minHeight: 0 }} />
+      </div>
+    </div>,
+  )
+
+  const { root, items } = parts()
+  const pile = root.getBoundingClientRect()
+  const stage = root.querySelector('[data-kida-photo-stage]')?.getBoundingClientRect()
+  expect(pile.height).toBeCloseTo(height, 1)
+  expect(stage?.height).toBeCloseTo(pile.height, 1)
+
+  for (const item of items) {
+    const bounds = item.getBoundingClientRect()
+    const style = getComputedStyle(item)
+    const x = Number.parseFloat(style.getPropertyValue('--kida-photo-x'))
+    const y = Number.parseFloat(style.getPropertyValue('--kida-photo-y'))
+    expect(bounds.left + bounds.width / 2).toBeCloseTo(pile.left + pile.width / 2 + x, 1)
+    expect(bounds.top + bounds.height / 2).toBeCloseTo(pile.top + pile.height / 2 + y, 1)
+  }
+})
+
 test('drags the active photo directly and springs it home', async () => {
   await render(<PhotoPile photos={photos} />)
 

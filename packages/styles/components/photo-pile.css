@@ -15,6 +15,17 @@
   isolation: isolate;
 }
 
+/* Chromium does not reliably use a fieldset itself as the containing block for absolutely
+   positioned children. A normal-flow stage keeps every card anchored to the pile wherever the
+   fieldset appears on the page. */
+[data-kida-photo-stage] {
+  position: relative;
+  display: block;
+  /* Fill explicitly sized previews as well as the pile's default minimum height. */
+  height: 100%;
+  min-height: inherit;
+}
+
 [data-kida-photo-item] {
   position: absolute;
   top: 50%;
