@@ -99,10 +99,11 @@ afterEach(async () => {
   await page.viewport(1280, 720)
 })
 
-test('matches the mobile component gallery', async () => {
-  await prepare(390, 844)
+test.each(['photo', 'motion', 'collapse', 'highlights', 'interactions'])(
+  'matches the mobile %s component',
+  async (name) => {
+    await prepare(390, 844)
 
-  for (const name of ['photo', 'motion', 'collapse', 'highlights', 'interactions']) {
     const element = document.querySelector<HTMLElement>(`[data-testid="visual-${name}"]`)
     if (!element) throw new Error(`Missing visual fixture: ${name}`)
     element.scrollIntoView({ block: 'center' })
@@ -110,8 +111,8 @@ test('matches the mobile component gallery', async () => {
     await expect
       .element(page.getByTestId(`visual-${name}`))
       .toMatchScreenshot(`component-mobile-${name}`)
-  }
-})
+  },
+)
 
 test('matches the desktop component gallery', async () => {
   await prepare(1280, 900)

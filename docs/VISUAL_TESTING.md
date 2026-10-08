@@ -43,8 +43,11 @@ confirm that the change is intended, and describe it in the pull request. CI upl
 the `visual-test-differences` artifact for 14 days.
 
 The desktop gallery and mobile motion references were reviewed against the Ubuntu output from
-[CI run 37760361477](https://github.com/asssslay/kida-ui/actions/runs/37760361477) when establishing
-the Linux baselines; the initial macOS captures differed in text rendering and desktop line wrapping.
+[CI run 37760361477](https://github.com/asssslay/kida-ui/actions/runs/37760361477), and the mobile
+Collapse reference against [CI run 37761097249](https://github.com/asssslay/kida-ui/actions/runs/37761097249),
+when establishing the Linux baselines. The initial macOS captures differed in text rendering and
+desktop line wrapping. Mobile screenshots run as separate tests so one mismatch cannot hide the
+remaining comparisons and their artifacts.
 
 ## Scope
 
