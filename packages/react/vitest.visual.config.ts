@@ -13,6 +13,15 @@ const bundled = (() => {
 })()
 const channel = bundled && existsSync(bundled) ? undefined : 'chrome'
 
+const updatingSnapshots = process.argv.some(
+  (argument) => argument === '-u' || argument === '--update' || argument.startsWith('--update='),
+)
+if (updatingSnapshots && process.platform !== 'linux') {
+  throw new Error(
+    'Visual baselines must be updated in the canonical Ubuntu 24.04 / bundled Chromium environment. See docs/VISUAL_TESTING.md.',
+  )
+}
+
 export default defineConfig({
   test: {
     include: ['src/**/*.visual.test.{ts,tsx}', 'src/responsive.test.tsx'],
@@ -39,8 +48,8 @@ export default defineConfig({
             caret: 'hide',
             scale: 'css',
           },
-          // CI on pinned Ubuntu is authoritative. Omitting the host platform keeps local runs
-          // useful for review instead of creating a second baseline set for every workstation.
+          // These shared references are rendered on Ubuntu. Other hosts may produce text
+          // differences; the update guard above prevents replacing the CI references locally.
           resolveScreenshotPath: ({ arg, browserName, ext, root, testFileName }) =>
             resolve(root, 'src/__visual_snapshots__', testFileName, `${arg}-${browserName}${ext}`),
         },

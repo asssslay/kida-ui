@@ -18,7 +18,10 @@ interruption behavior.
   separately so every state remains readable without scaling a tall page
 
 CI is authoritative. Local runs are useful for inspecting a change, but approved images should only
-be replaced after comparing them with the Linux CI output.
+be replaced after comparing them with the Linux CI output. macOS and Windows can differ in text
+rasterization and font metrics even with the same bundled font, so a local screenshot mismatch does
+not establish a Linux regression. Snapshot updates on non-Linux hosts are rejected to prevent
+overwriting the shared CI references with images from another renderer.
 
 ## Commands
 
@@ -28,7 +31,8 @@ Run the checked-in baselines:
 pnpm --filter @kida-ui/react test:visual
 ```
 
-Intentionally replace them:
+Intentionally replace them in the canonical Ubuntu 24.04 environment, after installing the locked
+dependencies and bundled Chromium:
 
 ```sh
 pnpm --filter @kida-ui/react test:visual:update
@@ -37,6 +41,10 @@ pnpm --filter @kida-ui/react test:visual:update
 Never update screenshots merely to make CI green. Review the expected, actual, and diff images,
 confirm that the change is intended, and describe it in the pull request. CI uploads differences as
 the `visual-test-differences` artifact for 14 days.
+
+The desktop gallery and mobile motion references were reviewed against the Ubuntu output from
+[CI run 37760361477](https://github.com/asssslay/kida-ui/actions/runs/37760361477) when establishing
+the Linux baselines; the initial macOS captures differed in text rendering and desktop line wrapping.
 
 ## Scope
 
