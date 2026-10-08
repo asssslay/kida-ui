@@ -7,7 +7,8 @@ on:
 
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    # This image is also the canonical renderer for checked-in visual baselines.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v4
@@ -29,6 +30,16 @@ jobs:
         run: pnpm docs:check-examples
       - run: pnpm typecheck
       - run: pnpm test
+      - name: Responsive visual baselines
+        run: pnpm --filter @kida-ui/react test:visual
+      - name: Upload visual differences
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-test-differences
+          path: packages/react/.vitest-attachments/visual
+          if-no-files-found: ignore
+          retention-days: 14
       - run: pnpm build
       - name: ADR D3a — framework-free core
         run: pnpm gate:agnostic

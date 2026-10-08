@@ -24,7 +24,9 @@
     "build": "tsdown",
     "dev": "tsdown --watch",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:visual": "vitest run --config vitest.visual.config.ts",
+    "test:visual:update": "vitest run --config vitest.visual.config.ts --update"
   },
   "dependencies": {
     "@kida-ui/motion": "workspace:*",
@@ -36,6 +38,7 @@
     "react-dom": "^18.0.0 || ^19.0.0"
   },
   "devDependencies": {
+    "@fontsource-variable/instrument-sans": "5.3.0",
     "@kida-ui/styles": "workspace:*",
     "@types/node": "^26.4.0",
     "@types/react": "^19.2.0",

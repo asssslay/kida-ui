@@ -24,6 +24,7 @@ const channel = bundled && existsSync(bundled) ? undefined : 'chrome'
 export default defineConfig({
   test: {
     include: ['src/**/*.test.{ts,tsx}'],
+    exclude: ['src/**/*.visual.test.{ts,tsx}', 'src/responsive.test.tsx'],
     browser: {
       enabled: true,
       headless: true,

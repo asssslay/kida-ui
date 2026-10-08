@@ -27,23 +27,23 @@ Cross-component gates also verify:
 - real Chromium reduced-motion media emulation, including retained PhotoPile interaction and
   immediate Collapse removal.
 
-Run the evidence with `pnpm --filter @kida-ui/react test`. The repository-wide release candidate
-gate remains `pnpm verify` followed by `pnpm -r --filter './packages/*' exec publint`.
+Responsive and visual evidence is defined in `VISUAL_TESTING.md`. It adds mobile and desktop
+geometry checks, deterministic settled-state screenshots for all seven components, controlled
+light/dark surfaces, and a color-contrast-enabled axe pass.
+
+Run the behavioral evidence with `pnpm --filter @kida-ui/react test` and the responsive/visual
+evidence with `pnpm --filter @kida-ui/react test:visual`. The repository-wide release candidate gate
+remains `pnpm verify` followed by `pnpm -r --filter './packages/*' exec publint`.
 
 ## Still required before a public alpha
 
 The following work is deliberately not represented as complete:
 
-1. Establish a pinned CI browser, operating system, fonts, viewport, and screenshot update policy;
-   then add visual baselines for settled signature states. Cross-machine screenshots are not a
-   useful gate until this environment is fixed.
-2. Add explicit narrow and wide viewport checks for PhotoPile and Collapse. Their current responsive
-   CSS is exercised by the docs, but its geometry is not yet asserted by tests.
-3. Run manual screen-reader checks on at least VoiceOver/Safari and NVDA/Chrome. Axe guards markup
+1. Run manual screen-reader checks on at least VoiceOver/Safari and NVDA/Chrome. Axe guards markup
    rules; it cannot prove announcement quality.
-4. Run real touch-device smoke tests for PhotoPile and coarse-pointer behavior. Synthetic pointer
+2. Run real touch-device smoke tests for PhotoPile and coarse-pointer behavior. Synthetic pointer
    coverage does not validate browser gesture arbitration.
-5. Expand the browser matrix beyond Chromium once CI ownership and expected support targets are
+3. Expand the browser matrix beyond Chromium once CI ownership and expected support targets are
    decided.
 
 Any failure found by those checks should be fixed on a narrowly named `fix/<component>-<problem>`
