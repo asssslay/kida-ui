@@ -62,30 +62,32 @@ export const PhotoPile = forwardRef<HTMLFieldSetElement, PhotoPileProps>(functio
       aria-label={ariaLabel ?? 'Draggable photo pile'}
       data-kida-photo-pile=""
     >
-      {photos.map((photo, index) => {
-        const fallback = POSITIONS[index % POSITIONS.length] ?? POSITIONS[0]
-        const label = photo.alt || `Photo ${index + 1}`
-        const style: ItemStyle = {
-          '--kida-photo-x': `${(photo.x ?? fallback.x) * spread}px`,
-          '--kida-photo-y': `${(photo.y ?? fallback.y) * spread}px`,
-          '--kida-photo-rotation': `${photo.rotation ?? fallback.rotation}deg`,
-          zIndex: index + 1,
-        }
+      <span data-kida-photo-stage="">
+        {photos.map((photo, index) => {
+          const fallback = POSITIONS[index % POSITIONS.length] ?? POSITIONS[0]
+          const label = photo.alt || `Photo ${index + 1}`
+          const style: ItemStyle = {
+            '--kida-photo-x': `${(photo.x ?? fallback.x) * spread}px`,
+            '--kida-photo-y': `${(photo.y ?? fallback.y) * spread}px`,
+            '--kida-photo-rotation': `${photo.rotation ?? fallback.rotation}deg`,
+            zIndex: index + 1,
+          }
 
-        return (
-          <button
-            key={photo.id}
-            type="button"
-            aria-label={`Bring ${label} to front and drag`}
-            data-kida-photo-item=""
-            style={style}
-          >
-            <span data-kida-photo-card="">
-              <img {...photo.imageProps} src={photo.src} alt={photo.alt} draggable={false} />
-            </span>
-          </button>
-        )
-      })}
+          return (
+            <button
+              key={photo.id}
+              type="button"
+              aria-label={`Bring ${label} to front and drag`}
+              data-kida-photo-item=""
+              style={style}
+            >
+              <span data-kida-photo-card="">
+                <img {...photo.imageProps} src={photo.src} alt={photo.alt} draggable={false} />
+              </span>
+            </button>
+          )
+        })}
+      </span>
     </fieldset>
   )
 })
