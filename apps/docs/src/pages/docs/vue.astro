@@ -1,0 +1,40 @@
+---
+import CodeBlock from '../../components/CodeBlock.astro'
+import Demo from '../../components/Demo.astro'
+import CollapseBasic from '../../demos/collapse-basic.vue'
+import RevealBasic from '../../demos/reveal-basic.vue'
+import DocsLayout from '../../layouts/DocsLayout.astro'
+
+const headings = [
+  { depth: 2, slug: 'installation', text: 'Installation' },
+  { depth: 2, slug: 'reveal', text: 'Reveal' },
+  { depth: 2, slug: 'collapse', text: 'Collapse' },
+  { depth: 2, slug: 'support', text: 'Support and rendering' },
+]
+const stylesImport = "import '@kida-ui/styles/kida.css'"
+---
+
+<DocsLayout title="Vue (experimental)" description="Reveal and Collapse for Vue 3.5, using Kida's shared motion and styles." currentPath="/docs/vue" headings={headings}>
+  <p>Vue support currently includes Reveal and Collapse. The other five components remain available in React.</p>
+  <h2 id="installation">Installation</h2>
+  <p>The Vue package is available in this workspace. npm publication is pending; after release, install the adapter and shared styles:</p>
+  <CodeBlock code="pnpm add @kida-ui/vue @kida-ui/styles" lang="bash" />
+  <p>Import the styles once in your application entry:</p>
+  <CodeBlock code={stylesImport} lang="ts" />
+  <p>Vue 3.5 or later in the Vue 3 series is required. The existing shadcn registry installs React components; Vue copied-source installation is not yet available.</p>
+  <h2 id="reveal">Reveal</h2>
+  <Demo name="reveal-basic" framework="vue" title="Vue Reveal">
+    <RevealBasic client:visible={{ rootMargin: '200px' }} />
+  </Demo>
+  <p>Use the default slot for content and native <code>class</code>, <code>style</code>, attributes, and events on the root. Motion options and defaults match <a href="/docs/reveal">Reveal's API</a>. Bind Boolean options explicitly, such as <code>:once="false"</code>. The <code>as</code> prop accepts an HTML tag name.</p>
+  <h2 id="collapse">Collapse</h2>
+  <Demo name="collapse-basic" framework="vue" title="Vue Collapse">
+    <CollapseBasic client:visible />
+  </Demo>
+  <p>Control visibility with <code>:open</code> and listen to <code>@exit-complete</code>. The event fires after the exit completes and presence removes the panel. Use the default slot for content. The CSS custom properties match <a href="/docs/collapse">Collapse's API</a>.</p>
+  <p>Place visual padding and borders on the inner content so the collapsing root can shrink to zero.</p>
+  <h2 id="support">Support and rendering</h2>
+  <p>Both components render deterministic server HTML and hydrate on the client. Under reduced motion, Reveal's shared stylesheet keeps content visible before hydration and Collapse exits immediately.</p>
+  <p>Vue component refs expose an <code>element</code> property containing the DOM root. For Collapse it becomes <code>null</code> after an exit. Changing motion options replaces Reveal's controller; changes to slot content or an equivalent easing tuple preserve its current animation.</p>
+  <p>The milestone is experimental. Chromium browser behavior, Node SSR, hydration, mobile and desktop layout, accessibility rules, and packed-package consumption are checked. Manual screen-reader and touch checks and a wider browser matrix remain release work.</p>
+</DocsLayout>

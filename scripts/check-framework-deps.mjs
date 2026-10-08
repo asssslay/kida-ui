@@ -25,6 +25,7 @@ const FRAMEWORK_PATTERNS = [
   /^@zag-js\/(react|vue|svelte|solid)$/,
   /^framer-motion$/, // the React-bound build of motion — ADR D3
   /^motion\/react/,
+  /^motion-v(\/|$)/,
 ]
 
 const isFramework = (name) => FRAMEWORK_PATTERNS.some((re) => re.test(name))
@@ -53,6 +54,10 @@ for (const pkgDir of AGNOSTIC) {
 
   // Source and build output must not import a framework either — a devDependency can leak.
   for (const file of walk(abs)) {
+    if (/\.(vue|svelte)$/.test(file)) {
+      violations.push(`${relative(root, file)}: framework component in an agnostic package`)
+      continue
+    }
     if (!/\.(m?[jt]sx?)$/.test(file) || file.endsWith('.test.ts')) continue
     const code = readFileSync(file, 'utf8')
     for (const match of code.matchAll(/from\s+['"]([^'"]+)['"]|import\(['"]([^'"]+)['"]\)/g)) {

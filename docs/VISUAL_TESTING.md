@@ -52,6 +52,12 @@ tests so one mismatch cannot hide the remaining comparisons and their artifacts.
 
 ## Scope
 
+The experimental Vue milestone also compares Reveal and Collapse against the built React adapter
+in the same Chromium session at both viewport widths. These settled reduced-motion captures use
+fixed, identical content and integer geometry; exact decoded pixel equality is required. The comparison has
+no stored baselines to update. Run it with `pnpm --filter @kida-ui/vue test`. The React Linux
+baselines remain the independent styling regression gate.
+
 The mobile and desktop galleries cover all seven components in deterministic settled states, on
 controlled light and dark surfaces. The same visual project also runs axe with color contrast
 enabled. Transient animation frames are intentionally excluded because frame timing is not a stable

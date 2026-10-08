@@ -1,0 +1,60 @@
+{
+  "name": "@kida-ui/vue",
+  "version": "0.0.0",
+  "description": "Experimental Vue 3 adapters for Kida UI Reveal and Collapse.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "vite build && vue-tsc -p tsconfig.build.json && node scripts/finalize-types.mjs",
+    "dev": "pnpm build && vite build --watch --emptyOutDir false",
+    "typecheck": "vue-tsc --noEmit",
+    "test": "pnpm build && vitest run --config vitest.ssr.config.ts && vitest run",
+    "check:consumer": "node ../../scripts/check-vue-consumer.mjs"
+  },
+  "dependencies": {
+    "@kida-ui/motion": "workspace:*",
+    "@zag-js/presence": "1.43.3",
+    "@zag-js/vue": "1.43.3"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "@kida-ui/react": "workspace:*",
+    "@kida-ui/styles": "workspace:*",
+    "@types/node": "^26.4.0",
+    "@types/pngjs": "6.0.5",
+    "@types/react": "19.2.0",
+    "@types/react-dom": "19.2.0",
+    "@vitejs/plugin-vue": "6.0.9",
+    "@vitest/browser-playwright": "4.1.11",
+    "@vue/server-renderer": "3.5.43",
+    "axe-core": "^4.13.0",
+    "playwright": "^1.62.1",
+    "pngjs": "7.0.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "typescript": "6.0.3",
+    "vite": "8.2.2",
+    "vitest": "4.1.11",
+    "vitest-browser-vue": "3.1.0",
+    "vue": "3.5.43",
+    "vue-tsc": "3.3.12"
+  }
+}

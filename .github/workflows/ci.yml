@@ -17,7 +17,7 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      # The React components are tested in a real browser — layout, IntersectionObserver
+      # The React and Vue components are tested in a real browser — layout, IntersectionObserver
       # and CSS animations have no meaningful jsdom equivalent.
       - name: Install Chromium for the browser tests
         run: pnpm --filter @kida-ui/react exec playwright install --with-deps chromium
@@ -37,10 +37,16 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: visual-test-differences
-          path: packages/react/.vitest-attachments/visual
+          path: |
+            packages/react/.vitest-attachments/visual
+            packages/vue/.vitest-attachments/parity
           if-no-files-found: ignore
           retention-days: 14
       - run: pnpm build
+      - name: Packed Vue packages work in an isolated consumer
+        run: pnpm check:vue-consumer
+      - name: React and Vue documentation work in development
+        run: pnpm docs:check-dev
       - name: ADR D3a — framework-free core
         run: pnpm gate:agnostic
       - name: Package manifests are publishable

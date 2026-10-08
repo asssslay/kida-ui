@@ -36,6 +36,32 @@ Run the behavioral evidence with `pnpm --filter @kida-ui/react test` and the res
 evidence with `pnpm --filter @kida-ui/react test:visual`. The repository-wide release candidate gate
 remains `pnpm verify` followed by `pnpm -r --filter './packages/*' exec publint`.
 
+## Experimental Vue milestone
+
+`@kida-ui/vue` currently exports only Reveal and Collapse. It uses the same motion options,
+measurement helper, CSS variables, and data attributes as React, with Vue default slots, native
+attributes/events, `@exit-complete`, and component refs exposing `element`.
+
+`pnpm --filter @kida-ui/vue test` builds the package before testing its public exports. Node tests
+check deterministic server rendering without browser globals. Chromium tests cover viewport entry,
+repetition, reactive options and root replacement, equivalent easing tuples, native events and refs,
+resize measurement, enter/exit and reversal, reduced motion, and controller/observer cleanup. They
+hydrate actual Node-rendered markup for both open and closed states and compare settled React/Vue
+pixels at mobile and desktop widths in the same browser. Axe includes color contrast on a controlled
+surface. Screenshot parity compares both adapters at runtime, so it creates no host-specific
+reference images and does not replace the existing authoritative Linux React baselines.
+
+The packed-consumer check in `DISTRIBUTION.md` verifies the displayed demos, production bundle,
+declaration resolution, and server imports. `/docs/vue` supplies the live examples and API notes.
+This is an experimental milestone, not full seven-component or public-release conformance.
+
+`pnpm docs:check-dev` starts an isolated Astro dev server and checks Vue/React docs and the home
+page, including the Vue client module. A version-pinned pnpm patch disables React Refresh only in
+plugin-vue's TypeScript SFC transform, avoiding upstream
+[vite-plugin-vue issue #798](https://github.com/vitejs/vite-plugin-vue/issues/798) while preserving
+React Refresh elsewhere. Remove the patch after upgrading to a release with this fix and passing
+the development smoke check.
+
 ## Still required before a public alpha
 
 The following work is deliberately not represented as complete:
