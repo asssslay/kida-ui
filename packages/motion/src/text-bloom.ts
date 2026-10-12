@@ -32,7 +32,7 @@ export function textBloomInitialStyle(voice: TextBloomVoice = 'gentle') {
     opacity: 0,
     transform:
       voice === 'pop'
-        ? 'translate3d(0, 14px, 0) scale(0.9)'
+        ? 'translate3d(0, 18px, 0) scale(0.86)'
         : 'translate3d(0, 10px, 0) scale(0.98)',
     transformOrigin: '50% 80%',
     willChange: 'transform, opacity',
@@ -90,11 +90,12 @@ export function textBloom(element: HTMLElement, options: TextBloomOptions = {}):
       controls = animate(
         segments,
         {
-          opacity: [0, 1, 1],
+          opacity: pop ? [0, 1, 1, 1] : [0, 1, 1],
           transform: pop
             ? [
-                'translate3d(0, 14px, 0) scale(0.9)',
-                'translate3d(0, -2px, 0) scale(1.035)',
+                'translate3d(0, 18px, 0) scale(0.86)',
+                'translate3d(0, -4px, 0) scale(1.08)',
+                'translate3d(0, 1px, 0) scale(0.985)',
                 'translate3d(0, 0, 0) scale(1)',
               ]
             : [
@@ -106,8 +107,15 @@ export function textBloom(element: HTMLElement, options: TextBloomOptions = {}):
         {
           duration: settings.duration,
           delay: stagger(settings.stagger, { startDelay: settings.delay }),
-          ease: [0.16, 1, 0.3, 1],
-          times: [0, 0.72, 1],
+          // Pop reaches its visible overshoot early, then recoils once before settling.
+          ease: pop
+            ? [
+                [0.16, 1, 0.3, 1],
+                [0.4, 0, 0.6, 1],
+                [0.16, 1, 0.3, 1],
+              ]
+            : [0.16, 1, 0.3, 1],
+          times: pop ? [0, 0.45, 0.72, 1] : [0, 0.72, 1],
         },
       )
 

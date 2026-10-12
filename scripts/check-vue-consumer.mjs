@@ -21,6 +21,15 @@ const run = promisify(execFile)
 const root = fileURLToPath(new URL('..', import.meta.url))
 const vueDirectory = join(root, 'packages/vue')
 const fixture = await mkdtemp(join(tmpdir(), 'kida-vue-consumer-'))
+const demos = [
+  'reveal-basic',
+  'collapse-basic',
+  'text-bloom-basic',
+  'magnetic-basic',
+  'photo-pile-basic',
+  'scribble-highlight-basic',
+  'sticker-burst-basic',
+]
 
 async function write(relative, content) {
   const path = join(fixture, relative)
@@ -74,19 +83,24 @@ try {
   await write('env.d.ts', "declare module '*.css'\n")
 
   // The exact files displayed as Vue documentation are compiled against packed declarations.
-  for (const name of ['reveal-basic', 'collapse-basic']) {
+  for (const name of demos) {
     await write(
       `${name}.vue`,
       await readFile(join(root, 'apps/docs/src/demos', `${name}.vue`), 'utf8'),
+    )
+  }
+  for (const name of ['flower', 'sunset', 'pool']) {
+    await write(
+      `public/demo/photo-pile-${name}.svg`,
+      await readFile(join(root, 'apps/docs/public/demo', `photo-pile-${name}.svg`), 'utf8'),
     )
   }
   await write(
     'main.ts',
     `import '@kida-ui/styles/kida.css'
 import { createApp, h } from 'vue'
-import RevealDemo from './reveal-basic.vue'
-import CollapseDemo from './collapse-basic.vue'
-createApp({ render: () => h('main', [h(RevealDemo), h(CollapseDemo)]) }).mount('#app')
+${demos.map((name, index) => `import Demo${index} from './${name}.vue'`).join('\n')}
+createApp({ render: () => h('main', [${demos.map((_, index) => `h(Demo${index})`).join(', ')}]) }).mount('#app')
 `,
   )
   await write(
@@ -113,12 +127,20 @@ createApp({ render: () => h('main', [h(RevealDemo), h(CollapseDemo)]) }).mount('
   // Also resolve emitted declarations with NodeNext; Vite-specific source aliases are absent.
   await write(
     'types.mts',
-    `import { Reveal, Collapse, type RevealProps, type KidaElement } from '@kida-ui/vue'
+    `import { Reveal, Collapse, TextBloom, Magnetic, PhotoPile, ScribbleHighlight, StickerBurst, type RevealProps, type TextBloomProps, type PhotoPilePhoto, type KidaElement } from '@kida-ui/vue'
 const options: RevealProps = { once: false, x: 0 }
+const bloom: TextBloomProps = { text: 'Typed text', by: 'character', once: false }
+const photo: PhotoPilePhoto = { id: 'photo', src: '/photo.png', alt: 'Sample', imageProps: { loading: 'lazy', width: 80 } }
 const element: KidaElement = { element: null }
 // @ts-expect-error Published component declarations must reject invalid motion options.
 const invalid: InstanceType<typeof Reveal>['$props'] = { duration: 'slow' }
-void [Reveal, Collapse, options, element]
+// @ts-expect-error TextBloom requires plain text.
+const invalidText: InstanceType<typeof TextBloom>['$props'] = { text: 12 }
+// @ts-expect-error PhotoPile requires stable photo identifiers and alt text.
+const invalidPhoto: InstanceType<typeof PhotoPile>['$props'] = { photos: [{ src: '/photo.png' }] }
+// @ts-expect-error StickerBurst seeds are numeric.
+const invalidSeed: InstanceType<typeof StickerBurst>['$props'] = { seed: 'random' }
+void [Reveal, Collapse, TextBloom, Magnetic, PhotoPile, ScribbleHighlight, StickerBurst, options, bloom, photo, element]
 `,
   )
   await write(
@@ -155,18 +177,29 @@ void [Reveal, Collapse, options, element]
     plugins: [vue()],
     build: { lib: { entry: join(fixture, 'main.ts'), formats: ['es'], fileName: 'consumer' } },
   })
+  await access(join(fixture, 'dist/demo/photo-pile-flower.svg'))
   await write(
     'server.mjs',
     `import assert from 'node:assert/strict'
-import { Reveal, Collapse } from '@kida-ui/vue'
+import * as Kida from '@kida-ui/vue'
 import { createSSRApp, h } from 'vue'
 import { renderToString } from '@vue/server-renderer'
 assert.equal(typeof window, 'undefined')
-const render = () => h('main', [h(Reveal, {}, () => 'Reveal content'), h(Collapse, { open: true }, () => 'Collapse content')])
+assert.deepEqual(Object.keys(Kida).sort(), ['Reveal', 'Collapse', 'TextBloom', 'Magnetic', 'PhotoPile', 'ScribbleHighlight', 'StickerBurst'].sort())
+const render = () => h('main', [
+  h(Kida.Reveal, {}, () => 'Reveal content'),
+  h(Kida.Collapse, { open: true }, () => 'Collapse content'),
+  h(Kida.TextBloom, { text: 'Bloom content' }),
+  h(Kida.Magnetic, {}, () => h('button', 'Magnetic action')),
+  h(Kida.PhotoPile, { photos: [{ id: 'photo', src: '/photo.png', alt: 'Sample' }] }),
+  h(Kida.ScribbleHighlight, {}, () => 'Highlight content'),
+  h(Kida.StickerBurst, {}, () => h('button', 'Celebrate')),
+])
 const first = await renderToString(createSSRApp({ render }))
 assert.equal(await renderToString(createSSRApp({ render })), first)
 assert.ok(first.includes('translate3d(0px, 8px, 0) scale(1)'))
 assert.ok(first.includes('Collapse content'))
+for (const marker of ['text-bloom', 'magnetic', 'photo-pile', 'scribble', 'sticker-burst']) assert.ok(first.includes('data-kida-' + marker))
 assert.ok(!first.includes('undefined'))
 `,
   )

@@ -52,7 +52,7 @@ tests so one mismatch cannot hide the remaining comparisons and their artifacts.
 
 ## Scope
 
-The experimental Vue milestone also compares Reveal and Collapse against the built React adapter
+The experimental Vue milestone also compares all seven components against the built React adapter
 in the same Chromium session at both viewport widths. These settled reduced-motion captures use
 fixed, identical content and integer geometry; exact decoded pixel equality is required. The comparison has
 no stored baselines to update. Run it with `pnpm --filter @kida-ui/vue test`. The React Linux

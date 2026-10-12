@@ -1,6 +1,6 @@
 ---
 title: TextBloom
-description: Reveals readable text with a gentle or softly overshooting stagger.
+description: Reveals readable text with a gentle rise or a pronounced pop and settle.
 category: text
 tier: T2
 status: beta
@@ -19,6 +19,8 @@ import TextBloomCharacters from '../../demos/text-bloom-characters.react.tsx'
 
 ## Quick start
 
+For Vue usage, see the [Vue guide](/docs/vue#text-bloom).
+
 <Distribution name="text-bloom" />
 
 <QuickStart name="text-bloom" />
@@ -32,6 +34,10 @@ import TextBloomCharacters from '../../demos/text-bloom-characters.react.tsx'
 Use word segmentation for most interface copy. Character segmentation is best reserved for short
 display phrases, where its longer sequence will not delay comprehension.
 
+Gentle uses a soft rise without a bounce. Pop starts smaller, rises into an 8% overshoot,
+then briefly recoils before settling. Both use the same default duration and finish at the
+text's natural size and position.
+
 ## API
 
 ### Props
@@ -40,7 +46,7 @@ display phrases, where its longer sequence will not delay comprehension.
 | --- | --- | --- | --- |
 | `children` | `string` | required | The readable and animated text. |
 | `by` | `'word' \| 'character'` | `'word'` | Segmentation unit. |
-| `voice` | `'gentle' \| 'pop'` | `'gentle'` | Soft rise or small overshoot. |
+| `voice` | `'gentle' \| 'pop'` | `'gentle'` | Soft rise or pronounced overshoot with a brief recoil. |
 | `stagger` | `number` | `0.045` | Seconds between segments. |
 | `delay` | `number` | `0` | Seconds before the first segment. |
 | `duration` | `number` | `0.55` | Seconds per segment. |

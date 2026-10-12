@@ -38,14 +38,19 @@ remains `pnpm verify` followed by `pnpm -r --filter './packages/*' exec publint`
 
 ## Experimental Vue milestone
 
-`@kida-ui/vue` currently exports only Reveal and Collapse. It uses the same motion options,
+`@kida-ui/vue` exports Reveal, Collapse, TextBloom, Magnetic, PhotoPile, ScribbleHighlight, and
+StickerBurst. It uses the same motion options,
 measurement helper, CSS variables, and data attributes as React, with Vue default slots, native
 attributes/events, `@exit-complete`, and component refs exposing `element`.
 
 `pnpm --filter @kida-ui/vue test` builds the package before testing its public exports. Node tests
 check deterministic server rendering without browser globals. Chromium tests cover viewport entry,
 repetition, reactive options and root replacement, equivalent easing tuples, native events and refs,
-resize measurement, enter/exit and reversal, reduced motion, and controller/observer cleanup. They
+resize measurement, enter/exit and reversal, reduced motion, and controller/observer cleanup.
+Catalog tests also cover reactive text/segmentation and Unicode code points, pointer and keyboard
+interaction, drag cancellation and spring return, photo collection reordering and removal, seeded
+sticker updates, and SVG decoration. Unrelated attributes preserve active or settled motion state.
+Vue TextBloom uses a required `text` prop; Magnetic uses `targetClass`; content wrappers use slots. They
 hydrate actual Node-rendered markup for both open and closed states and compare settled React/Vue
 pixels at mobile and desktop widths in the same browser. Axe includes color contrast on a controlled
 surface. Screenshot parity compares both adapters at runtime, so it creates no host-specific
@@ -53,7 +58,8 @@ reference images and does not replace the existing authoritative Linux React bas
 
 The packed-consumer check in `DISTRIBUTION.md` verifies the displayed demos, production bundle,
 declaration resolution, and server imports. `/docs/vue` supplies the live examples and API notes.
-This is an experimental milestone, not full seven-component or public-release conformance.
+The complete Vue catalog remains experimental; wider browser, touch-device, and screen-reader
+release conformance is still required.
 
 `pnpm docs:check-dev` starts an isolated Astro dev server and checks Vue/React docs and the home
 page, including the Vue client module. A version-pinned pnpm patch disables React Refresh only in

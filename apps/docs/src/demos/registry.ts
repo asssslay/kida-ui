@@ -1,7 +1,7 @@
 import type { CodeLang } from '../components/code-lang'
 
 /**
- * Available demo frameworks. Vue is experimental and currently covers Reveal and Collapse.
+ * Available demo frameworks. Vue is experimental and covers the seven-component catalog.
  */
 export type Framework = 'react' | 'vue'
 
