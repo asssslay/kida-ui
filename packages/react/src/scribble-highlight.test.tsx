@@ -1,5 +1,6 @@
 import '@kida-ui/styles/kida.css'
-import { expect, test } from 'vitest'
+import { afterEach, expect, test } from 'vitest'
+import { commands } from 'vitest/browser'
 import { render } from 'vitest-browser-react'
 import { ScribbleHighlight } from './scribble-highlight.js'
 
@@ -8,6 +9,20 @@ function root() {
   if (!element) throw new Error('ScribbleHighlight is not mounted')
   return element
 }
+
+afterEach(async () => {
+  await commands.setReducedMotion(false)
+})
+
+test('reduced motion renders a complete path without an active CSS animation', async () => {
+  await commands.setReducedMotion(true)
+  await render(<ScribbleHighlight>Visible immediately</ScribbleHighlight>)
+  const path = root().querySelector('path')
+  if (!path) throw new Error('Path is missing')
+  expect(root().dataset.state).toBe('settled')
+  expect(getComputedStyle(path).strokeDashoffset).toBe('0px')
+  expect(path.getAnimations()).toHaveLength(0)
+})
 
 test('keeps readable content and exposes no decorative SVG to assistive technology', async () => {
   await render(<ScribbleHighlight variant="circle">Worth circling</ScribbleHighlight>)

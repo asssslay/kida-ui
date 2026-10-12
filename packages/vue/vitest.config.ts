@@ -54,6 +54,26 @@ export default defineConfig({
             await mkdir('.vitest-attachments/parity', { recursive: true })
             await writeFile('.vitest-attachments/parity/react.png', react)
             await writeFile('.vitest-attachments/parity/vue.png', vue)
+            const geometry = await iframe.locator('[data-parity]').evaluateAll((roots) =>
+              roots.map((root) => ({
+                adapter: root.getAttribute('data-parity'),
+                nodes: [
+                  ...root.querySelectorAll(
+                    '[data-kida-magnetic], [data-kida-photo-pile], [data-kida-photo-stage], [data-kida-photo-item], [data-kida-photo-card], img, [data-kida-scribble]',
+                  ),
+                ].map((node) => ({
+                  tag: node.tagName,
+                  html: node.outerHTML.slice(0, 180),
+                  bounds: node.getBoundingClientRect().toJSON(),
+                  style: (node as HTMLElement).style.cssText,
+                  height: getComputedStyle(node).height,
+                })),
+              })),
+            )
+            await writeFile(
+              '.vitest-attachments/parity/geometry.json',
+              JSON.stringify(geometry, null, 2),
+            )
           }
           return equal
         },

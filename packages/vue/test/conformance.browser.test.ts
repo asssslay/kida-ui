@@ -1,5 +1,5 @@
 import '@kida-ui/styles/kida.css'
-import { Collapse, Reveal } from '@kida-ui/vue'
+import { Collapse } from '@kida-ui/vue'
 import axe from 'axe-core'
 import { afterEach, expect, test, vi } from 'vitest'
 import { commands, page } from 'vitest/browser'
@@ -26,6 +26,17 @@ test.each([false, true])(
     if (!reveal) throw new Error('Server Reveal is missing')
     expect(getComputedStyle(reveal).opacity).toBe(reduced ? '1' : '0')
     expect(getComputedStyle(reveal).transform).toBe(reduced ? 'none' : 'matrix(1, 0, 0, 1, 0, 8)')
+    const bloom = container.querySelector<HTMLElement>('[data-kida-text-bloom-segment]')
+    if (!bloom) throw new Error('Server TextBloom is missing')
+    expect(getComputedStyle(bloom).opacity).toBe(reduced ? '1' : '0')
+    expect(getComputedStyle(bloom).transform).toBe(
+      reduced ? 'none' : 'matrix(0.98, 0, 0, 0.98, 0, 10)',
+    )
+    const existing = [
+      ...container.querySelectorAll(
+        '[data-kida-photo-item], [data-kida-sticker-layer] > span, [data-kida-scribble]',
+      ),
+    ]
     const collapse = container.querySelector('[data-kida-collapse]')
     const warnings: string[] = []
     const errors = vi.spyOn(console, 'error')
@@ -39,6 +50,13 @@ test.each([false, true])(
       expect(warnings).toEqual([])
       expect(errors).not.toHaveBeenCalled()
       expect(collapse?.textContent).toBe('Collapse content')
+      expect([
+        ...container.querySelectorAll(
+          '[data-kida-photo-item], [data-kida-sticker-layer] > span, [data-kida-scribble]',
+        ),
+      ]).toEqual(existing)
+      expect(container.querySelectorAll('[data-kida-photo-item]')).toHaveLength(3)
+      expect(container.querySelectorAll('[data-kida-sticker-layer] > span')).toHaveLength(8)
       if (reduced) expect(getComputedStyle(reveal).willChange).toBe('auto')
     } finally {
       app.unmount()
@@ -98,16 +116,7 @@ test.each([390, 1280])(
   async (width) => {
     await page.viewport(width, 844)
     await commands.setReducedMotion(true)
-    await render(
-      defineComponent({
-        setup: () => () =>
-          h('main', { style: { color: '#241f22', background: '#fff', padding: '20px' } }, [
-            h('h1', 'Vue components'),
-            h(Reveal, {}, () => h('h2', 'Revealed content')),
-            h(Collapse, { open: true }, () => h('button', { type: 'button' }, 'Available action')),
-          ]),
-      }),
-    )
+    await render(defineComponent({ setup: () => () => showcase(true) }))
     expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(
       document.documentElement.clientWidth,
     )

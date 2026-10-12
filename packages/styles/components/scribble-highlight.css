@@ -56,7 +56,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  [data-kida-scribble] path {
+  [data-kida-scribble][data-state] path {
     animation: none;
     stroke-dashoffset: 0;
   }
