@@ -1,0 +1,52 @@
+{
+  "$schema": "https://shadcn-vue.com/schema/registry-item.json",
+  "name": "text-bloom",
+  "title": "TextBloom",
+  "description": "Reveals readable text with a gentle or softly overshooting stagger.",
+  "dependencies": [
+    "motion@^13.1.0"
+  ],
+  "files": [
+    {
+      "path": "registry/vue/kida/text-bloom.vue",
+      "content": "<script setup lang=\"ts\">\nimport './text-bloom.css'\nimport { textBloom, textBloomInitialStyle } from './text-bloom.motion.js'\nimport { computed, shallowRef, watch } from 'vue'\nimport type { TextBloomProps } from './text-bloom.types.js'\n\ndefineOptions({ name: 'KidaTextBloom', inheritAttrs: false })\nconst props = withDefaults(defineProps<TextBloomProps>(), { once: undefined })\nconst element = shallowRef<HTMLElement | null>(null)\nconst nodes = new Map<string, HTMLElement>()\ndefineExpose({ element })\n\nconst segments = computed(() => {\n  const parts = props.by === 'character' ? Array.from(props.text) : props.text.split(/(\\s+)/)\n  let cursor = 0\n  return parts.map((text) => {\n    const key = JSON.stringify([props.by, props.voice, cursor, text])\n    cursor += text.length\n    return { key, text, whitespace: /^\\s*$/.test(text) }\n  })\n})\n\nwatch(\n  [\n    () => element.value,\n    () => props.as,\n    () => props.text,\n    () => props.by,\n    () => props.voice,\n    () => props.stagger,\n    () => props.delay,\n    () => props.duration,\n    () => props.once,\n    () => props.amount,\n  ],\n  (_, __, onCleanup) => {\n    if (element.value) onCleanup(textBloom(element.value, { ...props }))\n  },\n  { flush: 'post' },\n)\n\nfunction setSegment(key: string, node: unknown) {\n  // Function refs are also called with null when a segment is removed.\n  if (node) nodes.set(key, node as HTMLElement)\n  else nodes.delete(key)\n}\n\nfunction segmentStyle(key: string) {\n  const node = nodes.get(key)\n  return node\n    ? {\n        opacity: node.style.opacity,\n        transform: node.style.transform,\n        transformOrigin: node.style.transformOrigin,\n        willChange: node.style.willChange,\n      }\n    : textBloomInitialStyle(props.voice)\n}\n</script>\n\n<template>\n  <component\n    :is=\"props.as ?? 'span'\"\n    v-bind=\"$attrs\"\n    ref=\"element\"\n    data-kida-text-bloom=\"\"\n    :data-state=\"element?.dataset.state ?? 'idle'\"\n  >\n    <span><template v-for=\"segment in segments\" :key=\"segment.key\"><template v-if=\"segment.whitespace\">{{ segment.text }}</template><span v-else :ref=\"(node) => setSegment(segment.key, node)\" data-kida-text-bloom-segment=\"\" :style=\"segmentStyle(segment.key)\">{{ segment.text }}</span></template></span>\n  </component>\n</template>\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "registry/vue/kida/text-bloom.types.ts",
+      "content": "import type { TextBloomOptions } from './text-bloom.motion.js';\n\nexport type { TextBloomVoice } from './text-bloom.motion.js';\n\nexport interface TextBloomProps extends TextBloomOptions {\n    /** Plain text, kept readable once while its segments animate. */\n    text: string;\n    /** Segment by words or Unicode code points. @default 'word' */\n    by?: 'word' | 'character';\n    /** Semantic HTML root. @default 'span' */\n    as?: keyof HTMLElementTagNameMap;\n}\n\n/** Vue component refs expose the root DOM element, null when presence removes it. */\nexport interface KidaElement {\n    element: HTMLElement | null;\n}\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "registry/vue/kida/text-bloom.css",
+      "content": "[data-kida-text-bloom-segment] {\n  display: inline-block;\n}\n\n@media (prefers-reduced-motion: reduce) {\n  [data-kida-text-bloom-segment] {\n    /* biome-ignore lint/complexity/noImportantStyles: overrides the SSR inline initial state */\n    opacity: 1 !important;\n    /* biome-ignore lint/complexity/noImportantStyles: overrides the SSR inline initial state */\n    transform: none !important;\n  }\n}\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "registry/vue/kida/text-bloom.motion.ts",
+      "content": "import { animate, inView, stagger } from 'motion'\nimport { prefersReducedMotion } from './reduced-motion.motion.js'\n\nexport type TextBloomVoice = 'gentle' | 'pop'\n\nexport interface TextBloomOptions {\n  /** Motion character. @default 'gentle' */\n  voice?: TextBloomVoice\n  /** Seconds between segments. @default 0.045 */\n  stagger?: number\n  /** Seconds before the first segment. @default 0 */\n  delay?: number\n  /** Seconds per segment. @default 0.55 */\n  duration?: number\n  /** Animate only on the first viewport entry. @default true */\n  once?: boolean\n  /** How much of the root must be visible. @default 0.4 */\n  amount?: 'some' | 'all' | number\n}\n\nconst DEFAULTS = {\n  voice: 'gentle',\n  stagger: 0.045,\n  delay: 0,\n  duration: 0.55,\n  once: true,\n  amount: 0.4,\n} as const\n\nexport function textBloomInitialStyle(voice: TextBloomVoice = 'gentle') {\n  return {\n    opacity: 0,\n    transform:\n      voice === 'pop'\n        ? 'translate3d(0, 18px, 0) scale(0.86)'\n        : 'translate3d(0, 10px, 0) scale(0.98)',\n    transformOrigin: '50% 80%',\n    willChange: 'transform, opacity',\n  } as const\n}\n\nexport function textBloom(element: HTMLElement, options: TextBloomOptions = {}): () => void {\n  const settings = {\n    voice: options.voice ?? DEFAULTS.voice,\n    stagger: options.stagger ?? DEFAULTS.stagger,\n    delay: options.delay ?? DEFAULTS.delay,\n    duration: options.duration ?? DEFAULTS.duration,\n    once: options.once ?? DEFAULTS.once,\n    amount: options.amount ?? DEFAULTS.amount,\n  }\n  const segments = [...element.querySelectorAll<HTMLElement>('[data-kida-text-bloom-segment]')]\n  if (segments.length === 0) return () => {}\n\n  const hide = () => {\n    for (const segment of segments)\n      Object.assign(segment.style, textBloomInitialStyle(settings.voice))\n    element.dataset.state = 'idle'\n  }\n  const settle = () => {\n    for (const segment of segments) {\n      segment.style.opacity = '1'\n      segment.style.transform = 'none'\n      segment.style.transformOrigin = ''\n      segment.style.willChange = 'auto'\n    }\n    element.dataset.state = 'settled'\n  }\n\n  if (prefersReducedMotion()) {\n    settle()\n    return () => {}\n  }\n\n  hide()\n  let controls: ReturnType<typeof animate> | undefined\n  let settleFrame = 0\n\n  const cancelSettle = () => {\n    if (!settleFrame) return\n    cancelAnimationFrame(settleFrame)\n    settleFrame = 0\n  }\n\n  const stop = inView(\n    element,\n    () => {\n      cancelSettle()\n      element.dataset.state = 'active'\n      const pop = settings.voice === 'pop'\n      controls = animate(\n        segments,\n        {\n          opacity: pop ? [0, 1, 1, 1] : [0, 1, 1],\n          transform: pop\n            ? [\n                'translate3d(0, 18px, 0) scale(0.86)',\n                'translate3d(0, -4px, 0) scale(1.08)',\n                'translate3d(0, 1px, 0) scale(0.985)',\n                'translate3d(0, 0, 0) scale(1)',\n              ]\n            : [\n                'translate3d(0, 10px, 0) scale(0.98)',\n                'translate3d(0, 0, 0) scale(1)',\n                'translate3d(0, 0, 0) scale(1)',\n              ],\n        },\n        {\n          duration: settings.duration,\n          delay: stagger(settings.stagger, { startDelay: settings.delay }),\n          // Pop reaches its visible overshoot early, then recoils once before settling.\n          ease: pop\n            ? [\n                [0.16, 1, 0.3, 1],\n                [0.4, 0, 0.6, 1],\n                [0.16, 1, 0.3, 1],\n              ]\n            : [0.16, 1, 0.3, 1],\n          times: pop ? [0, 0.45, 0.72, 1] : [0, 0.72, 1],\n        },\n      )\n\n      const currentControls = controls\n      void currentControls.finished\n        .then(() => {\n          // `animate()` creates one animation per property and segment. Wait for the whole\n          // group, then move one frame past Motion's final style commits before cleaning up.\n          if (controls !== currentControls) return\n          settleFrame = requestAnimationFrame(() => {\n            settleFrame = 0\n            if (controls === currentControls) settle()\n          })\n        })\n        .catch(() => {\n          // Cancelling a pass rejects its finished promise; the exit cleanup re-arms it.\n        })\n\n      if (settings.once) stop()\n      return settings.once\n        ? undefined\n        : () => {\n            cancelSettle()\n            controls?.cancel()\n            hide()\n          }\n    },\n    { amount: settings.amount },\n  )\n\n  return () => {\n    stop()\n    cancelSettle()\n    controls?.cancel()\n  }\n}\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "registry/vue/kida/reduced-motion.motion.ts",
+      "content": "const QUERY = '(prefers-reduced-motion: reduce)'\n\n/**\n * Whether the user has asked for reduced motion.\n *\n * SSR-safe: returns `false` when there is no `window`, matching the CSS default\n * (the `prefers-reduced-motion` media query in `@kida-ui/styles` is the real guard;\n * this is for the JS-driven paths that CSS cannot express).\n */\nexport function prefersReducedMotion(): boolean {\n  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return false\n  return window.matchMedia(QUERY).matches\n}\n\n/**\n * Subscribe to changes of the reduced-motion preference.\n * Returns an unsubscribe function. No-op (and immediately unsubscribable) on the server.\n */\nexport function watchReducedMotion(onChange: (reduced: boolean) => void): () => void {\n  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return () => {}\n\n  const list = window.matchMedia(QUERY)\n  const handler = (event: MediaQueryListEvent) => onChange(event.matches)\n  list.addEventListener('change', handler)\n  return () => list.removeEventListener('change', handler)\n}\n",
+      "type": "registry:ui"
+    }
+  ],
+  "meta": {
+    "kida": {
+      "package": {
+        "name": "@kida-ui/vue",
+        "exportName": "TextBloom",
+        "styleImports": [
+          "@kida-ui/styles/kida.css"
+        ]
+      },
+      "framework": "vue"
+    }
+  },
+  "categories": [
+    "text"
+  ],
+  "type": "registry:ui"
+}

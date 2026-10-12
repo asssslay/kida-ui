@@ -4,27 +4,35 @@ import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { registryItemSchema, registrySchema } from 'shadcn/schema'
+import { registryItemSchema as vueItemSchema, registrySchema as vueSchema } from 'shadcn-vue/schema'
 import { registryDefinitions } from '../registry/definitions.mjs'
+import { vueRegistryDefinitions } from '../registry/vue-definitions.mjs'
+import { selectDeclarations } from './registry-types.mjs'
 
 const root = fileURLToPath(new URL('..', import.meta.url))
 const outputDir = join(root, 'registry/r')
 const checkOnly = process.argv.includes('--check')
 
 const packageManifests = await Promise.all(
-  ['packages/react/package.json', 'packages/motion/package.json'].map(async (path) =>
-    JSON.parse(await readFile(join(root, path), 'utf8')),
+  ['packages/react/package.json', 'packages/vue/package.json', 'packages/motion/package.json'].map(
+    async (path) => JSON.parse(await readFile(join(root, path), 'utf8')),
   ),
 )
-const declaredDependencies = Object.assign(
-  {},
-  ...packageManifests.map((manifest) => ({
-    ...manifest.dependencies,
-    ...manifest.peerDependencies,
-  })),
+const declaredDependencies = Object.fromEntries(
+  ['react', 'vue'].map((framework, index) => [
+    framework,
+    Object.assign(
+      {},
+      ...[packageManifests[index], packageManifests[2]].map((manifest) => ({
+        ...manifest.dependencies,
+        ...manifest.peerDependencies,
+      })),
+    ),
+  ]),
 )
 
-function dependencySpecifier(name) {
-  const version = declaredDependencies[name]
+function dependencySpecifier(name, framework) {
+  const version = declaredDependencies[framework][name]
   if (!version) {
     throw new Error(`Registry dependency "${name}" is not declared by a source package.`)
   }
@@ -45,6 +53,10 @@ function assertInsideRoot(path) {
 
 function addStyleImport(source, styleImport) {
   if (!styleImport) return source
+
+  if (source.startsWith('<script setup')) {
+    return source.replace(/(<script setup[^>]*>)/, `$1\nimport '${styleImport}'`)
+  }
 
   const directive = /^(['"]use client['"])\s*\n+/
   if (directive.test(source)) {
@@ -74,47 +86,64 @@ async function createItem(definition) {
       assertInsideRoot(sourcePath)
 
       let content = await readFile(sourcePath, 'utf8')
+      if (file.declarations) content = selectDeclarations(content, file.declarations)
       content = replaceImports(content, file.importReplacements)
       content = addStyleImport(content, file.styleImport)
       content = addCssImports(content, file.imports)
 
       return {
-        path: file.source,
-        type: file.type,
-        target: file.target,
+        // shadcn-vue resolves paths under aliases.ui; it does not support React's @ui targets.
+        path:
+          definition.framework === 'vue'
+            ? file.target.replace('@ui/', 'registry/vue/')
+            : file.source,
+        type: definition.framework === 'vue' ? 'registry:ui' : file.type,
+        ...(definition.framework === 'vue' ? {} : { target: file.target }),
         content,
       }
     }),
   )
 
-  return registryItemSchema.parse({
-    $schema: 'https://ui.shadcn.com/schema/registry-item.json',
+  return (definition.framework === 'vue' ? vueItemSchema : registryItemSchema).parse({
+    $schema:
+      definition.framework === 'vue'
+        ? 'https://shadcn-vue.com/schema/registry-item.json'
+        : 'https://ui.shadcn.com/schema/registry-item.json',
     name: definition.name,
     type: 'registry:ui',
     title: definition.title,
     description: definition.description,
-    dependencies: definition.dependencies.map(dependencySpecifier),
+    dependencies: definition.dependencies.map((name) =>
+      dependencySpecifier(name, definition.framework ?? 'react'),
+    ),
     files,
     categories: [definition.category],
     meta: {
       kida: {
         package: definition.package,
+        ...(definition.framework === 'vue' ? { framework: 'vue' } : {}),
       },
     },
   })
 }
 
-export async function buildRegistry() {
+export async function buildRegistry(framework = 'react') {
+  if (!['react', 'vue'].includes(framework))
+    throw new Error(`Unknown registry framework: ${framework}`)
+  const definitions = framework === 'vue' ? vueRegistryDefinitions : registryDefinitions
   const names = new Set()
-  for (const definition of registryDefinitions) {
+  for (const definition of definitions) {
     if (names.has(definition.name)) throw new Error(`Duplicate registry item: ${definition.name}`)
     names.add(definition.name)
   }
 
-  const items = await Promise.all(registryDefinitions.map(createItem))
-  const registry = registrySchema.parse({
-    $schema: 'https://ui.shadcn.com/schema/registry.json',
-    name: 'kida-ui',
+  const items = await Promise.all(definitions.map(createItem))
+  const registry = (framework === 'vue' ? vueSchema : registrySchema).parse({
+    $schema:
+      framework === 'vue'
+        ? 'https://shadcn-vue.com/schema/registry.json'
+        : 'https://ui.shadcn.com/schema/registry.json',
+    name: framework === 'vue' ? 'kida-ui-vue' : 'kida-ui',
     homepage: 'https://kida-ui.onrender.com',
     items: items.map(({ $schema: _schema, ...item }) => item),
   })
@@ -131,6 +160,10 @@ async function expectedFiles() {
       `${JSON.stringify(item, null, 2)}\n`,
     ]),
   ])
+  const vue = await buildRegistry('vue')
+  files.set(join(outputDir, 'vue/registry.json'), `${JSON.stringify(vue.registry, null, 2)}\n`)
+  for (const item of vue.items)
+    files.set(join(outputDir, 'vue', `${item.name}.json`), `${JSON.stringify(item, null, 2)}\n`)
   return files
 }
 
@@ -149,11 +182,13 @@ async function check(files) {
 
   let generated = []
   try {
-    generated = (await readdir(outputDir)).filter((file) => file.endsWith('.json'))
+    generated = (await readdir(outputDir, { recursive: true })).filter((file) =>
+      file.endsWith('.json'),
+    )
   } catch {
     // A missing directory is already reported through its expected files.
   }
-  const expectedNames = new Set([...files.keys()].map((path) => path.split('/').at(-1)))
+  const expectedNames = new Set([...files.keys()].map((path) => relative(outputDir, path)))
   for (const file of generated) {
     if (!expectedNames.has(file)) failures.push(`registry/r/${file} is no longer defined`)
   }
@@ -174,7 +209,7 @@ async function write(files) {
     await writeFile(path, content)
   }
 
-  for (const file of await readdir(outputDir)) {
+  for (const file of await readdir(outputDir, { recursive: true })) {
     const path = join(outputDir, file)
     if (file.endsWith('.json') && !expectedPaths.has(path)) await rm(path)
   }
@@ -184,10 +219,10 @@ async function main() {
   const files = await expectedFiles()
   if (checkOnly) {
     await check(files)
-    console.log(`✓ ${files.size - 1} registry items are current and schema-valid`)
+    console.log(`✓ ${files.size - 2} React and Vue registry items are current and schema-valid`)
   } else {
     await write(files)
-    console.log(`✓ wrote ${files.size - 1} registry items to registry/r`)
+    console.log(`✓ wrote ${files.size - 2} React and Vue registry items to registry/r`)
   }
 }
 

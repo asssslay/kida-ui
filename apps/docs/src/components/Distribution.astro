@@ -5,12 +5,14 @@ import type { CodeLang } from './code-lang'
 
 interface Props {
   name: string
+  framework?: 'react' | 'vue'
 }
 
-const { name } = Astro.props
-const item = getRegistryItem(name)
-const registryUrl = new URL(`/r/${item.name}.json`, Astro.site).href
-const registryCommand = `npx shadcn@latest add ${registryUrl}`
+const { name, framework = 'react' } = Astro.props
+const item = getRegistryItem(name, framework)
+const registryPath = `/r/${framework === 'vue' ? 'vue/' : ''}${item.name}.json`
+const registryUrl = new URL(registryPath, Astro.site).href
+const registryCommand = `npx ${framework === 'vue' ? 'shadcn-vue@2.8.2' : 'shadcn@latest'} add ${registryUrl}`
 const dependencyCommand = `npm install ${item.dependencies.join(' ')}`
 
 function displayTarget(target: string): string {
@@ -28,32 +30,33 @@ function displayTarget(target: string): string {
 }
 
 function codeLanguage(path: string): CodeLang {
+  if (path.endsWith('.vue')) return 'vue'
   if (path.endsWith('.css')) return 'css'
   if (path.endsWith('.ts')) return 'ts'
   return 'tsx'
 }
 ---
 
-<section class="distribution" data-distribution aria-labelledby={`copy-${item.name}`}>
+<section class="distribution" data-distribution data-framework={framework} aria-labelledby={`copy-${item.name}`}>
   <div class="distribution-head">
     <div>
       <strong id={`copy-${item.name}`}>Add to your project</strong>
-      <p>Copy the component and everything it needs into your React project.</p>
+      <p>Copy the component and everything it needs into your {framework === 'vue' ? 'Vue 3.5+' : 'React'} project.</p>
     </div>
   </div>
 
   <div class="distribution-source">
     <div class="distribution-label">
       <span class="distribution-badge">Recommended</span>
-      <strong>Use the shadcn CLI</strong>
+      <strong>Use the {framework === 'vue' ? 'shadcn-vue' : 'shadcn'} CLI</strong>
     </div>
     <CodeBlock code={registryCommand} lang="bash" />
     <p class="distribution-note">
       Run this from a project with <code>components.json</code>. The CLI creates all required files
       and installs the declared runtime dependencies. New to shadcn? Follow the
-      <a href="/docs/installation">installation guide</a> first.
+      <a href={framework === 'vue' ? '/docs/vue/installation' : '/docs/installation'}>installation guide</a> first.
     </p>
-    <a class="registry-link" href={`/r/${item.name}.json`}>View registry JSON <span aria-hidden="true">↗</span></a>
+    <a class="registry-link" href={registryPath}>View registry JSON <span aria-hidden="true">↗</span></a>
 
     <details class="manual-source">
       <summary>
@@ -76,7 +79,7 @@ function codeLanguage(path: string): CodeLang {
             {
               item.files.map((file) => (
                 <details>
-                  <summary>{displayTarget(file.target)}</summary>
+                  <summary>{displayTarget(file.target ?? file.path.replace('registry/vue/', 'src/components/ui/'))}</summary>
                   <CodeBlock code={file.content} lang={codeLanguage(file.path)} />
                 </details>
               ))

@@ -1,0 +1,12 @@
+---
+interface Props {
+  page: string
+  framework: 'react' | 'vue'
+}
+const { page, framework } = Astro.props
+---
+
+<nav class="framework-switcher" aria-label="Documentation framework">
+  <a href={`/docs/${page}`} aria-current={framework === 'react' ? 'page' : undefined}>React</a>
+  <a href={`/docs/vue/${page}`} aria-current={framework === 'vue' ? 'page' : undefined}>Vue <span class="framework-badge">Experimental</span></a>
+</nav>

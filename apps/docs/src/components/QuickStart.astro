@@ -4,10 +4,11 @@ import CodeBlock from './CodeBlock.astro'
 
 interface Props {
   name: string
+  framework?: 'react' | 'vue'
 }
 
-const { name } = Astro.props
-const source = getQuickStart(name)
+const { name, framework = 'react' } = Astro.props
+const source = getQuickStart(name, framework)
 ---
 
-<CodeBlock code={source} lang="tsx" />
+<CodeBlock code={source} lang={framework === 'vue' ? 'vue' : 'tsx'} />

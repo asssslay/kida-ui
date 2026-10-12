@@ -24,4 +24,9 @@ const components = defineCollection({
   }),
 })
 
-export const collections = { components }
+const vueComponents = defineCollection({
+  loader: glob({ pattern: '**/*.mdx', base: './src/content/vue-components' }),
+  schema: z.object({}),
+})
+
+export const collections = { components, vueComponents }

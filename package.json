@@ -15,7 +15,7 @@
     "format": "biome check --write .",
     "registry:build": "node scripts/build-registry.mjs",
     "registry:check": "node scripts/build-registry.mjs --check",
-    "registry:check-copy": "node scripts/check-copy-source.mjs",
+    "registry:check-copy": "node scripts/check-copy-source.mjs && node scripts/check-vue-copy-source.mjs",
     "docs:check-examples": "node scripts/check-doc-examples.mjs",
     "docs:check-dev": "node scripts/check-docs-dev.mjs",
     "gate:agnostic": "node scripts/check-framework-deps.mjs",
@@ -27,8 +27,10 @@
   "devDependencies": {
     "@biomejs/biome": "2.5.9",
     "@changesets/cli": "3.0.0",
+    "eslint": "10.2.0",
     "publint": "0.3.23",
     "shadcn": "4.20.1",
+    "shadcn-vue": "2.8.2",
     "turbo": "2.10.11",
     "typescript": "6.0.3"
   }

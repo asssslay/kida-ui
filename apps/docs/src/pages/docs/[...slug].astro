@@ -4,18 +4,41 @@ import DocsLayout from '../../layouts/DocsLayout.astro'
 
 export async function getStaticPaths() {
   const entries = await getCollection('components')
-  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }))
+  const vue = await getCollection('vueComponents')
+  const vueNames = new Set(vue.map((entry) => entry.id))
+  if (entries.some((entry) => !vueNames.has(entry.id)) || vue.length !== entries.length)
+    throw new Error('Vue component documentation must match the catalog')
+  return [
+    ...entries.map((entry) => ({
+      params: { slug: entry.id },
+      props: { entry, content: entry, framework: 'react' as const },
+    })),
+    ...vue.map((content) => {
+      const entry = entries.find((entry) => entry.id === content.id)
+      if (!entry) throw new Error(`Vue documentation has no catalog entry: ${content.id}`)
+      return {
+        params: { slug: `vue/${content.id}` },
+        props: {
+          entry,
+          content,
+          framework: 'vue' as const,
+        },
+      }
+    }),
+  ]
 }
 
-const { entry } = Astro.props
-const { Content, headings } = await render(entry)
+const { entry, content, framework } = Astro.props
+const { Content, headings } = await render(content)
 ---
 
 <DocsLayout
   title={entry.data.title}
   description={entry.data.description}
-  currentPath={`/docs/${entry.id}`}
+  currentPath={`/docs/${framework === 'vue' ? 'vue/' : ''}${entry.id}`}
   headings={headings}
+  framework={framework}
+  frameworkPage={entry.id}
 >
   <Content />
 </DocsLayout>

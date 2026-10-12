@@ -56,8 +56,13 @@ pixels at mobile and desktop widths in the same browser. Axe includes color cont
 surface. Screenshot parity compares both adapters at runtime, so it creates no host-specific
 reference images and does not replace the existing authoritative Linux React baselines.
 
+Copied-source conformance installs every Vue registry item through the pinned shadcn-vue CLI,
+then tests a combined installation with a custom UI alias. The displayed quick starts typecheck,
+bundle, and render deterministically in Node without Kida packages or workspace aliases.
+Both framework catalogs and all 14 items must match the built documentation endpoints.
+
 The packed-consumer check in `DISTRIBUTION.md` verifies the displayed demos, production bundle,
-declaration resolution, and server imports. `/docs/vue` supplies the live examples and API notes.
+declaration resolution, and server imports. `/docs/vue/<name>` supplies the live examples and API notes.
 The complete Vue catalog remains experimental; wider browser, touch-device, and screen-reader
 release conformance is still required.
 
