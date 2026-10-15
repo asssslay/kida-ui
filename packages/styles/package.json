@@ -21,7 +21,8 @@
     "./components/collapse.css": "./components/collapse.css",
     "./components/text-bloom.css": "./components/text-bloom.css",
     "./components/magnetic.css": "./components/magnetic.css",
-    "./components/scribble-highlight.css": "./components/scribble-highlight.css"
+    "./components/scribble-highlight.css": "./components/scribble-highlight.css",
+    "./components/dual-wave.css": "./components/dual-wave.css"
   },
   "publishConfig": {
     "access": "public"

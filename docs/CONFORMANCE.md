@@ -2,7 +2,7 @@
 
 Status: **required release evidence** (2026-09-26)
 
-This matrix tracks the behavior of the seven existing React components against
+This matrix tracks the behavior of the React catalog against
 `COMPONENT_STANDARD.md`. It is intentionally separate from the product roadmap: a green row means
 the current component is stable enough to reproduce in another framework, not that more components
 should be added.
@@ -18,6 +18,7 @@ should be added.
 | PhotoPile | Browser | Browser | Drag settle + collection replacement | Photos and drag options | Shared browser gate | Focus and pointer paths |
 | ScribbleHighlight | Browser | Browser | Observer re-arm | Viewport options and variant | Shared browser gate | SVG decoration hidden |
 | StickerBurst | Browser | Browser | Listener cleanup via Strict Mode | Stable layout inputs | Shared browser gate | Native click path; decoration hidden |
+| DualWave (React only) | Browser + math unit tests | Browser | Observer, listener, and frame cleanup via Strict Mode | Items, layout, grid, options in place, `index` | Browser | Keyboard, click, wheel; live region announces each item |
 
 Cross-component gates also verify:
 
@@ -29,8 +30,10 @@ Cross-component gates also verify:
   immediate Collapse removal.
 
 Responsive and visual evidence is defined in `VISUAL_TESTING.md`. It adds mobile and desktop
-geometry checks, deterministic settled-state screenshots for all seven components, controlled
-light/dark surfaces, and a color-contrast-enabled axe pass.
+geometry checks, deterministic settled-state screenshots for the seven shared components, controlled
+light/dark surfaces, and a color-contrast-enabled axe pass. DualWave additionally has browser checks
+for mobile and desktop geometry, empty/single/long item lists, the first frame after a layout switch,
+and Frame's instant swap. Its stored Linux screenshot baseline is still required before public alpha.
 
 Run the behavioral evidence with `pnpm --filter @kida-ui/react test` and the responsive/visual
 evidence with `pnpm --filter @kida-ui/react test:visual`. The repository-wide release candidate gate
@@ -58,7 +61,7 @@ reference images and does not replace the existing authoritative Linux React bas
 
 The packed-consumer check in `DISTRIBUTION.md` verifies the displayed demos, production bundle,
 declaration resolution, and server imports. `/docs/vue` supplies the live examples and API notes.
-The complete Vue catalog remains experimental; wider browser, touch-device, and screen-reader
+DualWave currently has only a React adapter; the seven shared Vue components remain experimental. Wider browser, touch-device, and screen-reader
 release conformance is still required.
 
 `pnpm docs:check-dev` starts an isolated Astro dev server and checks Vue/React docs and the home

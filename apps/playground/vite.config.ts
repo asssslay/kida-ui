@@ -6,6 +6,8 @@ const src = (path: string) => fileURLToPath(new URL(path, import.meta.url))
 
 export default defineConfig({
   plugins: [react()],
+  // Demo media is shared with the docs site rather than copied.
+  publicDir: src('../docs/public'),
   resolve: {
     // Point at package SOURCE, not dist. Editing the engine hot-reloads the page with no
     // rebuild step — which is the whole reason this app exists.

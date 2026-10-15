@@ -1,6 +1,7 @@
 import '@kida-ui/styles/kida.css'
 import { Collapse, Reveal, useReducedMotion } from '@kida-ui/react'
 import { useState } from 'react'
+import { DualWavePlayground } from './dual-wave'
 
 const CARDS = [
   { title: 'Default', options: {} },
@@ -85,6 +86,14 @@ function StressSection() {
 export function App() {
   const reduced = useReducedMotion()
 
+  if (new URLSearchParams(window.location.search).get('demo') === 'dual-wave') {
+    return (
+      <main className="dual-wave-page">
+        <DualWavePlayground standalone />
+      </main>
+    )
+  }
+
   return (
     <main>
       <header>
@@ -97,6 +106,7 @@ export function App() {
           appear instantly and the collapse should still close and unmount.
         </p>
       </header>
+      <DualWavePlayground />
       <CollapseSection />
       <div className="spacer">↓ scroll ↓</div>
       <RevealSection />

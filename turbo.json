@@ -20,6 +20,25 @@
       "outputs": ["dist/**"]
     },
     "typecheck": { "dependsOn": ["^build"] },
+    "@kida-ui/playground#build": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/apps/docs/src/demos/dual-wave-playground.react.tsx",
+        "$TURBO_ROOT$/apps/docs/src/demos/dual-wave-photos.ts",
+        "$TURBO_ROOT$/apps/docs/src/demos/dual-wave.css",
+        "$TURBO_ROOT$/apps/docs/public/demo/dual-wave/**"
+      ],
+      "outputs": ["dist/**"]
+    },
+    "@kida-ui/playground#typecheck": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/apps/docs/src/demos/dual-wave-playground.react.tsx",
+        "$TURBO_ROOT$/apps/docs/src/demos/dual-wave-photos.ts"
+      ]
+    },
     "@kida-ui/vue#typecheck": { "dependsOn": ["build"] },
     "test": { "dependsOn": ["^build"] },
     "dev": { "cache": false, "persistent": true }

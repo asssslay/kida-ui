@@ -68,3 +68,8 @@ Responsive browser tests separately verify:
 - PhotoPile compact sizing, focus visibility, and absence of page-level overflow;
 - Collapse height remeasurement after content wraps in a narrower container; and
 - TextBloom wrapping, text preservation, and absence of horizontal overflow.
+
+DualWave's browser suite checks that the stage's parts stay inside it at mobile and desktop widths,
+without page overflow, and that long titles stay inside their columns. These checks do not replace a
+reviewed Linux screenshot baseline; adding DualWave to the stored visual references remains a
+pre-alpha task.

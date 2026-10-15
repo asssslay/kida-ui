@@ -6,7 +6,7 @@ import { join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const root = fileURLToPath(new URL('..', import.meta.url))
-const components = [
+const vueComponents = [
   'reveal',
   'collapse',
   'text-bloom',
@@ -15,6 +15,8 @@ const components = [
   'scribble-highlight',
   'sticker-burst',
 ]
+// React-only components have docs pages but no Vue demo module.
+const components = [...vueComponents, 'dual-wave']
 const docs = join(root, 'apps/docs')
 const require = createRequire(join(docs, 'package.json'))
 const { dev } = await import(pathToFileURL(require.resolve('astro')).href)
@@ -28,10 +30,25 @@ const server = await dev({
 
 try {
   const origin = `http://127.0.0.1:${server.address.port}`
-  for (const path of ['/docs/vue', ...components.map((name) => `/docs/${name}`), '/']) {
+  for (const path of ['/docs', '/docs/vue', ...components.map((name) => `/docs/${name}`), '/']) {
     const response = await fetch(`${origin}${path}`)
     const html = await response.text()
     assert.equal(response.status, 200, `${path}: development SSR failed`)
+    if (path === '/' || path === '/docs') {
+      assert(html.includes('href="/docs/dual-wave"'), `${path}: DualWave catalog link is missing`)
+      assert(html.includes('data-component="dual-wave"'), `${path}: DualWave preview is missing`)
+    }
+    if (path === '/') {
+      assert(
+        html.includes(`${components.length} components. No filler.`),
+        'The homepage component count does not match the catalog',
+      )
+    }
+    if (path === '/docs/dual-wave') {
+      assert(html.includes('data-kida-dual-wave'), 'React DualWave did not render on the server')
+      assert(html.includes('dual-wave-settings'), 'DualWave customization controls are missing')
+      assert(html.includes('/r/dual-wave.json'), 'DualWave installation link is missing')
+    }
     if (path === '/docs/vue') {
       assert(html.includes('data-kida-reveal'), 'Vue Reveal did not render on the server')
       assert(html.includes('data-kida-collapse'), 'Vue Collapse did not render on the server')
@@ -41,7 +58,7 @@ try {
       }
     }
   }
-  for (const name of components) {
+  for (const name of vueComponents) {
     const response = await fetch(`${origin}/src/demos/${name}-basic.vue`)
     const source = await response.text()
     assert.equal(response.status, 200, `Vue ${name} client module failed to compile`)

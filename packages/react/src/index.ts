@@ -1,4 +1,10 @@
 export { Collapse, type CollapseProps } from './collapse.js'
+export {
+  DualWave,
+  type DualWaveItem,
+  type DualWaveLayout,
+  type DualWaveProps,
+} from './dual-wave.js'
 export { Magnetic, type MagneticProps } from './magnetic.js'
 export { PhotoPile, type PhotoPilePhoto, type PhotoPileProps } from './photo-pile.js'
 export { Reveal, type RevealProps } from './reveal.js'
