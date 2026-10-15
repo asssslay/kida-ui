@@ -49,7 +49,11 @@ try {
   page.setDefaultTimeout(20000)
   page.setDefaultNavigationTimeout(30000)
   const errors = []
-  page.on('pageerror', (error) => errors.push(error.message))
+  page.on('pageerror', (error) => {
+    const detail = { message: error.message, url: page.url(), stack: error.stack }
+    errors.push(detail)
+    console.error('Documentation browser error:', detail)
+  })
   const origin = `http://127.0.0.1:${server.port}`
 
   async function open(path) {
