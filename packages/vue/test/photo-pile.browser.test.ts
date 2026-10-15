@@ -90,52 +90,6 @@ test.each([
     expect(node('[data-kida-photo-stage]').getBoundingClientRect().height).toBeCloseTo(height, 1)
     for (const photo of root().querySelectorAll<HTMLElement>('[data-kida-photo-item]')) {
       const rect = photo.getBoundingClientRect()
-      const expectedX =
-        bounds.left +
-        bounds.width / 2 +
-        Number.parseFloat(photo.style.getPropertyValue('--kida-photo-x'))
-      const expectedY =
-        bounds.top +
-        bounds.height / 2 +
-        Number.parseFloat(photo.style.getPropertyValue('--kida-photo-y'))
-      if (
-        Math.abs(rect.left + rect.width / 2 - expectedX) > 0.05 ||
-        Math.abs(rect.top + rect.height / 2 - expectedY) > 0.05
-      ) {
-        const original = photo.style.cssText
-        const describe = () => {
-          const box = photo.getBoundingClientRect()
-          const style = getComputedStyle(photo)
-          return {
-            box: box.toJSON(),
-            width: style.width,
-            height: style.height,
-            origin: style.transformOrigin,
-            transform: style.transform,
-            center: [box.left + box.width / 2, box.top + box.height / 2],
-          }
-        }
-        const variants = []
-        for (const override of [
-          '',
-          'transform-box:border-box',
-          'transform-box:content-box',
-          'transform-box:fill-box',
-          'display:block',
-          'translate:-50% -50%;transform:translate(var(--kida-photo-x),var(--kida-photo-y)) rotate(var(--kida-photo-rotation))',
-          'transform:translate3d(-50%,-50%,0) translate(var(--kida-photo-x),var(--kida-photo-y)) rotate(var(--kida-photo-rotation))',
-          'transform:translate(-50%,-50%) translate(var(--kida-photo-x),var(--kida-photo-y))',
-          'transform:none',
-        ]) {
-          photo.style.cssText = `${original};${override}`
-          variants.push({ override, ...describe() })
-        }
-        photo.style.cssText = original
-        console.info(
-          'PhotoPile geometry diagnostics',
-          JSON.stringify({ expectedX, expectedY, variants }),
-        )
-      }
       expect(rect.left + rect.width / 2).toBeCloseTo(
         bounds.left +
           bounds.width / 2 +

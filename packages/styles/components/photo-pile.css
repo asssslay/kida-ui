@@ -20,7 +20,9 @@
    fieldset appears on the page. */
 [data-kida-photo-stage] {
   position: relative;
-  display: block;
+  /* Grid centers fractional card sizes without percentage transforms, which WebKit rounds. */
+  display: grid;
+  place-items: center;
   /* Fill explicitly sized previews as well as the pile's default minimum height. */
   height: 100%;
   min-height: inherit;
@@ -28,20 +30,15 @@
 
 [data-kida-photo-item] {
   position: absolute;
-  top: 50%;
-  left: 50%;
   width: var(--kida-photo-width);
   margin: 0;
   padding: 0;
   border: 0;
   border-radius: var(--kida-photo-radius);
   background: transparent;
-  /* Custom photo cards must not use WebKit's pixel-snapped native button appearance. */
-  appearance: none;
   cursor: grab;
   touch-action: none;
-  transform: translate(-50%, -50%) translate(var(--kida-photo-x), var(--kida-photo-y))
-    rotate(var(--kida-photo-rotation));
+  transform: translate(var(--kida-photo-x), var(--kida-photo-y)) rotate(var(--kida-photo-rotation));
 }
 
 [data-kida-photo-item][data-dragging] {
