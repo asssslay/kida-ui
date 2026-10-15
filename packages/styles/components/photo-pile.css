@@ -36,6 +36,8 @@
   border: 0;
   border-radius: var(--kida-photo-radius);
   background: transparent;
+  /* Custom photo cards must not use WebKit's pixel-snapped native button appearance. */
+  appearance: none;
   cursor: grab;
   touch-action: none;
   transform: translate(-50%, -50%) translate(var(--kida-photo-x), var(--kida-photo-y))

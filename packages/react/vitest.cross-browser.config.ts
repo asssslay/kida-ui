@@ -11,7 +11,8 @@ export default defineConfig({
     fileParallelism: false,
     browser: {
       ...base.test?.browser,
-      provider: playwright(),
+      // Fit the test iframe without fractional scaling or clipping the viewport-entry fixture.
+      provider: playwright({ contextOptions: { viewport: { width: 1440, height: 1000 } } }),
       instances: [{ browser: 'firefox' }, { browser: 'webkit' }],
     },
   },
