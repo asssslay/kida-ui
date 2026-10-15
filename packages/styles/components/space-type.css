@@ -1,0 +1,128 @@
+[data-kida-space-type] {
+  --kida-space-type-color: #211c24;
+  --kida-space-type-background: #fffafb;
+  width: 100%;
+  --kida-space-type-size: calc(
+    min(9cqw, 350cqw / var(--kida-space-type-count), 20cqw / var(--kida-space-type-rows))
+  );
+  /* Reserve the strongest wave before measurement as well. */
+  --kida-space-type-radius: calc(34cqw / 1.32);
+  position: relative;
+  container-type: inline-size;
+  height: var(--kida-space-type-height, clamp(15rem, 40vw, 28rem));
+  padding: 0;
+  border: 0;
+  overflow: clip;
+  background: var(--kida-space-type-background);
+}
+
+[data-kida-space-type] [data-kida-space-type-space] {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  pointer-events: none;
+  perspective: var(--kida-space-type-perspective, 1200cqw);
+}
+
+[data-kida-space-type] [data-kida-space-type-camera],
+[data-kida-space-type] [data-kida-space-type-ring],
+[data-kida-space-type] [data-kida-space-type-row],
+[data-kida-space-type] [data-kida-space-type-letter] {
+  position: absolute;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+}
+
+[data-kida-space-type] [data-kida-space-type-camera] {
+  top: 50%;
+  left: 50%;
+  transform: rotateX(18deg) rotateZ(-3deg);
+}
+
+[data-kida-space-type] [data-kida-space-type-ring] {
+  transform: rotateY(-90deg);
+}
+
+[data-kida-space-type] [data-kida-space-type-row] {
+  /* A wave travels along the cylinder's rows. Each letter follows its local slope. */
+  --kida-space-type-wave-angle: calc(
+    var(--kida-space-type-phase) *
+    2880deg +
+    var(--kida-space-type-row) *
+    2160deg /
+    var(--kida-space-type-count)
+  );
+  --kida-space-type-wave-amplitude: calc(
+    var(--kida-space-type-radius) *
+    var(--kida-space-type-longitude) *
+    0.0032
+  );
+  --kida-space-type-row-radius: calc(
+    var(--kida-space-type-radius) +
+    sin(var(--kida-space-type-wave-angle)) *
+    var(--kida-space-type-wave-amplitude)
+  );
+  --kida-space-type-surface-tilt: atan2(
+    calc(
+      var(--kida-space-type-wave-amplitude) *
+      cos(var(--kida-space-type-wave-angle)) *
+      sin(2160deg / var(--kida-space-type-count))
+    ),
+    calc(var(--kida-space-type-size) * 1.2)
+  );
+  transform: translateY(
+    calc(
+      (var(--kida-space-type-row) - (var(--kida-space-type-rows) - 1) / 2) *
+      var(--kida-space-type-size) *
+      1.2
+    )
+  );
+}
+
+[data-kida-space-type] [data-kida-space-type-letter] {
+  transform: rotateY(calc(var(--kida-space-type-index) * 360deg / var(--kida-space-type-count)))
+    translateZ(var(--kida-space-type-row-radius)) rotateX(var(--kida-space-type-surface-tilt));
+}
+
+[data-kida-space-type] [data-kida-space-type-face] {
+  position: absolute;
+  top: calc(var(--kida-space-type-size) * -0.5);
+  left: calc(var(--kida-space-type-size) * -0.4);
+  width: calc(var(--kida-space-type-size) * 0.8);
+  height: var(--kida-space-type-size);
+  backface-visibility: hidden;
+  font-family: var(--kida-space-type-font, "Helvetica Neue", "Segoe UI", sans-serif);
+  font-size: var(--kida-space-type-size);
+  font-weight: 200;
+  line-height: 1;
+  text-align: center;
+  white-space: pre;
+}
+
+[data-kida-space-type] [data-kida-space-type-face="front"] {
+  color: var(--kida-space-type-color);
+  transform: translateZ(0.1px) scaleX(0.7);
+}
+
+[data-kida-space-type] [data-kida-space-type-face="back"] {
+  color: color-mix(in srgb, var(--kida-space-type-color) 30%, var(--kida-space-type-background));
+  transform: rotateY(180deg) translateZ(0.1px) scaleX(-0.7);
+}
+
+[data-kida-space-type] [data-kida-space-type-text] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@property --kida-space-type-phase {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}

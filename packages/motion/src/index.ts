@@ -5,6 +5,13 @@ export { type PhotoPileOptions, photoPile } from './photo-pile.js'
 export { prefersReducedMotion, watchReducedMotion } from './reduced-motion.js'
 export { type RevealOptions, reveal, revealInitialStyle } from './reveal.js'
 export {
+  getSpaceTypeGeometry,
+  type SpaceTypeControls,
+  type SpaceTypeGeometry,
+  type SpaceTypeOptions,
+  spaceType,
+} from './space-type.js'
+export {
   type StickerBurstOptions,
   type StickerBurstPoint,
   stickerBurst,

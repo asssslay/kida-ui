@@ -20,6 +20,21 @@
       "outputs": ["dist/**"]
     },
     "typecheck": { "dependsOn": ["^build"] },
+    "@kida-ui/playground#build": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/apps/docs/src/demos/space-type-playground.react.tsx",
+        "$TURBO_ROOT$/apps/docs/src/demos/space-type.css"
+      ]
+    },
+    "@kida-ui/playground#typecheck": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/apps/docs/src/demos/space-type-playground.react.tsx"
+      ]
+    },
     "@kida-ui/vue#typecheck": { "dependsOn": ["build"] },
     "test": { "dependsOn": ["^build"] },
     "dev": { "cache": false, "persistent": true }

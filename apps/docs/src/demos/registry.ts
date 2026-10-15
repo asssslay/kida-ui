@@ -1,7 +1,7 @@
 import type { CodeLang } from '../components/code-lang'
 
 /**
- * Available demo frameworks. Vue is experimental and covers the seven-component catalog.
+ * Available demo frameworks. Vue is experimental and covers seven shared components.
  */
 export type Framework = 'react' | 'vue'
 

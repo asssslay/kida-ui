@@ -2,7 +2,7 @@
 
 Status: **implemented for React components** (2026-09-03)
 
-Vue support is package-only and experimental: `@kida-ui/vue` exports all seven catalog components
+Vue support is package-only and experimental: `@kida-ui/vue` exports the seven shared catalog components
 for Vue 3.5+, with the same `@kida-ui/styles/kida.css` import. npm publication is pending. Vue live
 demos and complete usage are at `/docs/vue`; the existing registry and shadcn commands remain
 React-only. Do not advertise Vue copied-source support until its installation and validation path

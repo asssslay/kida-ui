@@ -2,7 +2,7 @@
 
 Status: **required release evidence** (2026-09-26)
 
-This matrix tracks the behavior of the seven existing React components against
+This matrix tracks the behavior of the React catalog against
 `COMPONENT_STANDARD.md`. It is intentionally separate from the product roadmap: a green row means
 the current component is stable enough to reproduce in another framework, not that more components
 should be added.
@@ -18,6 +18,7 @@ should be added.
 | PhotoPile | Browser | Browser | Drag settle + collection replacement | Photos and drag options | Shared browser gate | Focus and pointer paths |
 | ScribbleHighlight | Browser | Browser | Observer re-arm | Viewport options and variant | Shared browser gate | SVG decoration hidden |
 | StickerBurst | Browser | Browser | Listener cleanup via Strict Mode | Stable layout inputs | Shared browser gate | Native click path; decoration hidden |
+| SpaceType (React only) | Browser + geometry unit tests | Browser | Observer and animation cleanup | Text, rows, speed, pause, radius, longitude, colors | Browser | Authored phrase exposed once |
 
 Cross-component gates also verify:
 
@@ -30,7 +31,10 @@ Cross-component gates also verify:
 
 Responsive and visual evidence is defined in `VISUAL_TESTING.md`. It adds mobile and desktop
 geometry checks, deterministic settled-state screenshots for all seven components, controlled
-light/dark surfaces, and a color-contrast-enabled axe pass.
+light/dark surfaces, and a color-contrast-enabled axe pass. SpaceType additionally has responsive
+light/dark checks in normal and reduced motion, empty/single/long content coverage, independent
+instances, and hidden-document playback checks. Its stored Linux screenshot baseline is still
+required before public alpha.
 
 Run the behavioral evidence with `pnpm --filter @kida-ui/react test` and the responsive/visual
 evidence with `pnpm --filter @kida-ui/react test:visual`. The repository-wide release candidate gate
@@ -58,7 +62,7 @@ reference images and does not replace the existing authoritative Linux React bas
 
 The packed-consumer check in `DISTRIBUTION.md` verifies the displayed demos, production bundle,
 declaration resolution, and server imports. `/docs/vue` supplies the live examples and API notes.
-The complete Vue catalog remains experimental; wider browser, touch-device, and screen-reader
+SpaceType currently has only a React adapter; the seven shared Vue components remain experimental. Wider browser, touch-device, and screen-reader
 release conformance is still required.
 
 `pnpm docs:check-dev` starts an isolated Astro dev server and checks Vue/React docs and the home
