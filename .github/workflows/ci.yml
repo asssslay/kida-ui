@@ -32,6 +32,18 @@ jobs:
       - run: pnpm test
       - name: Responsive visual baselines
         run: pnpm --filter @kida-ui/react test:visual
+      - run: pnpm build
+      - name: Packed Vue packages work in an isolated consumer
+        run: pnpm check:vue-consumer
+      - name: React and Vue documentation work in development
+        run: pnpm docs:check-dev
+      - name: Documentation framework navigation and demo parity
+        run: pnpm docs:test-browser
+      - name: ADR D3a — framework-free core
+        run: pnpm gate:agnostic
+      - name: Package manifests are publishable
+        run: pnpm -r --filter "./packages/*" exec publint
+
       - name: Upload visual differences
         if: failure()
         uses: actions/upload-artifact@v4
@@ -40,14 +52,56 @@ jobs:
           path: |
             packages/react/.vitest-attachments/visual
             packages/vue/.vitest-attachments/parity
+            apps/docs/.vitest-attachments/framework
+          # Vitest diagnostics are stored in .vitest-attachments.
+          include-hidden-files: true
           if-no-files-found: ignore
           retention-days: 14
-      - run: pnpm build
-      - name: Packed Vue packages work in an isolated consumer
-        run: pnpm check:vue-consumer
-      - name: React and Vue documentation work in development
-        run: pnpm docs:check-dev
-      - name: ADR D3a — framework-free core
-        run: pnpm gate:agnostic
-      - name: Package manifests are publishable
-        run: pnpm -r --filter "./packages/*" exec publint
+
+  browser-conformance:
+    name: Browser conformance (${{ matrix.browser }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [firefox, webkit]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Install locked browser and operating system dependencies
+        run: pnpm --filter @kida-ui/react exec playwright install --with-deps "${{ matrix.browser }}"
+      - name: Build adapters and shared dependencies
+        run: pnpm exec turbo run build --filter=@kida-ui/react --filter=@kida-ui/vue
+      - name: React behavior and responsive geometry
+        run: pnpm --filter @kida-ui/react test:cross-browser --project "${{ matrix.browser }}"
+      - name: Vue behavior, hydration, accessibility, and adapter parity
+        if: ${{ !cancelled() }}
+        run: pnpm --filter @kida-ui/vue test:cross-browser --project "${{ matrix.browser }}"
+      - name: WebKit emulated touch input
+        if: ${{ !cancelled() && matrix.browser == 'webkit' }}
+        run: pnpm --filter @kida-ui/vue test:cross-browser --project webkit-touch
+      - name: Documentation framework navigation and demo parity
+        if: ${{ !cancelled() }}
+        env:
+          KIDA_TEST_BROWSER: ${{ matrix.browser }}
+        run: pnpm --filter @kida-ui/docs build && pnpm docs:test-browser
+      - name: Upload browser failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-conformance-${{ matrix.browser }}
+          path: |
+            packages/react/src/**/__screenshots__
+            packages/react/.vitest-attachments
+            packages/vue/test/**/__screenshots__
+            packages/vue/.vitest-attachments
+            apps/docs/.vitest-attachments/framework
+          # Vitest diagnostics are stored in .vitest-attachments.
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 14

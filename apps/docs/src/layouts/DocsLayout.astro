@@ -45,9 +45,10 @@ const toc = headings.filter((heading) => heading.depth === 2 || heading.depth ==
   title={`${title} — Kida UI`}
   description={description}
   bodyClass="soft-orbit-page docs-reference-page"
+  clientNavigation
 >
   <div class="docs">
-    <aside class="sidebar">
+    <aside class="sidebar" transition:persist="docs-sidebar">
       <h2>Documentation</h2>
       <section class="sidebar-group">
         <h3>Getting started</h3>
@@ -59,6 +60,7 @@ const toc = headings.filter((heading) => heading.depth === 2 || heading.depth ==
           </li>
           <li>
             <a
+              data-framework-link
               href={`${docsPrefix}/installation`}
               aria-current={currentPath === `${docsPrefix}/installation` ? 'page' : undefined}
             >
@@ -75,6 +77,7 @@ const toc = headings.filter((heading) => heading.depth === 2 || heading.depth ==
               {group.entries.map((item) => (
                 <li>
                   <a
+                    data-framework-link
                     href={`${docsPrefix}/${item.id}`}
                     aria-current={currentPath === `${docsPrefix}/${item.id}` ? 'page' : undefined}
                   >
@@ -89,7 +92,7 @@ const toc = headings.filter((heading) => heading.depth === 2 || heading.depth ==
     </aside>
 
     <main class="prose" id="main">
-      <header class="docs-prose-head">
+      <header class="docs-prose-head" transition:persist={`docs-heading-${frameworkPage ?? title}`}>
         <p class="docs-prose-kicker">
           <a href="/docs">Documentation</a><span aria-hidden="true">/</span>{title}
         </p>

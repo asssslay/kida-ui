@@ -8,4 +8,5 @@ autoInstallPeers: false
 strictPeerDependencies: false
 
 patchedDependencies:
+  '@astrojs/react@6.0.4': patches/@astrojs__react@6.0.4.patch
   '@vitejs/plugin-vue@6.0.9': patches/@vitejs__plugin-vue@6.0.9.patch

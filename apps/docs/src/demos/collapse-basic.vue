@@ -2,22 +2,21 @@
 import { Collapse } from '@kida-ui/vue'
 import { ref, useId } from 'vue'
 
-const open = ref(true)
+const props = withDefaults(defineProps<{ initialOpen?: boolean }>(), { initialOpen: false })
+const open = ref(props.initialOpen)
 const panelId = useId()
-const exits = ref(0)
 </script>
 
 <template>
   <div class="demo-stack">
     <button type="button" class="demo-button" :aria-expanded="open" :aria-controls="open ? panelId : undefined" @click="open = !open">
-      {{ open ? 'Hide details' : 'Show details' }}
+      {{ open ? 'Close' : 'Open' }}
     </button>
-    <Collapse :id="panelId" :open="open" @exit-complete="exits++">
+    <Collapse :id="panelId" :open="open">
       <div class="demo-panel">
-        <h2>Room for the details.</h2>
-        <p>The panel stays mounted until its CSS exit animation finishes.</p>
+        <p>The node stays mounted until the close keyframes finish.</p>
+        <p>Its natural height is measured into --kida-collapse-height.</p>
       </div>
     </Collapse>
-    <p role="status">Completed exits: {{ exits }}</p>
   </div>
 </template>

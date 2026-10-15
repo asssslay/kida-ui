@@ -2,8 +2,9 @@ import Demo from '../../components/Demo.astro'
 import Distribution from '../../components/Distribution.astro'
 import QuickStart from '../../components/QuickStart.astro'
 import Basic from '../../demos/reveal-basic.vue'
+import Options from '../../demos/reveal-options.vue'
 
-<Demo name="reveal-basic" framework="vue" title="Reveal" hideSource>
+<Demo name="reveal-basic" framework="vue" title="Basic" hideSource>
   <Basic client:visible={{ rootMargin: '200px' }} />
 </Demo>
 
@@ -19,6 +20,10 @@ The copy-source command includes the stylesheet that keeps server-rendered conte
 reduced motion before hydration. Package consumers must import `@kida-ui/styles/kida.css` once.
 
 ## Customization
+
+<Demo name="reveal-options" framework="vue" title="Travel, timing and repetition">
+  <Options client:visible={{ rootMargin: '200px' }} />
+</Demo>
 
 Bind Boolean options explicitly, such as `:once="false"`. Use `x`, `y`, `scale`, `duration`, and `ease` to tune the entrance.
 
