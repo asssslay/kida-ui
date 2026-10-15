@@ -44,7 +44,7 @@ measurement helper, CSS variables, and data attributes as React, with Vue defaul
 attributes/events, `@exit-complete`, and component refs exposing `element`.
 
 `pnpm --filter @kida-ui/vue test` builds the package before testing its public exports. Node tests
-check deterministic server rendering without browser globals. Chromium tests cover viewport entry,
+check deterministic server rendering without browser globals. Browser tests cover viewport entry,
 repetition, reactive options and root replacement, equivalent easing tuples, native events and refs,
 resize measurement, enter/exit and reversal, reduced motion, and controller/observer cleanup.
 Catalog tests also cover reactive text/segmentation and Unicode code points, pointer and keyboard
@@ -63,8 +63,10 @@ Both framework catalogs and all 14 items must match the built documentation endp
 
 The packed-consumer check in `DISTRIBUTION.md` verifies the displayed demos, production bundle,
 declaration resolution, and server imports. `/docs/vue/<name>` supplies the live examples and API notes.
-The complete Vue catalog remains experimental; wider browser, touch-device, and screen-reader
-release conformance is still required.
+The complete Vue catalog remains experimental. CI now defines Firefox/WebKit behavior gates for
+both adapters, in addition to Chromium, with Chromium/WebKit touch emulation. Real touch-device
+and screen-reader release conformance is still required. See
+[the release checklist](RELEASE_CHECKLIST.md) for commands and evidence requirements.
 
 `pnpm docs:check-dev` starts an isolated Astro dev server and checks Vue/React docs and the home
 page, including the Vue client module. A version-pinned pnpm patch disables React Refresh only in
@@ -81,8 +83,8 @@ The following work is deliberately not represented as complete:
    rules; it cannot prove announcement quality.
 2. Run real touch-device smoke tests for PhotoPile and coarse-pointer behavior. Synthetic pointer
    coverage does not validate browser gesture arbitration.
-3. Expand the browser matrix beyond Chromium once CI ownership and expected support targets are
-   decided.
+3. Require green Chromium, Firefox, and WebKit CI jobs for the release candidate, including Vue
+   adapter parity and the touch-emulation scenarios. A configured job is not passing evidence.
 
 Any failure found by those checks should be fixed on a narrowly named `fix/<component>-<problem>`
 branch when it is larger than a small conformance correction.

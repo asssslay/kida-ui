@@ -53,10 +53,16 @@ tests so one mismatch cannot hide the remaining comparisons and their artifacts.
 ## Scope
 
 The experimental Vue milestone also compares all seven components against the built React adapter
-in the same Chromium session at both viewport widths. These settled reduced-motion captures use
-fixed, identical content and integer geometry; exact decoded pixel equality is required. The comparison has
-no stored baselines to update. Run it with `pnpm --filter @kida-ui/vue test`. The React Linux
-baselines remain the independent styling regression gate.
+in the same browser session at both viewport widths. Chromium runs under `pnpm verify`;
+Firefox/WebKit run under `pnpm test:cross-browser` and their separate CI jobs. These settled
+reduced-motion captures use fixed, identical content and integer geometry; exact decoded pixel
+equality is required. The comparison has no stored baselines to update. Run the Chromium checks
+with `pnpm --filter @kida-ui/vue test`. The React Linux baselines remain the independent styling
+regression gate. The parity host window is larger than either test viewport so Vitest
+does not scale its iframe; captures must contain one image pixel per CSS pixel. This prevents
+rotated cards and SVG strokes from being compared at a fractional raster scale. Chromium uses
+software rasterization for these adapter checks to avoid GPU shadow dithering between captures;
+the independent Linux React screenshot environment is unchanged.
 
 The mobile and desktop galleries cover all seven components in deterministic settled states, on
 controlled light and dark surfaces. The same visual project also runs axe with color contrast

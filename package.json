@@ -22,7 +22,8 @@
     "check:vue-consumer": "pnpm --filter @kida-ui/vue check:consumer",
     "verify": "pnpm lint && pnpm registry:check && pnpm registry:check-copy && pnpm docs:check-examples && pnpm typecheck && pnpm test && pnpm build && pnpm check:vue-consumer && pnpm docs:check-dev && pnpm gate:agnostic",
     "changeset": "changeset",
-    "release": "turbo run build && changeset publish"
+    "release": "turbo run build && changeset publish",
+    "test:cross-browser": "turbo run build --filter=@kida-ui/react --filter=@kida-ui/vue && pnpm --filter @kida-ui/react test:cross-browser && pnpm --filter @kida-ui/vue test:cross-browser"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.9",
