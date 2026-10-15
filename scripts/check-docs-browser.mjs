@@ -292,22 +292,25 @@ try {
     await page.locator('.framework-switcher a:focus').getAttribute('href'),
     '/docs/vue/reveal',
   )
-  await page.goBack()
-  await page.waitForURL(`${origin}/docs/reveal`)
-  await page.waitForFunction(
-    () =>
-      document
-        .querySelector('.framework-switcher a[href="/docs/reveal"]')
-        ?.getAttribute('aria-current') === 'page',
-  )
-  await page.goForward()
-  await page.waitForURL(`${origin}/docs/vue/reveal`)
-  await page.waitForFunction(
-    () =>
-      document
-        .querySelector('.framework-switcher a[href="/docs/vue/reveal"]')
-        ?.getAttribute('aria-current') === 'page',
-  )
+  // Repeat without waiting for island hydration to finish between traversals.
+  for (let attempt = 0; attempt < 3; attempt++) {
+    await page.goBack()
+    await page.waitForURL(`${origin}/docs/reveal`)
+    await page.waitForFunction(
+      () =>
+        document
+          .querySelector('.framework-switcher a[href="/docs/reveal"]')
+          ?.getAttribute('aria-current') === 'page',
+    )
+    await page.goForward()
+    await page.waitForURL(`${origin}/docs/vue/reveal`)
+    await page.waitForFunction(
+      () =>
+        document
+          .querySelector('.framework-switcher a[href="/docs/vue/reveal"]')
+          ?.getAttribute('aria-current') === 'page',
+    )
+  }
   // Clipboard is stubbed only at the host boundary; the actual post-navigation Copy handler runs.
   await page.evaluate(() => {
     window.__copiedDocsText = ''

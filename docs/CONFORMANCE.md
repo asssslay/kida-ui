@@ -82,6 +82,13 @@ geometry across React and Vue. Framework switching must preserve the document, n
 scroll position, keyboard focus, history, and working Copy buttons. CI also runs this gate with
 `KIDA_TEST_BROWSER=firefox` and `KIDA_TEST_BROWSER=webkit`.
 
+A version-pinned `@astrojs/react` patch completes a pending island's initial render before
+unmounting it during a router swap. Without it, rapid history traversal can unmount an unfinished
+hydration and report React error 424 in WebKit. The patch is limited to teardown; ordinary
+hydration remains concurrent. The docs gate repeats back/forward traversal without waiting for
+island hydration and requires zero browser errors. Remove the patch after the integration handles
+this lifecycle and passes the same checks.
+
 ## Still required before a public alpha
 
 The following work is deliberately not represented as complete:
