@@ -1,6 +1,7 @@
 import '@kida-ui/styles/kida.css'
 import { Collapse, Reveal, useReducedMotion } from '@kida-ui/react'
 import { useState } from 'react'
+import { SpaceTypeSection } from '../../docs/src/demos/space-type-playground.react'
 
 const CARDS = [
   { title: 'Default', options: {} },
@@ -97,6 +98,7 @@ export function App() {
           appear instantly and the collapse should still close and unmount.
         </p>
       </header>
+      <SpaceTypeSection />
       <CollapseSection />
       <div className="spacer">↓ scroll ↓</div>
       <RevealSection />

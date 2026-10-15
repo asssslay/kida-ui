@@ -26,6 +26,9 @@ export default defineConfig({
   // suite with a second React instance and trigger invalid-hook errors.
   optimizeDeps: { include: ['react-dom/client', 'react-dom/server'] },
   test: {
+    // Media emulation and viewport changes belong to the browser page. Keep files from
+    // changing those settings while another component is waiting for an animation.
+    fileParallelism: false,
     include: ['src/**/*.test.{ts,tsx}'],
     exclude: ['src/**/*.visual.test.{ts,tsx}', 'src/responsive.test.tsx'],
     browser: {

@@ -6,7 +6,7 @@ import { join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const root = fileURLToPath(new URL('..', import.meta.url))
-const components = [
+const vueComponents = [
   'reveal',
   'collapse',
   'text-bloom',
@@ -15,6 +15,7 @@ const components = [
   'scribble-highlight',
   'sticker-burst',
 ]
+const components = [...vueComponents, 'space-type']
 const docs = join(root, 'apps/docs')
 const require = createRequire(join(docs, 'package.json'))
 const { dev } = await import(pathToFileURL(require.resolve('astro')).href)
@@ -41,7 +42,7 @@ try {
       }
     }
   }
-  for (const name of components) {
+  for (const name of vueComponents) {
     const response = await fetch(`${origin}/src/demos/${name}-basic.vue`)
     const source = await response.text()
     assert.equal(response.status, 200, `Vue ${name} client module failed to compile`)
