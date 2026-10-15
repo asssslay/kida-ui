@@ -1,6 +1,6 @@
 # Kida UI — Architecture Decision Record
 
-Status: **decided** (2026-10-08) · Scope: React catalog + experimental Vue milestone · Rev 7
+Status: **decided** (2026-10-08) · Scope: React catalog + experimental Vue milestone · Rev 8
 
 ## 1. Positioning
 
@@ -158,7 +158,7 @@ packages/react/src/spotlight-card.tsx      ← single source of truth
    └── build-registry.ts ──► registry/r/spotlight-card.json
 ```
 
-The copy path is available for every public React component. Each registry item contains all
+The copy path is available for every public React and Vue component. Each registry item contains all
 required Kida source and CSS and declares only public third-party runtime packages. The package
 path remains the future upgradeable option once the Kida packages are published.
 
@@ -171,8 +171,9 @@ v1 needs **no Kida CLI**: emit shadcn-schema JSON and users run
 // → npx shadcn@latest add @kida-ui/reveal
 ```
 
-Evaluate `packages/cli` when Vue copied-source distribution is designed. The experimental Vue
-milestone uses packages; the existing shadcn installation path remains React-only.
+Vue uses generated `/r/vue/<name>.json` items with the official shadcn-vue CLI. Framework
+selection lives in the docs; both CLI paths are validated outside the workspace. A custom Kida
+CLI remains deferred while the existing framework CLIs cover installation.
 
 ## 8. Toolchain
 
@@ -191,7 +192,8 @@ Vitest + Playwright + axe · Biome · Astro (docs) · Shiki
   next are CandyDock, one background, and one composed hero
 - **P4:** package metadata, visual regression and accessibility audit → **v0.1 alpha (React)**
 - **P5 — current:** experimental Vue covers all seven components with package/SSR/browser evidence
-  and parity; next design Vue copied-source distribution and complete release conformance before a public beta
+  and parity, generated copied-source distribution, and framework-specific documentation;
+  next complete release conformance before a public beta
 
 ## 10. Known risks
 

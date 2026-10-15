@@ -1,0 +1,51 @@
+import Demo from '../../components/Demo.astro'
+import Distribution from '../../components/Distribution.astro'
+import QuickStart from '../../components/QuickStart.astro'
+import Basic from '../../demos/scribble-highlight-basic.vue'
+
+<Demo name="scribble-highlight-basic" framework="vue" title="ScribbleHighlight" hideSource>
+  <Basic client:visible={{ rootMargin: '200px' }} />
+</Demo>
+
+Place content in the default slot. This Vue adapter is experimental. Native attributes use Vue spelling, and component refs expose `element`.
+
+## Quick start
+
+<Distribution name="scribble-highlight" framework="vue" />
+
+<QuickStart name="scribble-highlight" framework="vue" />
+
+## Customization
+
+Use `variant="circle"` for a surrounding mark. Set `--kida-scribble-color`, `--kida-scribble-width`, and `--kida-scribble-duration` on the root to customize the stroke.
+
+## API
+
+### Props
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `variant` | `'underline' \| 'circle'` | `'underline'` | Shape drawn around the content. |
+| `once` | `boolean` | `true` | Draw only on the first viewport entry. |
+| `amount` | `'some' \| 'all' \| number` | `0.4` | Required visible portion. |
+
+The root accepts span attributes, `class`, `style`, and a component ref exposing `element`.
+
+### CSS custom properties
+
+| Property | Default | Description |
+| --- | --- | --- |
+| `--kida-scribble-color` | `#e94f86` | Stroke color. |
+| `--kida-scribble-width` | `0.14em` | Stroke width. |
+| `--kida-scribble-duration` | `650ms` | Draw duration. |
+
+## Accessibility and input behavior
+
+The SVG is decorative and hidden from assistive technology; the wrapped text remains ordinary,
+readable content. Static paths avoid generated IDs and remain deterministic during server rendering.
+Reduced motion displays the completed mark without running the draw animation.
+
+## Troubleshooting
+
+> The mark is positioned around the component's inline box. Wrap only the words you want marked,
+> and check reduced-motion settings if the completed stroke appears without drawing.

@@ -41,7 +41,7 @@ Registry tasks: `pnpm registry:build`, `pnpm registry:check`, `pnpm registry:che
 Vue milestone checks: `pnpm --filter @kida-ui/vue test` runs Node SSR and Chromium behavior,
 hydration, accessibility, and settled pixel parity against React. After building, run
 `pnpm check:vue-consumer` to validate packed packages and the checked Vue demos outside the
-workspace. The Vue guide is at `/docs/vue`; copied-source registry installation remains React-only.
+workspace. Vue installation is documented at `/docs/vue/installation`. Component pages offer React/Vue selection and copied-source installation through the respective shadcn CLI. Vue registry items are served at `/r/vue/<name>.json`.
 `pnpm docs:check-dev` smoke-tests both renderers in development as well as the production build.
 
 ## Conventions

@@ -1,0 +1,59 @@
+import Demo from '../../components/Demo.astro'
+import Distribution from '../../components/Distribution.astro'
+import QuickStart from '../../components/QuickStart.astro'
+import Basic from '../../demos/collapse-basic.vue'
+
+<Demo name="collapse-basic" framework="vue" title="Collapse" hideSource>
+  <Basic client:visible={{ rootMargin: '200px' }} />
+</Demo>
+
+Place content in the default slot. This Vue adapter is experimental. Native attributes use Vue spelling, and component refs expose `element`.
+
+## Quick start
+
+<Distribution name="collapse" framework="vue" />
+
+<QuickStart name="collapse" framework="vue" />
+
+The copy-source command includes the required styles.
+
+## API
+
+### Props
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | `boolean` | — | Whether the content is shown. |
+| `@exit-complete` | `() => void` | — | Fires after the exit animation ends and the node is removed. |
+| `class` | Vue class binding | — | Applied to the collapsing root. |
+| `style` | Vue style binding | — | Applied to the collapsing root. |
+
+Native div attributes, `class`, `style`, and events apply to the collapsing root. A component ref
+exposes `element`, which becomes `null` after the exit animation finishes and the panel unmounts.
+
+### CSS custom properties
+
+| Property | Default | Description |
+| --- | --- | --- |
+| `--kida-collapse-duration` | `--kida-duration-md` | Applies to both directions. |
+| `--kida-collapse-ease` | `--kida-ease-out` opening, `--kida-ease-in-out` closing | Easing for each direction. |
+
+## Customization
+
+Set `--kida-collapse-duration` or `--kida-collapse-ease` on the Collapse root through a class or
+the `style` prop. Put visual borders, backgrounds, and padding on the inner content so the root can
+shrink cleanly to zero.
+
+## Accessibility and input behavior
+
+Collapse preserves its children's semantics and focus behavior while open. When reduced motion is
+requested, the transition is skipped while still unmounting the panel and emitting
+`exit-complete`.
+
+## Troubleshooting
+
+> Put borders and padding on the content inside Collapse, not on its root. The root needs to shrink
+> cleanly to zero while it clips the panel.
+
+The required CSS is included by the copy-source command. After npm publication, package consumers must
+import `@kida-ui/styles/kida.css` once in your application.

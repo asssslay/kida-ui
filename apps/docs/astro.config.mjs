@@ -16,6 +16,7 @@ const site = process.env.SITE_URL ?? process.env.RENDER_EXTERNAL_URL ?? 'http://
 
 export default defineConfig({
   site,
+  redirects: { '/docs/vue': { status: 301, destination: '/docs/vue/installation' } },
 
   // Keep React transforms and renderer detection out of Vue SFCs and their virtual modules.
   integrations: [react({ exclude: [/\.vue(?:\?|$)/] }), vue(), mdx()],

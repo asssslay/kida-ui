@@ -2,7 +2,7 @@ interface RegistryFile {
   path: string
   content: string
   type: string
-  target: string
+  target?: string
 }
 
 interface PackageInstall {
@@ -30,13 +30,20 @@ const modules = import.meta.glob<RegistryItem>('../../../../registry/r/*.json', 
 })
 
 const items = Object.values(modules).sort((a, b) => a.name.localeCompare(b.name))
+const vueModules = import.meta.glob<RegistryItem>('../../../../registry/r/vue/*.json', {
+  eager: true,
+  import: 'default',
+})
+const vueItems = Object.values(vueModules)
+  .filter((item) => Array.isArray(item.files))
+  .sort((a, b) => a.name.localeCompare(b.name))
 
-export function getRegistryItems(): RegistryItem[] {
-  return items
+export function getRegistryItems(framework: 'react' | 'vue' = 'react'): RegistryItem[] {
+  return framework === 'vue' ? vueItems : items
 }
 
-export function getRegistryItem(name: string): RegistryItem {
-  const item = items.find((candidate) => candidate.name === name)
+export function getRegistryItem(name: string, framework: 'react' | 'vue' = 'react'): RegistryItem {
+  const item = getRegistryItems(framework).find((candidate) => candidate.name === name)
   if (!item) {
     throw new Error(`Unknown registry item "${name}".`)
   }
