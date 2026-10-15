@@ -215,6 +215,61 @@ test('pauses off-screen and resumes on entry', async () => {
   expect(ring().getAnimations()[0]).toBe(animation)
 })
 
+test('handles empty, single-character, and long phrases without losing the accessible text', async () => {
+  const view = await render(<SpaceType text="" style={{ width: 342, height: 240 }} />)
+  await measured()
+  await expect.poll(() => root().dataset.state).toBe('paused')
+  expect(root().querySelectorAll('[data-kida-space-type-letter]')).toHaveLength(0)
+  const animation = getRingAnimation()
+  for (const text of ['😀', 'KIDA / '.repeat(30), '']) {
+    await view.rerender(<SpaceType text={text} style={{ width: 342, height: 240 }} />)
+    await expect.poll(() => root().dataset.state).toBe(text ? 'active' : 'paused')
+    expect(root().querySelector('[data-kida-space-type-text]')?.textContent).toBe(text)
+    expect(root().querySelectorAll('[data-kida-space-type-letter]')).toHaveLength(
+      Array.from(text).length,
+    )
+    expect(getRingAnimation()).toBe(animation)
+    expect(root().scrollWidth).toBe(root().clientWidth)
+    for (const face of root().querySelectorAll<HTMLElement>('[data-kida-space-type-face]')) {
+      const box = face.getBoundingClientRect()
+      const bounds = root().getBoundingClientRect()
+      expect(box.left).toBeGreaterThanOrEqual(bounds.left)
+      expect(box.right).toBeLessThanOrEqual(bounds.right)
+    }
+  }
+})
+
+test('instances keep independent playback and suspend while the document is hidden', async () => {
+  const hidden = vi.spyOn(document, 'hidden', 'get').mockReturnValue(false)
+  const view = await render(
+    <>
+      <SpaceType id="playing" text="FIRST / " style={{ height: 180 }} />
+      <SpaceType id="still" text="SECOND / " speed={0} style={{ height: 180 }} />
+    </>,
+  )
+  const playing = document.querySelector<HTMLElement>('#playing')
+  const still = document.querySelector<HTMLElement>('#still')
+  if (!playing || !still) throw new Error('SpaceType instances are missing')
+  await expect.poll(() => playing.dataset.state).toBe('active')
+  await expect.poll(() => still.dataset.state).toBe('paused')
+  const first = playing.querySelector('[data-kida-space-type-ring]')?.getAnimations()[0]
+  const second = still.querySelector('[data-kida-space-type-ring]')?.getAnimations()[0]
+  if (!first || !second) throw new Error('Instance animations are missing')
+  expect(first).not.toBe(second)
+  hidden.mockReturnValue(true)
+  document.dispatchEvent(new Event('visibilitychange'))
+  expect(playing.dataset.state).toBe('paused')
+  expect(first.playState).toBe('paused')
+  hidden.mockReturnValue(false)
+  document.dispatchEvent(new Event('visibilitychange'))
+  expect(playing.dataset.state).toBe('active')
+  expect(first.playState).toBe('running')
+  expect(second.playState).toBe('paused')
+  await view.unmount()
+  expect(first.playState).toBe('idle')
+  expect(second.playState).toBe('idle')
+})
+
 test('reacts to reduced motion and releases all animation and observer resources in Strict Mode', async () => {
   const disconnectResize = vi.spyOn(ResizeObserver.prototype, 'disconnect')
   const disconnectIntersection = vi.spyOn(IntersectionObserver.prototype, 'disconnect')
@@ -260,7 +315,10 @@ test.each([false, true])(
         hydrated = hydrateRoot(container, element, {
           onRecoverableError: (error) => errors.push(error),
         })
-        await new Promise((resolve) => setTimeout(resolve, 50))
+      })
+      // Hydration must commit before awaiting ResizeObserver's first delivery.
+      await act(async () => {
+        await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
       })
       await measured()
       expect(errors).toEqual([])

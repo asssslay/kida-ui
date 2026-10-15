@@ -31,7 +31,10 @@ Cross-component gates also verify:
 
 Responsive and visual evidence is defined in `VISUAL_TESTING.md`. It adds mobile and desktop
 geometry checks, deterministic settled-state screenshots for all seven components, controlled
-light/dark surfaces, and a color-contrast-enabled axe pass.
+light/dark surfaces, and a color-contrast-enabled axe pass. SpaceType additionally has responsive
+light/dark checks in normal and reduced motion, empty/single/long content coverage, independent
+instances, and hidden-document playback checks. Its stored Linux screenshot baseline is still
+required before public alpha.
 
 Run the behavioral evidence with `pnpm --filter @kida-ui/react test` and the responsive/visual
 evidence with `pnpm --filter @kida-ui/react test:visual`. The repository-wide release candidate gate
