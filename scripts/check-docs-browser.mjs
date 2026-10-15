@@ -54,7 +54,9 @@ try {
 
   async function open(path) {
     const response = await page.goto(`${origin}${path}`)
-    assert.equal(response?.status(), 200, path)
+    // Firefox exposes the 304 from a validated cache entry on repeat navigations.
+    // The rendered page and hydrated demos are still checked below.
+    assert([200, 304].includes(response?.status()), `${path}: HTTP ${response?.status()}`)
     await page.waitForFunction(
       () => !!document.querySelector('[name="astro-view-transitions-enabled"]'),
     )
