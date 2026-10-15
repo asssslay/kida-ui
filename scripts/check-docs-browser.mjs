@@ -375,7 +375,11 @@ try {
       document.querySelector('.docs-catalog') &&
       document.querySelector('.site-nav a[href="/docs"]')?.getAttribute('aria-current') === 'page',
   )
-  assert(await page.evaluate(() => window.__motionDocument === document))
+  // Catalog and marketing pages retain native navigation; only reference pages need
+  // client navigation for framework selection.
+  assert(
+    await page.evaluate(() => !document.querySelector('[name="astro-view-transitions-enabled"]')),
+  )
   await page.locator('.wordmark').click()
   await page.waitForURL(`${origin}/`)
   assert.equal(await page.locator('.site-nav a[href="/docs"]').getAttribute('aria-current'), null)

@@ -10,9 +10,10 @@ interface Props {
   title: string
   description: string
   bodyClass?: string
+  clientNavigation?: boolean
 }
 
-const { title, description, bodyClass } = Astro.props
+const { title, description, bodyClass, clientNavigation = false } = Astro.props
 const canonical = new URL(Astro.url.pathname, Astro.site)
 ---
 
@@ -20,7 +21,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <ClientRouter fallback="swap" />
+    {clientNavigation && <ClientRouter fallback="swap" />}
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
