@@ -96,6 +96,13 @@ try {
 
   async function capture(name) {
     const stage = await hydrated(name)
+    // Compare the same resting state: scrolling can leave the pointer over only one
+    // framework's button after opening Collapse, especially in WebKit.
+    await page.mouse.move(0, 0)
+    await stage.evaluate((node) => {
+      const focused = document.activeElement
+      if (focused instanceof HTMLElement && node.contains(focused)) focused.blur()
+    })
     const tree = await stage.evaluate((stage) => {
       const origin = stage.getBoundingClientRect()
       const properties = [
