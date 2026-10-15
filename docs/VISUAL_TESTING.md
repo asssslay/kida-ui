@@ -64,6 +64,15 @@ rotated cards and SVG strokes from being compared at a fractional raster scale. 
 software rasterization for these adapter checks to avoid GPU shadow dithering between captures;
 the independent Linux React screenshot environment is unchanged.
 
+After building, `pnpm docs:test-browser` additionally compares production documentation demos
+in the same browser at mobile and desktop widths. It requires matching demo lists and checks
+content, semantic markup, computed styles, and layout relative to each stage (within 0.05 CSS
+pixels), including expanded Collapse and all customization variants.
+This catches drift between authored demos that identical adapter fixtures cannot detect. The
+adapter tests above remain the pixel comparison gate. Failed docs comparisons save screenshots
+and rendered element diagnostics under `apps/docs/.vitest-attachments/framework`, uploaded by CI.
+There are no stored baselines to update. CI runs this check in Chromium, Firefox, and WebKit.
+
 The mobile and desktop galleries cover all seven components in deterministic settled states, on
 controlled light and dark surfaces. The same visual project also runs axe with color contrast
 enabled. Transient animation frames are intentionally excluded because frame timing is not a stable

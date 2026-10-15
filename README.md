@@ -43,6 +43,8 @@ hydration, accessibility, settled pixel parity against React, and emulated touch
 building, run `pnpm check:vue-consumer` to validate packed packages and the checked Vue demos outside the
 workspace. Vue installation is documented at `/docs/vue/installation`. Component pages offer React/Vue selection and copied-source installation through the respective shadcn CLI. Vue registry items are served at `/r/vue/<name>.json`.
 `pnpm docs:check-dev` smoke-tests both renderers in development as well as the production build.
+After building, `pnpm docs:test-browser` compares the actual framework demos and checks client navigation,
+scroll/focus preservation, browser history, and Copy buttons.
 
 Release checks: `pnpm test:cross-browser` builds the adapters and runs Firefox/WebKit behavior,
 responsive geometry, and adapter parity checks, plus WebKit touch taps. Install the locked browser

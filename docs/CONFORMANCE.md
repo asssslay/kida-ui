@@ -75,6 +75,13 @@ plugin-vue's TypeScript SFC transform, avoiding upstream
 React Refresh elsewhere. Remove the patch after upgrading to a release with this fix and passing
 the development smoke check.
 
+After building, `pnpm docs:test-browser` exercises the production documentation in Chromium.
+It requires matching demo lists and compares all seven basic demos, every customization variant,
+expanded Collapse, and Reveal's initial motion
+geometry across React and Vue. Framework switching must preserve the document, navigation shell,
+scroll position, keyboard focus, history, and working Copy buttons. CI also runs this gate with
+`KIDA_TEST_BROWSER=firefox` and `KIDA_TEST_BROWSER=webkit`.
+
 ## Still required before a public alpha
 
 The following work is deliberately not represented as complete:
