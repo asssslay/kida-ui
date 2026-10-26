@@ -23,6 +23,10 @@ function availableFrameworks(element: HTMLElement | null | undefined): Framework
   return frameworks?.length ? frameworks : ['react', 'vue']
 }
 
+function revealPendingText() {
+  document.documentElement.removeAttribute('data-framework-pending')
+}
+
 function initializeFrameworkDocs() {
   cancelCurrentFramework()
   const content = document.querySelector<HTMLElement>('[data-framework-content]')
@@ -31,14 +35,14 @@ function initializeFrameworkDocs() {
   const status = document.querySelector<HTMLElement>('[data-framework-status]')
   if (!content || !article || !switcher) return
   const cached = new Map<Framework, DocumentFragment>()
-  const pending = new Map<Framework, Promise<DocumentFragment>>()
+  const requests = new Map<Framework, Promise<DocumentFragment>>()
   let selection = 0
   const lifetime = new AbortController()
 
   async function loadFramework(framework: Framework): Promise<DocumentFragment> {
     const saved = cached.get(framework)
     if (saved) return saved
-    const request = pending.get(framework)
+    const request = requests.get(framework)
     if (request) return request
     const loading = (async () => {
       const prefix = framework === 'vue' ? '/docs/vue' : '/docs'
@@ -64,11 +68,11 @@ function initializeFrameworkDocs() {
       cached.set(framework, fragment)
       return fragment
     })()
-    pending.set(framework, loading)
+    requests.set(framework, loading)
     try {
       return await loading
     } finally {
-      pending.delete(framework)
+      requests.delete(framework)
     }
   }
 
@@ -141,7 +145,19 @@ function initializeFrameworkDocs() {
     window.scrollTo({ left: scrollX, top: scrollY, behavior: 'instant' })
   }
 
-  async function selectFramework(framework: Framework, remember = true) {
+  // The browser scrolled to a section anchor in the replaced article; its heading
+  // may now sit elsewhere, so scroll to it again once the layout has settled.
+  function scrollToSection(anchor: string) {
+    let target: HTMLElement | null = null
+    try {
+      target = document.getElementById(decodeURIComponent(anchor.slice(1)))
+    } catch {
+      /* A malformed fragment matches no heading. */
+    }
+    if (target && article?.contains(target)) target.scrollIntoView({ behavior: 'instant' })
+  }
+
+  async function selectFramework(framework: Framework, remember = true, anchor = '') {
     if (!content || !article || !switcher) return
     const request = ++selection
     try {
@@ -160,6 +176,7 @@ function initializeFrameworkDocs() {
         button.setAttribute('aria-pressed', String(button.dataset.frameworkChoice === framework))
       }
       if (status) status.textContent = ''
+      if (anchor) scrollToSection(anchor)
       try {
         if (remember) localStorage.setItem(preferenceKey, framework)
       } catch {
@@ -170,7 +187,10 @@ function initializeFrameworkDocs() {
         status.textContent =
           'Could not load documentation. Please try selecting the framework again.'
     } finally {
-      if (request === selection) content.removeAttribute('aria-busy')
+      if (request === selection) {
+        content.removeAttribute('aria-busy')
+        revealPendingText()
+      }
     }
   }
 
@@ -182,6 +202,8 @@ function initializeFrameworkDocs() {
   // saved preference for the pages that do ship it.
   const supported = availableFrameworks(switcher).includes(framework)
   if (!supported) framework = content.dataset.framework as Framework
+  // Base.astro hides the React text of a first load that will switch to Vue.
+  const pending = document.documentElement.hasAttribute('data-framework-pending')
   for (const button of switcher.querySelectorAll<HTMLButtonElement>('[data-framework-choice]'))
     button.disabled = false
   selectCurrentFramework = selectFramework
@@ -189,10 +211,11 @@ function initializeFrameworkDocs() {
     selection++
     lifetime.abort()
     cached.clear()
-    pending.clear()
+    requests.clear()
     selectCurrentFramework = undefined
+    revealPendingText()
   }
-  void selectFramework(framework, supported)
+  void selectFramework(framework, supported, pending ? location.hash : '')
 }
 
 // Module scripts run once with ClientRouter. Delegation and a fresh controller
@@ -215,7 +238,9 @@ document.addEventListener(
       event.target instanceof Element
         ? event.target.closest<HTMLAnchorElement>('.sidebar [data-framework-link]')
         : null
-    if (link?.href === location.href) event.preventDefault()
+    // A section anchor (#api) still means the same page: keep the live preview.
+    if (link && link.pathname + link.search === location.pathname + location.search)
+      event.preventDefault()
   },
   { capture: true },
 )

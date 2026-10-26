@@ -51,6 +51,7 @@ const toc = headings.filter((heading) => heading.depth === 2 || heading.depth ==
   bodyClass="soft-orbit-page docs-reference-page"
   canonicalPath={currentPath}
   clientNavigation
+  frameworks={frameworkPage ? (availableFrameworks ?? ['react', 'vue']) : []}
 >
   <div class="docs">
     <aside class="sidebar">

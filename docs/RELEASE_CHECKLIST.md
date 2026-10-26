@@ -53,10 +53,21 @@ pnpm exec turbo run build --filter=@kida-ui/react --filter=@kida-ui/vue
 pnpm --filter @kida-ui/docs dev --host 0.0.0.0
 ```
 
-Use the port printed by Astro. Open `/docs/vue/reveal`, `/docs/vue/collapse`,
-`/docs/vue/text-bloom`, `/docs/vue/magnetic`, `/docs/vue/photo-pile`,
-`/docs/vue/scribble-highlight`, and `/docs/vue/sticker-burst`.
-Also check their React equivalents by removing `/vue` from each path.
+Use the port printed by Astro. A page's live previews use the adapter chosen when the page loads.
+The React/Vue buttons change only the code examples and API notes, never the running previews.
+
+- **Vue:** type each `/docs/vue/<name>` address into the address bar: `/docs/vue/reveal`,
+  `/docs/vue/collapse`, `/docs/vue/text-bloom`, `/docs/vue/magnetic`, `/docs/vue/photo-pile`,
+  `/docs/vue/scribble-highlight`, and `/docs/vue/sticker-burst`. The address then shows
+  `/docs/<name>`, so do not use Reload to restart a check: a reload loads React previews.
+  Open the `/docs/vue/<name>` address again instead.
+- **React:** select React on any component page, then type each `/docs/<name>` address. The same
+  seven components apply; SpaceType and ImageText have React previews only.
+- **Sidebar:** after a component page is open, sidebar links load previews for the selected
+  framework.
+
+To confirm the adapter under test, inspect a preview's `astro-island` element in the browser's
+developer tools: its `component-url` ends in `.vue` for Vue and `.react.tsx` for React.
 
 For a phone/tablet, connect it to the same Wi-Fi as the Mac and open
 `http://<Mac-LAN-IP>:<Astro-port>/docs/vue/photo-pile`. Find the Mac's LAN address in

@@ -715,6 +715,16 @@ try {
     ),
     'Clicking the current sidebar item reset the preview',
   )
+  await page.locator('.toc a').first().click()
+  await page.waitForURL(/\/docs\/collapse#.+/)
+  await page.locator('.sidebar a[href="/docs/collapse"]').click()
+  await page.waitForTimeout(500)
+  assert(
+    await page.evaluate(
+      () => window.__samePagePanel === document.querySelector('[data-kida-collapse]'),
+    ),
+    'Clicking the current sidebar item from a section anchor reset the preview',
+  )
 
   await page.evaluate(() => {
     window.__centerIslands = [...document.querySelectorAll('[data-framework-article] astro-island')]
@@ -823,6 +833,53 @@ try {
   )
   await reactOnly(direct)
   await direct.close()
+
+  // With Vue saved, a direct load hides the server-rendered React text until the
+  // Vue article replaces it, then lands on the requested section of the Vue text.
+  const anchored = await context.newPage()
+  anchored.on('pageerror', (error) => errors.push({ message: error.message, url: anchored.url() }))
+  let releaseVue
+  const vueHeld = new Promise((resolve) => {
+    releaseVue = resolve
+  })
+  const heldVueURL = `${origin}/docs/vue/scribble-highlight`
+  await anchored.route(heldVueURL, async (route) => {
+    await vueHeld
+    await route.continue()
+  })
+  await anchored.goto(`${origin}/docs/scribble-highlight#api`)
+  await anchored.waitForFunction(() =>
+    document.querySelector('[data-framework-content]')?.hasAttribute('aria-busy'),
+  )
+  const visibility = (selector) =>
+    anchored.evaluate(
+      (selector) => getComputedStyle(document.querySelector(selector)).visibility,
+      selector,
+    )
+  assert.equal(
+    await visibility('[data-framework-article] > :not([data-demo])'),
+    'hidden',
+    'React text showed before the saved Vue documentation',
+  )
+  assert.equal(await visibility('.toc ul'), 'hidden')
+  assert.equal(await visibility('[data-demo] .demo-stage'), 'visible')
+  releaseVue()
+  await anchored.waitForFunction(
+    () =>
+      document.querySelector('[data-framework-content]')?.getAttribute('data-framework') ===
+        'vue' && !document.documentElement.hasAttribute('data-framework-pending'),
+  )
+  assert.equal(await visibility('[data-framework-article] > :not([data-demo])'), 'visible')
+  const landing = await anchored.evaluate(() => ({
+    top: document.getElementById('api').getBoundingClientRect().top,
+    padding: Number.parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop),
+    bottom: scrollY + innerHeight >= document.documentElement.scrollHeight - 1,
+  }))
+  assert(
+    Math.abs(landing.top - landing.padding) <= 2 || landing.bottom,
+    `#api landed at ${landing.top}px instead of ${landing.padding}px`,
+  )
+  await anchored.close()
   await sidebar('collapse')
   assert(await page.locator('[data-framework-choice="vue"]').isVisible())
   await hydrated('collapse-basic')

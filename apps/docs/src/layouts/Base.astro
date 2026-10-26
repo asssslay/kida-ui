@@ -12,6 +12,8 @@ interface Props {
   bodyClass?: string
   canonicalPath?: string
   clientNavigation?: boolean
+  /** Documentation frameworks this page can switch between. */
+  frameworks?: ('react' | 'vue')[]
 }
 
 const {
@@ -20,6 +22,7 @@ const {
   bodyClass,
   canonicalPath = Astro.url.pathname,
   clientNavigation = false,
+  frameworks = [],
 } = Astro.props
 const canonical = new URL(canonicalPath, Astro.site)
 ---
@@ -29,10 +32,21 @@ const canonical = new URL(canonicalPath, Astro.site)
   <head>
     <meta charset="utf-8" />
     {clientNavigation && <>
-      <script is:inline>
+      <script is:inline data-frameworks={frameworks.join(' ')}>
         // Normalize compatibility entries before the router reads its initial URL.
         if (location.pathname.startsWith('/docs/vue/')) {
           history.replaceState(history.state, '', location.pathname.replace('/docs/vue/', '/docs/') + location.search + location.hash)
+        } else if (document.currentScript?.dataset.frameworks?.split(' ').includes('vue')) {
+          // A saved Vue preference replaces this React article right after load.
+          // Hide its text until then (docs-navigation clears this); the timeout
+          // keeps the page readable if that script never runs.
+          try {
+            if (localStorage.getItem('kida-ui:framework') === 'vue') {
+              const root = document.documentElement
+              root.setAttribute('data-framework-pending', '')
+              setTimeout(() => root.removeAttribute('data-framework-pending'), 4000)
+            }
+          } catch {}
         }
       </script>
       <ClientRouter fallback="swap" />

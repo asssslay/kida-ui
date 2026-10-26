@@ -2509,6 +2509,22 @@ a {
   font-size: 0.85rem;
 }
 
+/* Keep the empty live region in the accessibility tree; screen readers often
+   miss a status region that appears in the same moment as its text. */
 .framework-status:empty {
-  display: none;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* With Vue saved, the server-rendered React text is replaced right after load.
+   Hide the authored text and section links until then; previews stay visible. */
+html[data-framework-pending] [data-framework-article] > :not([data-demo]),
+html[data-framework-pending] [data-framework-article] [data-demo] > :not(.demo-stage),
+html[data-framework-pending] .toc ul {
+  visibility: hidden;
 }
