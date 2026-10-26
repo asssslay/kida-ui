@@ -15,7 +15,7 @@ const vueComponents = [
   'scribble-highlight',
   'sticker-burst',
 ]
-const components = [...vueComponents, 'space-type']
+const components = [...vueComponents, 'space-type', 'image-text']
 const docs = join(root, 'apps/docs')
 const require = createRequire(join(docs, 'package.json'))
 const { dev } = await import(pathToFileURL(require.resolve('astro')).href)
@@ -64,6 +64,21 @@ try {
       assert(
         !html.includes('href="/docs/vue/space-type"'),
         'SpaceType links to an unavailable adapter',
+      )
+    }
+    if (path === '/docs/image-text') {
+      assert(html.includes('data-kida-image-text'), 'React ImageText did not render on the server')
+      assert(html.includes('/r/image-text.json'), 'ImageText installation link is missing')
+      assert(html.includes('React only'), 'ImageText framework availability is missing')
+      assert(
+        !html.includes('href="/docs/vue/image-text"'),
+        'ImageText links to an unavailable adapter',
+      )
+      const stage = html.match(/<figure[^>]*data-demo="image-text-basic"[\s\S]*?<\/figure>/)?.[0]
+      assert(stage, 'ImageText preview is missing')
+      assert(
+        !/<(?:span|button)\b/.test(stage),
+        'ImageText preview must contain only the white text variant',
       )
     }
     if (path.startsWith('/docs/vue/')) {

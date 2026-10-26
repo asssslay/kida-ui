@@ -1,4 +1,5 @@
 export { Collapse, type CollapseProps } from './collapse.js'
+export { ImageText, type ImageTextProps } from './image-text.js'
 export { Magnetic, type MagneticProps } from './magnetic.js'
 export { PhotoPile, type PhotoPilePhoto, type PhotoPileProps } from './photo-pile.js'
 export { Reveal, type RevealProps } from './reveal.js'
