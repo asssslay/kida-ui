@@ -6,6 +6,7 @@
 export const registryDefinitions = [
   {
     name: 'space-type',
+    frameworks: ['react'],
     title: 'SpaceType',
     description: 'Wraps a phrase around rotating rings with a soft radial wave.',
     category: 'text',

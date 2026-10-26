@@ -19,9 +19,19 @@ const components = defineCollection({
     /** Taxonomy tier from ADR §5. */
     tier: z.enum(['T1', 'T2', 'T3', 'T4']),
     status: z.enum(['stable', 'beta', 'planned']).default('beta'),
+    /** Framework adapters available for this component. */
+    frameworks: z
+      .array(z.enum(['react', 'vue']))
+      .min(1)
+      .default(['react', 'vue']),
     /** Sidebar ordering; ties break alphabetically. */
     order: z.number().default(0),
   }),
 })
 
-export const collections = { components }
+const vueComponents = defineCollection({
+  loader: glob({ pattern: '**/*.mdx', base: './src/content/vue-components' }),
+  schema: z.object({}),
+})
+
+export const collections = { components, vueComponents }

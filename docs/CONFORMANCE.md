@@ -30,7 +30,7 @@ Cross-component gates also verify:
   immediate Collapse removal.
 
 Responsive and visual evidence is defined in `VISUAL_TESTING.md`. It adds mobile and desktop
-geometry checks, deterministic settled-state screenshots for all seven components, controlled
+geometry checks, deterministic settled-state screenshots for the seven shared components, controlled
 light/dark surfaces, and a color-contrast-enabled axe pass. SpaceType additionally has responsive
 light/dark checks in normal and reduced motion, empty/single/long content coverage, independent
 instances, and hidden-document playback checks. Its stored Linux screenshot baseline is still
@@ -60,10 +60,15 @@ pixels at mobile and desktop widths in the same browser. Axe includes color cont
 surface. Screenshot parity compares both adapters at runtime, so it creates no host-specific
 reference images and does not replace the existing authoritative Linux React baselines.
 
+Copied-source conformance installs every Vue registry item through the pinned shadcn-vue CLI,
+then tests a combined installation with a custom UI alias. The displayed quick starts typecheck,
+bundle, and render deterministically in Node without Kida packages or workspace aliases.
+Both framework catalogs and all 15 items must match the built documentation endpoints.
+
 The packed-consumer check in `DISTRIBUTION.md` verifies the displayed demos, production bundle,
-declaration resolution, and server imports. `/docs/vue` supplies the live examples and API notes.
-SpaceType currently has only a React adapter; the seven shared Vue components remain experimental. Wider browser, touch-device, and screen-reader
-release conformance is still required.
+declaration resolution, and server imports. `/docs/vue/<name>` supplies the live examples and API notes.
+SpaceType currently has only a React adapter. The seven shared Vue components remain experimental;
+wider browser, touch-device, and screen-reader release conformance is still required.
 
 `pnpm docs:check-dev` starts an isolated Astro dev server and checks Vue/React docs and the home
 page, including the Vue client module. A version-pinned pnpm patch disables React Refresh only in

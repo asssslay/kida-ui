@@ -1,0 +1,57 @@
+{
+  "$schema": "https://shadcn-vue.com/schema/registry-item.json",
+  "name": "scribble-highlight",
+  "title": "ScribbleHighlight",
+  "description": "Draws an informal underline or circle around existing content.",
+  "dependencies": [
+    "motion@^13.1.0"
+  ],
+  "files": [
+    {
+      "path": "registry/vue/kida/scribble-highlight.vue",
+      "content": "<script setup lang=\"ts\">\nimport './scribble-highlight.css'\nimport { drawInView } from './draw-in-view.motion.js'\nimport { shallowRef, watch } from 'vue'\nimport type { ScribbleHighlightProps } from './scribble-highlight.types.js'\n\ndefineOptions({ name: 'KidaScribbleHighlight', inheritAttrs: false })\nconst props = withDefaults(defineProps<ScribbleHighlightProps>(), { once: undefined })\nconst element = shallowRef<HTMLSpanElement | null>(null)\ndefineExpose({ element })\nconst paths = {\n  underline: 'M2 12.5 C18 8.5 34 15.5 50 11 C66 6.5 82 14 98 9.5',\n  circle: 'M6 10 C16 1 78 0 94 8 C104 15 88 20 50 19 C14 19 -3 15 6 10',\n} as const\n\nwatch(\n  [() => element.value, () => props.variant, () => props.once, () => props.amount],\n  (_, __, onCleanup) => {\n    if (element.value) onCleanup(drawInView(element.value, { ...props }))\n  },\n  { flush: 'post' },\n)\n</script>\n\n<template>\n  <span v-bind=\"$attrs\" ref=\"element\" data-kida-scribble=\"\" :data-variant=\"props.variant ?? 'underline'\" :data-state=\"element?.dataset.state ?? 'idle'\">\n    <span data-kida-scribble-content=\"\"><slot /></span>\n    <svg aria-hidden=\"true\" viewBox=\"0 0 100 20\" preserveAspectRatio=\"none\">\n      <path :d=\"paths[props.variant ?? 'underline']\" pathLength=\"1\" />\n    </svg>\n  </span>\n</template>\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "registry/vue/kida/scribble-highlight.types.ts",
+      "content": "import type { DrawInViewOptions } from './draw-in-view.motion.js';\n\nexport interface ScribbleHighlightProps extends DrawInViewOptions {\n    /** Shape drawn around the default slot. @default 'underline' */\n    variant?: 'underline' | 'circle';\n}\n\n/** Vue component refs expose the root DOM element, null when presence removes it. */\nexport interface KidaElement {\n    element: HTMLElement | null;\n}\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "registry/vue/kida/scribble-highlight.css",
+      "content": "@import './tokens.css';\n\n[data-kida-scribble] {\n  --kida-scribble-color: #e94f86;\n  --kida-scribble-width: 0.14em;\n  --kida-scribble-duration: 650ms;\n\n  position: relative;\n  display: inline-block;\n  isolation: isolate;\n}\n\n[data-kida-scribble-content] {\n  position: relative;\n  z-index: 1;\n}\n\n[data-kida-scribble] svg {\n  position: absolute;\n  z-index: 0;\n  left: -4%;\n  width: 108%;\n  overflow: visible;\n  pointer-events: none;\n}\n\n[data-kida-scribble][data-variant=\"underline\"] svg {\n  top: 78%;\n  height: 0.55em;\n}\n\n[data-kida-scribble][data-variant=\"circle\"] svg {\n  inset: -12% -7%;\n  width: 114%;\n  height: 124%;\n}\n\n[data-kida-scribble] path {\n  fill: none;\n  stroke: var(--kida-scribble-color);\n  stroke-width: var(--kida-scribble-width);\n  stroke-linecap: round;\n  stroke-linejoin: round;\n  vector-effect: non-scaling-stroke;\n  stroke-dasharray: 1;\n  stroke-dashoffset: 1;\n}\n\n[data-kida-scribble][data-state=\"active\"] path,\n[data-kida-scribble][data-state=\"settled\"] path {\n  animation: kida-scribble-draw var(--kida-scribble-duration) var(--kida-ease-out) forwards;\n}\n\n@keyframes kida-scribble-draw {\n  to {\n    stroke-dashoffset: 0;\n  }\n}\n\n@media (prefers-reduced-motion: reduce) {\n  [data-kida-scribble][data-state] path {\n    animation: none;\n    stroke-dashoffset: 0;\n  }\n}\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "registry/vue/kida/tokens.css",
+      "content": "/*\n * Kida UI — motion tokens.\n * Plain CSS custom properties (ADR D7). No preprocessor, no Tailwind, no build step.\n */\n\n:root {\n  /* Durations */\n  --kida-duration-xs: 100ms;\n  --kida-duration-sm: 150ms;\n  --kida-duration-md: 300ms;\n  --kida-duration-lg: 500ms;\n  --kida-duration-xl: 800ms;\n\n  /* Easings */\n  --kida-ease-out: cubic-bezier(0.16, 1, 0.3, 1);\n  --kida-ease-in: cubic-bezier(0.7, 0, 0.84, 0);\n  --kida-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);\n  --kida-ease-spring: linear(0, 0.5, 0.9, 1.02, 1);\n\n  /* Travel distances used by the enter/exit keyframes */\n  --kida-distance-sm: 4px;\n  --kida-distance-md: 8px;\n  --kida-distance-lg: 16px;\n\n  /* Stagger step between siblings */\n  --kida-stagger: 60ms;\n}\n\n/*\n * The shared reduced-motion guard for CSS-driven animation in the library.\n * Durations collapse to ~0 by default. Components whose presence lifecycle cannot safely observe\n * a 1ms animation, such as Collapse, disable it explicitly and complete presence in their adapter.\n */\n@media (prefers-reduced-motion: reduce) {\n  :root {\n    --kida-duration-xs: 1ms;\n    --kida-duration-sm: 1ms;\n    --kida-duration-md: 1ms;\n    --kida-duration-lg: 1ms;\n    --kida-duration-xl: 1ms;\n    --kida-distance-sm: 0px;\n    --kida-distance-md: 0px;\n    --kida-distance-lg: 0px;\n    --kida-stagger: 0ms;\n  }\n}\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "registry/vue/kida/draw-in-view.motion.ts",
+      "content": "import { inView } from 'motion'\nimport { prefersReducedMotion } from './reduced-motion.motion.js'\n\nexport interface DrawInViewOptions {\n  /** Animate only on the first viewport entry. @default true */\n  once?: boolean\n  /** How much of the element must be visible. @default 0.4 */\n  amount?: 'some' | 'all' | number\n}\n\nexport function drawInView(element: HTMLElement, options: DrawInViewOptions = {}): () => void {\n  if (prefersReducedMotion()) {\n    element.dataset.state = 'settled'\n    return () => {}\n  }\n\n  const { once = true, amount = 0.4 } = options\n  element.dataset.state = 'idle'\n\n  const stop = inView(\n    element,\n    () => {\n      element.dataset.state = 'active'\n      if (once) stop()\n      return once\n        ? undefined\n        : () => {\n            element.dataset.state = 'idle'\n          }\n    },\n    { amount },\n  )\n\n  return stop\n}\n",
+      "type": "registry:ui"
+    },
+    {
+      "path": "registry/vue/kida/reduced-motion.motion.ts",
+      "content": "const QUERY = '(prefers-reduced-motion: reduce)'\n\n/**\n * Whether the user has asked for reduced motion.\n *\n * SSR-safe: returns `false` when there is no `window`, matching the CSS default\n * (the `prefers-reduced-motion` media query in `@kida-ui/styles` is the real guard;\n * this is for the JS-driven paths that CSS cannot express).\n */\nexport function prefersReducedMotion(): boolean {\n  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return false\n  return window.matchMedia(QUERY).matches\n}\n\n/**\n * Subscribe to changes of the reduced-motion preference.\n * Returns an unsubscribe function. No-op (and immediately unsubscribable) on the server.\n */\nexport function watchReducedMotion(onChange: (reduced: boolean) => void): () => void {\n  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return () => {}\n\n  const list = window.matchMedia(QUERY)\n  const handler = (event: MediaQueryListEvent) => onChange(event.matches)\n  list.addEventListener('change', handler)\n  return () => list.removeEventListener('change', handler)\n}\n",
+      "type": "registry:ui"
+    }
+  ],
+  "meta": {
+    "kida": {
+      "package": {
+        "name": "@kida-ui/vue",
+        "exportName": "ScribbleHighlight",
+        "styleImports": [
+          "@kida-ui/styles/kida.css"
+        ]
+      },
+      "framework": "vue"
+    }
+  },
+  "categories": [
+    "decorative"
+  ],
+  "type": "registry:ui"
+}
