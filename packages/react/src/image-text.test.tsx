@@ -12,6 +12,9 @@ import { ImageText } from './image-text.js'
 const image = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="600" height="750"><rect width="600" height="750" fill="#e94f86"/></svg>')}`
 const broken = 'data:image/png,broken'
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+// Chromium repeats a single background value once per image layer in computed
+// style ("text, text"); Firefox and WebKit report it once. Compare distinct values.
+const layers = (value: string) => [...new Set(value.split(', '))]
 function root() {
   const element = document.querySelector<HTMLElement>('[data-kida-image-text]')
   if (!element) throw new Error('ImageText did not mount')
@@ -39,7 +42,7 @@ test('renders one selectable text node, without spans, images or controls', asyn
   expect(selection?.toString()).toBe('A world of color.')
   selection?.removeAllRanges()
   await expect.poll(() => element.dataset.state).toBe('moving')
-  expect(getComputedStyle(element).backgroundClip).toBe('text, text')
+  expect(layers(getComputedStyle(element).backgroundClip)).toEqual(['text'])
 })
 
 test('moves the crop in both directions without moving letters, and joins the loop', async () => {
@@ -57,7 +60,7 @@ test('moves the crop in both directions without moving letters, and joins the lo
   animation.currentTime = 0
   const initial = getComputedStyle(element).backgroundPosition
   animation.currentTime = 100
-  expect(getComputedStyle(element).backgroundPosition).toBe('80% 34%, 80% 34%')
+  expect(layers(getComputedStyle(element).backgroundPosition)).toEqual(['80% 34%'])
   expect(element.getBoundingClientRect().toJSON()).toEqual(bounds)
   animation.currentTime = 400
   expect(getComputedStyle(element).backgroundPosition).toBe(initial)
@@ -122,7 +125,7 @@ test('respects initial and live reduced motion', async () => {
   await render(<ImageText image={image}>Quiet color.</ImageText>)
   await expect.poll(() => root().dataset.state).toBe('settled')
   expect(root().getAnimations()).toHaveLength(0)
-  expect(getComputedStyle(root()).backgroundPosition).toBe('50% 50%, 50% 50%')
+  expect(layers(getComputedStyle(root()).backgroundPosition)).toEqual(['50% 50%'])
   await commands.setReducedMotion(false)
   await expect.poll(() => root().dataset.state).toBe('moving')
   await commands.setReducedMotion(true)
