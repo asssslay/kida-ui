@@ -74,3 +74,8 @@ surfaces with color contrast enabled, in both normal and reduced motion. Its beh
 samples the full rotation and wave at minimum and maximum radii. These checks do not replace a
 reviewed Linux screenshot baseline; adding SpaceType to the stored visual references remains a
 pre-alpha task.
+
+ImageText has mobile/desktop geometry, text-only markup, decoded licensed-photo rendering,
+reduced-motion, and contrast-enabled axe checks in `image-text.visual.test.tsx`. The website
+shows only the approved white composition. A stored ImageText screenshot must still be reviewed
+in the canonical Linux environment before public alpha; no macOS baseline is introduced.

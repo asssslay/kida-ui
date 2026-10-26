@@ -1,0 +1,103 @@
+---
+title: ImageText
+description: A photograph moves through stationary, selectable text.
+category: text
+tier: T2
+status: beta
+frameworks: [react]
+order: 2
+---
+
+import Demo from '../../components/Demo.astro'
+import Distribution from '../../components/Distribution.astro'
+import QuickStart from '../../components/QuickStart.astro'
+import ImageTextBasic from '../../demos/image-text-basic.react.tsx'
+
+<Demo name="image-text-basic" previewOnly>
+  <ImageTextBasic client:visible />
+</Demo>
+
+## Quick start
+
+ImageText supports **React only**. The preview shows the approved white-background composition:
+one unsplit heading, with no labels, spans, or playback buttons.
+
+<Distribution name="image-text" />
+
+<QuickStart name="image-text" />
+
+Supply a photograph you own or are licensed to use. The quick start's `/photos/flowers.webp`
+is an application-owned file, not an image bundled with the component.
+
+## Customization
+
+Configure the image, center crop, duration, zoom, and playback in code. The photograph follows
+a smooth four-crop path and returns to its starting position every 9.6 seconds. The letters
+stay in place. No controls or alternate compositions are included in the website preview.
+
+Use `className` and `style` for typography. CSS custom properties adjust the photo tint,
+selection color, and intermediate crops. Replacing an image or tint requires reviewing
+contrast throughout its movement. For a custom dark surface, use a lighter tint and fallback ink.
+
+## API
+
+### Props
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | `string` | required | One readable, selectable text sequence. |
+| `image` | `string` | required | Photo or texture URL. |
+| `position` | `readonly [number, number]` | `[50, 50]` | Center crop in percentages, clamped to 0–100. |
+| `duration` | `number` | `9600` | Milliseconds per complete cycle; `0` is static. |
+| `zoom` | `number` | `1.28` | Overscan, clamped to 1–4, to maintain coverage while moving. |
+| `paused` | `boolean` | `false` | Pause on the current frame; resume without restarting. |
+| `as` | heading tag or `'p'` | `'h2'` | Semantic root element. |
+
+The root forwards its ref, safe native attributes, authored event handlers, `className`, and `style`.
+Changing the text, image, duration, or zoom resets the controller. Changing an equivalent crop
+tuple, native attribute, or `paused` value does not reload the image.
+
+### CSS custom properties
+
+| Property | Default | Description |
+| --- | --- | --- |
+| `--kida-image-text-tint` | `#3c092b8c` | Translucent plum over the photograph for contrast. |
+| `--kida-image-text-ink` | `--kida-ink` or `#211c24` | Solid loading/error fallback and selection ink. |
+| `--kida-image-text-selection` | `#f4cf63` | Text selection background. |
+| `--kida-image-text-font-size` | `clamp(2.5rem, 6vw, 7.375rem)` | Display text size. |
+| `--kida-image-text-weight` | `520` | Font weight. |
+| `--kida-image-text-leading` | `1.06` | Line height. |
+| `--kida-image-text-tracking` | `-0.065em` | Letter spacing. |
+| `--kida-image-text-duration` | 12 XL motion durations | Cycle duration when the prop is omitted. |
+| `--kida-image-text-crop-one` | center + `[30, -16]` | First intermediate crop, clamped to 0–100. |
+| `--kida-image-text-crop-two` | center + `[-26, 18]` | Second intermediate crop. |
+| `--kida-image-text-crop-three` | center + `[18, -8]` | Third intermediate crop. |
+
+## Accessibility and input behavior
+
+The component renders a single heading or paragraph with a text node. There are no split spans,
+duplicated accessible copies, image elements, or generated buttons. Selection and copy use the
+authored text, and the photograph is decorative.
+
+Reduced motion shows the center crop without animation. Solid text remains available before
+hydration, during loading, after an image failure, and when text clipping is unavailable.
+Forced colors and print use solid text. Each instance waits for image decode and viewport entry;
+motion pauses offscreen or while the document is hidden. Resizing and delayed fonts remeasure
+the photo without a per-frame layout loop.
+
+The component supplies controlled `paused` playback so applications can connect their own
+accessible playback controls when appropriate. This requested text-only preview has no such
+controls and respects the operating system's reduced-motion preference.
+
+## Troubleshooting
+
+> The photograph is cropped across the complete text block, rather than repeated per letter.
+> Use broad color areas and serve an image close to the displayed size. The animation changes
+> CSS background position, which repaints the text area; avoid many large, simultaneously moving
+> instances. It has no per-frame JavaScript or React updates. Chromium browser checks cover
+> motion and hydration; wider engine and manual screen-reader conformance remain release work.
+
+The preview photograph is by [Anthony Melone](https://unsplash.com/photos/W6zVhDL_ijg), used
+under the [Unsplash License](https://unsplash.com/license). Its existing asset record is in
+`apps/docs/public/demo/image-text/README.md`. The visual idea is inspired by
+[Butter](https://www.butter.video/); no Butter assets or implementation are included.

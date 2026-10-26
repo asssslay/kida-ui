@@ -14,6 +14,7 @@ should be added.
 | Reveal | Browser | Browser | Unit + browser | Browser | Shared browser gate | Content remains visible |
 | Collapse | Browser | Browser | Rapid reversal + unmount | Controlled `open` | Shared browser gate | Content remains available |
 | TextBloom | Browser | Browser | Mid-animation replacement | Text, segmentation, options | Shared browser gate | Authored text exposed once |
+| ImageText (React only) | Browser + crop unit tests | Initial and live browser emulation | Image replacement, observers, CSS animation, Strict Mode | Text, image, crop, duration, zoom, paused, root tag | Deterministic SSR + browser hydration | One selectable text node; no generated spans/buttons |
 | Magnetic | Browser | Browser | Settle + controller replacement | Strength and distance | Shared browser gate | Touch ignored; child remains usable |
 | PhotoPile | Browser | Browser | Drag settle + collection replacement | Photos and drag options | Shared browser gate | Focus and pointer paths |
 | ScribbleHighlight | Browser | Browser | Observer re-arm | Viewport options and variant | Shared browser gate | SVG decoration hidden |
@@ -63,11 +64,11 @@ reference images and does not replace the existing authoritative Linux React bas
 Copied-source conformance installs every Vue registry item through the pinned shadcn-vue CLI,
 then tests a combined installation with a custom UI alias. The displayed quick starts typecheck,
 bundle, and render deterministically in Node without Kida packages or workspace aliases.
-Both framework catalogs and all 15 items must match the built documentation endpoints.
+Both framework catalogs and all 16 items must match the built documentation endpoints.
 
 The packed-consumer check in `DISTRIBUTION.md` verifies the displayed demos, production bundle,
 declaration resolution, and server imports. `/docs/vue/<name>` supplies the live examples and API notes.
-SpaceType currently has only a React adapter. The seven shared Vue components remain experimental;
+SpaceType and ImageText currently have only React adapters. The seven shared Vue components remain experimental;
 wider browser, touch-device, and screen-reader release conformance is still required.
 
 `pnpm docs:check-dev` starts an isolated Astro dev server and checks Vue/React docs and the home

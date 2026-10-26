@@ -18,7 +18,7 @@ tactile and playful motion in response to intent. `DESIGN_DIRECTION.md` owns the
 | # | Decision | Rationale |
 |---|---|---|
 | D1 | Layered architecture: core / styles / adapters / distribution | Zag + Ark's proven shape; framework #2 must cost ~300 LOC, not a rewrite |
-| D2 | React covers the catalog; experimental Vue 3.5 covers seven shared components | SpaceType currently ships for React only. Keep its behavior and CSS shared for future adapters, and document availability per component. Require package, SSR, lifecycle, and parity evidence before adding another adapter. |
+| D2 | React covers the catalog; experimental Vue 3.5 covers seven shared components | SpaceType and ImageText currently ship for React only. Keep their behavior and CSS shared for future adapters, and document availability per component. Require package, SSR, lifecycle, and parity evidence before adding another adapter. |
 | D3 | Animation engine built on vanilla `motion`, NOT `framer-motion` | `motion` is framework-agnostic → identical motion in every framework later |
 | D3a | **`@kida-ui/motion` has zero framework code and zero framework peer deps** | The real boundary. CI-enforceable. React adapter lives in `@kida-ui/react`, not `@kida-ui/motion/react` — otherwise React has two entry points. |
 | D4 | Behavior from Zag.js | 60+ audited machines, already supports 6 frameworks |

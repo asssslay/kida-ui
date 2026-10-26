@@ -1,0 +1,92 @@
+[data-kida-image-text] {
+  margin: 0;
+  color: var(--kida-image-text-ink, var(--kida-ink, #211c24));
+  font-size: var(--kida-image-text-font-size, clamp(2.5rem, 6vw, 7.375rem));
+  font-weight: var(--kida-image-text-weight, 520);
+  line-height: var(--kida-image-text-leading, 1.06);
+  letter-spacing: var(--kida-image-text-tracking, -0.065em);
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+}
+
+@supports ((background-clip: text) or (-webkit-background-clip: text)) {
+  [data-kida-image-text][data-image="ready"] {
+    background-color: var(--kida-image-text-ink, var(--kida-ink, #211c24));
+    background-image:
+      linear-gradient(
+        var(--kida-image-text-tint, #3c092b8c),
+        var(--kida-image-text-tint, #3c092b8c)
+      ),
+      var(--kida-image-text-image);
+    background-size:
+      100% 100%,
+      var(--kida-image-text-size, cover);
+    background-repeat: no-repeat;
+    background-position: var(--kida-image-text-position, 50% 50%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
+  [data-kida-image-text][data-image="ready"][data-state="moving"] {
+    animation: kida-image-text-drift
+      var(--kida-image-text-duration, calc(var(--kida-duration-xl, 800ms) * 12))
+      var(--kida-ease-in-out, cubic-bezier(0.65, 0, 0.35, 1)) infinite both;
+  }
+
+  [data-kida-image-text][data-image="ready"][data-suspended="true"],
+  [data-kida-image-text][data-image="ready"][data-paused="true"] {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes kida-image-text-drift {
+  0%,
+  100% {
+    background-position: var(--kida-image-text-position, 50% 50%);
+  }
+  25% {
+    background-position: var(--kida-image-text-crop-one, 80% 34%);
+  }
+  50% {
+    background-position: var(--kida-image-text-crop-two, 24% 68%);
+  }
+  75% {
+    background-position: var(--kida-image-text-crop-three, 68% 42%);
+  }
+}
+
+[data-kida-image-text]::selection {
+  color: var(--kida-image-text-ink, var(--kida-ink, #211c24));
+  -webkit-text-fill-color: var(--kida-image-text-ink, var(--kida-ink, #211c24));
+  background: var(--kida-image-text-selection, #f4cf63);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-kida-image-text][data-image="ready"][data-state="moving"] {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [data-kida-image-text][data-image="ready"] {
+    background: none;
+    color: CanvasText;
+    -webkit-text-fill-color: CanvasText;
+  }
+}
+
+@media print {
+  [data-kida-image-text][data-image="ready"] {
+    background: none;
+    color: #211c24;
+    -webkit-text-fill-color: #211c24;
+  }
+}
+
+@media (forced-colors: active), print {
+  [data-kida-image-text][data-image="ready"][data-state] {
+    animation: none;
+  }
+}
