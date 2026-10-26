@@ -6,7 +6,7 @@ import { join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const root = fileURLToPath(new URL('..', import.meta.url))
-const components = [
+const vueComponents = [
   'reveal',
   'collapse',
   'text-bloom',
@@ -15,6 +15,7 @@ const components = [
   'scribble-highlight',
   'sticker-burst',
 ]
+const components = [...vueComponents, 'space-type']
 const docs = join(root, 'apps/docs')
 const require = createRequire(join(docs, 'package.json'))
 const { dev } = await import(pathToFileURL(require.resolve('astro')).href)
@@ -35,14 +36,42 @@ try {
     '/docs/vue/installation',
   )
   for (const path of [
+    '/docs',
     '/docs/installation',
     '/docs/vue/installation',
-    ...components.flatMap((name) => [`/docs/${name}`, `/docs/vue/${name}`]),
+    ...components.map((name) => `/docs/${name}`),
+    ...vueComponents.map((name) => `/docs/vue/${name}`),
     '/',
   ]) {
     const response = await fetch(`${origin}${path}`)
     const html = await response.text()
     assert.equal(response.status, 200, `${path}: development SSR failed`)
+    if (path === '/' || path === '/docs') {
+      assert(html.includes('href="/docs/space-type"'), `${path}: SpaceType catalog link is missing`)
+      assert(html.includes('data-component="space-type"'), `${path}: SpaceType preview is missing`)
+    }
+    if (path === '/') {
+      assert(
+        html.includes(`${components.length} components. No filler.`),
+        'The homepage component count does not match the catalog',
+      )
+    }
+    if (path === '/docs/space-type') {
+      assert(html.includes('data-kida-space-type'), 'React SpaceType did not render on the server')
+      assert(html.includes('space-type-panel'), 'SpaceType customization controls are missing')
+      assert(html.includes('/r/space-type.json'), 'SpaceType installation link is missing')
+      assert(html.includes('React only'), 'SpaceType framework availability is missing')
+      assert(
+        !html.includes('href="/docs/vue/space-type"'),
+        'SpaceType links to an unavailable adapter',
+      )
+    }
+    if (path.startsWith('/docs/vue/')) {
+      assert(
+        !html.includes('href="/docs/vue/space-type"'),
+        `${path}: unavailable Vue component in navigation`,
+      )
+    }
     if (path.startsWith('/docs/vue/') && path !== '/docs/vue/installation') {
       const name = path.split('/').at(-1)
       assert(html.includes(`data-framework="vue"`), `${path}: Vue distribution is missing`)
@@ -60,7 +89,7 @@ try {
     }
     assert(!html.includes('Vue (experimental)'), `${path}: the removed overview is still linked`)
   }
-  for (const name of ['registry', ...components]) {
+  for (const name of ['registry', ...vueComponents]) {
     const response = await fetch(`${origin}/r/vue/${name}.json`)
     assert.equal(response.status, 200, `Vue ${name} registry is missing`)
     assert(response.headers.get('content-type')?.includes('application/json'))
@@ -71,7 +100,7 @@ try {
         `${name}: Vue entry is missing`,
       )
   }
-  for (const name of components) {
+  for (const name of vueComponents) {
     const response = await fetch(`${origin}/src/demos/${name}-basic.vue`)
     const source = await response.text()
     assert.equal(response.status, 200, `Vue ${name} client module failed to compile`)

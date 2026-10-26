@@ -1,9 +1,11 @@
 import '@kida-ui/styles/kida.css'
+import axe from 'axe-core'
 import { afterEach, expect, test } from 'vitest'
-import { page } from 'vitest/browser'
+import { commands, page } from 'vitest/browser'
 import { render } from 'vitest-browser-react'
 import { Collapse } from './collapse.js'
 import { PhotoPile, type PhotoPilePhoto } from './photo-pile.js'
+import { SpaceType } from './space-type.js'
 import { TextBloom } from './text-bloom.js'
 
 const photos: readonly PhotoPilePhoto[] = [
@@ -20,8 +22,80 @@ const photos: readonly PhotoPilePhoto[] = [
 ]
 
 afterEach(async () => {
+  await commands.setReducedMotion(false)
   await page.viewport(1280, 720)
 })
+
+test.each([false, true])(
+  'SpaceType fits light and dark surfaces after resizing (reduced motion: %s)',
+  async (reduced) => {
+    await commands.setReducedMotion(reduced)
+    const view = await render(
+      <main style={{ width: 760, maxWidth: '100%' }}>
+        <h1>SpaceType surface checks</h1>
+        <SpaceType
+          text="KIDA / MADE-TO-MOVE / "
+          rows={2}
+          longitude={100}
+          paused
+          radius={Number.MAX_VALUE}
+          style={{ height: 260 }}
+        />
+        <SpaceType
+          text="KIDA / AFTER-HOURS / "
+          rows={2}
+          longitude={100}
+          paused
+          radius={Number.MAX_VALUE}
+          color="#fffafb"
+          background="#211c24"
+          style={{ height: 260 }}
+        />
+      </main>,
+    )
+    const roots = [...document.querySelectorAll<HTMLElement>('[data-kida-space-type]')]
+    expect(roots).toHaveLength(2)
+    for (const root of roots) {
+      await expect.poll(() => root.style.getPropertyValue('--kida-space-type-radius')).not.toBe('')
+    }
+    const wideRadius = Number.parseFloat(
+      roots[0]?.style.getPropertyValue('--kida-space-type-radius') ?? '',
+    )
+    for (const width of [1280, 390]) {
+      await page.viewport(width, width === 390 ? 844 : 900)
+      if (width === 390) {
+        await expect
+          .poll(() =>
+            Number.parseFloat(roots[0]?.style.getPropertyValue('--kida-space-type-radius') ?? ''),
+          )
+          .toBeLessThan(wideRadius)
+      }
+      for (const root of roots) {
+        const bounds = root.getBoundingClientRect()
+        expect(root.dataset.state).toBe(reduced ? 'reduced' : 'paused')
+        for (const face of root.querySelectorAll<HTMLElement>('[data-kida-space-type-face]')) {
+          const box = face.getBoundingClientRect()
+          expect(box.left).toBeGreaterThanOrEqual(bounds.left)
+          expect(box.right).toBeLessThanOrEqual(bounds.right)
+          expect(box.top).toBeGreaterThanOrEqual(bounds.top)
+          expect(box.bottom).toBeLessThanOrEqual(bounds.bottom)
+        }
+      }
+      expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(
+        document.documentElement.clientWidth,
+      )
+    }
+    const dark = roots[1]
+    if (!dark) throw new Error('Dark surface is missing')
+    expect(getComputedStyle(dark).backgroundColor).toBe('rgb(33, 28, 36)')
+    const front = dark.querySelector<HTMLElement>('[data-kida-space-type-face="front"]')
+    if (!front) throw new Error('Dark surface text is missing')
+    expect(getComputedStyle(front).color).toBe('rgb(255, 250, 251)')
+    const results = await axe.run(document.body)
+    expect(results.violations).toEqual([])
+    await view.unmount()
+  },
+)
 
 test('PhotoPile applies its compact layout without page-level overflow', async () => {
   await page.viewport(1280, 720)

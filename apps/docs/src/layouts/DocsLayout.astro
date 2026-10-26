@@ -24,12 +24,16 @@ const {
 } = Astro.props
 const docsPrefix = framework === 'vue' ? '/docs/vue' : '/docs'
 
-const entries = (await getCollection('components')).sort(
-  (a, b) =>
-    categoryOrder(a.data.category) - categoryOrder(b.data.category) ||
-    a.data.order - b.data.order ||
-    a.data.title.localeCompare(b.data.title),
-)
+const catalog = await getCollection('components')
+const availableFrameworks = catalog.find((entry) => entry.id === frameworkPage)?.data.frameworks
+const entries = catalog
+  .filter((entry) => entry.data.frameworks.includes(framework))
+  .sort(
+    (a, b) =>
+      categoryOrder(a.data.category) - categoryOrder(b.data.category) ||
+      a.data.order - b.data.order ||
+      a.data.title.localeCompare(b.data.title),
+  )
 
 const groups = COMPONENT_CATEGORIES.map((category) => ({
   ...category,
@@ -96,7 +100,7 @@ const toc = headings.filter((heading) => heading.depth === 2 || heading.depth ==
         <h1>{title}</h1>
         <p class="lede">{description}</p>
       </header>
-      {frameworkPage && <FrameworkSwitcher page={frameworkPage} framework={framework} />}
+      {frameworkPage && <FrameworkSwitcher page={frameworkPage} framework={framework} frameworks={availableFrameworks} />}
       <slot />
     </main>
 

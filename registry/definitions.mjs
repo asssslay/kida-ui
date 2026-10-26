@@ -5,6 +5,58 @@
  */
 export const registryDefinitions = [
   {
+    name: 'space-type',
+    frameworks: ['react'],
+    title: 'SpaceType',
+    description: 'Wraps a phrase around rotating rings with a soft radial wave.',
+    category: 'text',
+    package: {
+      name: '@kida-ui/react',
+      exportName: 'SpaceType',
+      styleImports: ['@kida-ui/styles/components/space-type.css'],
+    },
+    dependencies: [],
+    files: [
+      {
+        source: 'packages/react/src/space-type.tsx',
+        type: 'registry:ui',
+        target: '@ui/kida/space-type.tsx',
+        styleImport: './space-type.css',
+        importReplacements: { '@kida-ui/motion': './motion/space-type.js' },
+      },
+      {
+        source: 'packages/react/src/compose-refs.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/compose-refs.ts',
+      },
+      {
+        source: 'packages/react/src/use-isomorphic-layout-effect.ts',
+        type: 'registry:hook',
+        target: '@ui/kida/use-isomorphic-layout-effect.ts',
+      },
+      {
+        source: 'packages/styles/components/space-type.css',
+        type: 'registry:ui',
+        target: '@ui/kida/space-type.css',
+      },
+      {
+        source: 'packages/motion/src/space-type.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/space-type.ts',
+      },
+      {
+        source: 'packages/motion/src/space-type-geometry.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/space-type-geometry.ts',
+      },
+      {
+        source: 'packages/motion/src/reduced-motion.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/reduced-motion.ts',
+      },
+    ],
+  },
+  {
     name: 'reveal',
     title: 'Reveal',
     description: 'Animates its children in when they enter the viewport.',

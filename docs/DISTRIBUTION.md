@@ -2,8 +2,9 @@
 
 Status: **implemented for React and experimental Vue components** (2026-10-12)
 
-Both adapters cover all seven components. Component and installation pages have a React/Vue
-selector; Vue pages live at `/docs/vue/<name>` and use checked Vue quick starts and live SFC demos.
+React covers eight components; experimental Vue covers the seven shared components.
+SpaceType currently supports React only. Component and installation pages list available
+frameworks; Vue pages live at `/docs/vue/<name>` and use checked Vue quick starts and live SFC demos.
 Vue 3.5+ and a TypeScript project are required. npm publication remains pending.
 
 React uses the existing `/r/<name>.json` registry through `shadcn`. Vue uses

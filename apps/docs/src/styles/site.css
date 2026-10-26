@@ -552,6 +552,16 @@ a {
   min-height: 8rem;
 }
 
+.demo[data-demo="space-type-basic"] .demo-stage,
+.demo[data-demo="space-type-playground"] .demo-stage {
+  display: block;
+  padding: 1.25rem;
+}
+
+.component-preview[data-component="space-type"] {
+  padding: 0.5rem;
+}
+
 .demo .code {
   margin: 0;
 }
