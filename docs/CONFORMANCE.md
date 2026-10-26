@@ -2,7 +2,7 @@
 
 Status: **required release evidence** (2026-09-26)
 
-This matrix tracks the behavior of the seven existing React components against
+This matrix tracks the behavior of the React catalog against
 `COMPONENT_STANDARD.md`. It is intentionally separate from the product roadmap: a green row means
 the current component is stable enough to reproduce in another framework, not that more components
 should be added.
@@ -18,6 +18,7 @@ should be added.
 | PhotoPile | Browser | Browser | Drag settle + collection replacement | Photos and drag options | Shared browser gate | Focus and pointer paths |
 | ScribbleHighlight | Browser | Browser | Observer re-arm | Viewport options and variant | Shared browser gate | SVG decoration hidden |
 | StickerBurst | Browser | Browser | Listener cleanup via Strict Mode | Stable layout inputs | Shared browser gate | Native click path; decoration hidden |
+| SpaceType (React only) | Browser + geometry unit tests | Browser | Observer and animation cleanup | Text, rows, speed, pause, radius, longitude, colors | Browser | Authored phrase exposed once |
 
 Cross-component gates also verify:
 
@@ -29,8 +30,11 @@ Cross-component gates also verify:
   immediate Collapse removal.
 
 Responsive and visual evidence is defined in `VISUAL_TESTING.md`. It adds mobile and desktop
-geometry checks, deterministic settled-state screenshots for all seven components, controlled
-light/dark surfaces, and a color-contrast-enabled axe pass.
+geometry checks, deterministic settled-state screenshots for the seven shared components, controlled
+light/dark surfaces, and a color-contrast-enabled axe pass. SpaceType additionally has responsive
+light/dark checks in normal and reduced motion, empty/single/long content coverage, independent
+instances, and hidden-document playback checks. Its stored Linux screenshot baseline is still
+required before public alpha.
 
 Run the behavioral evidence with `pnpm --filter @kida-ui/react test` and the responsive/visual
 evidence with `pnpm --filter @kida-ui/react test:visual`. The repository-wide release candidate gate
@@ -59,14 +63,15 @@ reference images and does not replace the existing authoritative Linux React bas
 Copied-source conformance installs every Vue registry item through the pinned shadcn-vue CLI,
 then tests a combined installation with a custom UI alias. The displayed quick starts typecheck,
 bundle, and render deterministically in Node without Kida packages or workspace aliases.
-Both framework catalogs and all 14 items must match the built documentation endpoints.
+Both framework catalogs and all 15 items must match the built documentation endpoints.
 
 The packed-consumer check in `DISTRIBUTION.md` verifies the displayed demos, production bundle,
 declaration resolution, and server imports. `/docs/<name>` supplies the live preview and framework-specific examples and API notes.
-The complete Vue catalog remains experimental. CI now defines Firefox/WebKit behavior gates for
-both adapters, in addition to Chromium, with Chromium/WebKit touch emulation. Real touch-device
-and screen-reader release conformance is still required. See
-[the release checklist](RELEASE_CHECKLIST.md) for commands and evidence requirements.
+SpaceType currently has only a React adapter; its page hides the Vue choice. The seven shared Vue
+components remain experimental. CI now defines Firefox/WebKit behavior gates for both adapters, in
+addition to Chromium, with Chromium/WebKit touch emulation. Real touch-device and screen-reader
+release conformance is still required. See [the release checklist](RELEASE_CHECKLIST.md) for
+commands and evidence requirements.
 
 `pnpm docs:check-dev` starts an isolated Astro dev server and checks Vue/React docs and the home
 page, including the Vue client module. A version-pinned pnpm patch disables React Refresh only in

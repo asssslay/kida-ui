@@ -7,7 +7,8 @@ export async function getStaticPaths() {
   const entries = await getCollection('components')
   const vue = await getCollection('vueComponents')
   const vueNames = new Set(vue.map((entry) => entry.id))
-  if (entries.some((entry) => !vueNames.has(entry.id)) || vue.length !== entries.length)
+  const vueEntries = entries.filter((entry) => entry.data.frameworks.includes('vue'))
+  if (vueEntries.some((entry) => !vueNames.has(entry.id)) || vue.length !== vueEntries.length)
     throw new Error('Vue component documentation must match the catalog')
   return [
     ...entries.map((entry) => ({

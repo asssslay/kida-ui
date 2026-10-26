@@ -650,7 +650,9 @@ try {
     )
     assert.equal(
       await page.locator('.framework-preview-note').evaluate((node) => node.hidden),
-      name === 'installation',
+      name === 'installation' ||
+        (await page.locator(`.sidebar a[href="/docs/${name}"]`).getAttribute('data-frameworks')) ===
+          'react',
     )
     assert.equal(await page.title(), `${await page.locator('h1').textContent()} — Kida UI`)
     assert(
@@ -782,6 +784,39 @@ try {
     [],
     'Navigation removed or reparented persistent shell nodes',
   )
+  // SpaceType ships only a React adapter. Its page shows React and hides the Vue
+  // choice, but keeps the saved Vue preference for the components that have it.
+  async function reactOnly(target) {
+    assert(await target.locator('[data-framework-choice="vue"]').isHidden())
+    assert(await target.locator('[data-framework-choice="react"]').isVisible())
+    assert.equal(
+      await target.locator('[data-framework-choice="react"]').getAttribute('aria-pressed'),
+      'true',
+    )
+    assert.equal(await target.locator('[data-framework-status]').textContent(), '')
+    assert.equal(
+      await target.evaluate(() => localStorage.getItem('kida-ui:framework')),
+      'vue',
+      'A React-only page replaced the saved framework preference',
+    )
+  }
+  await sidebar('space-type', 'react')
+  await reactOnly(page)
+  await hydrated('space-type-playground')
+  const direct = await context.newPage()
+  direct.on('pageerror', (error) => errors.push({ message: error.message, url: direct.url() }))
+  assert.equal((await direct.goto(`${origin}/docs/space-type`))?.status(), 200)
+  await direct.waitForFunction(
+    () =>
+      !!document.querySelector('[data-framework-choice]:not(:disabled)') &&
+      !document.querySelector('[data-framework-content]')?.hasAttribute('aria-busy'),
+  )
+  await reactOnly(direct)
+  await direct.close()
+  await sidebar('collapse')
+  assert(await page.locator('[data-framework-choice="vue"]').isVisible())
+  await hydrated('collapse-basic')
+
   await switchTo('react')
   await sidebar('text-bloom', 'react')
   assert.equal(await page.locator('[data-distribution]').getAttribute('data-framework'), 'react')

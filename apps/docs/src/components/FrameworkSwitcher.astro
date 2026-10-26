@@ -2,19 +2,23 @@
 interface Props {
   page: string
   framework: 'react' | 'vue'
+  frameworks?: ('react' | 'vue')[]
 }
-const { page, framework } = Astro.props
+const { page, framework, frameworks = ['react', 'vue'] } = Astro.props
+const other = framework === 'react' ? 'vue' : 'react'
 ---
 
-<div class="framework-switcher" role="group" aria-label="Documentation framework" data-framework-page={page}>
-  <button type="button" data-framework-choice="react" aria-controls="framework-article" aria-pressed={framework === 'react'} disabled>React</button>
-  <button type="button" data-framework-choice="vue" aria-controls="framework-article" aria-pressed={framework === 'vue'} disabled>Vue <span class="framework-badge">Experimental</span></button>
+<div class="framework-switcher" role="group" aria-label="Documentation framework" data-framework-page={page} data-frameworks={frameworks.join(' ')}>
+  <button type="button" data-framework-choice="react" aria-controls="framework-article" aria-pressed={framework === 'react'} hidden={!frameworks.includes('react')} disabled>React</button>
+  <button type="button" data-framework-choice="vue" aria-controls="framework-article" aria-pressed={framework === 'vue'} hidden={!frameworks.includes('vue')} disabled>Vue <span class="framework-badge">Experimental</span></button>
 </div>
-<p class="framework-preview-note" hidden={page === 'installation'}>Shared live previews stay running while you switch code examples and API documentation.</p>
+<p class="framework-preview-note" hidden={page === 'installation' || frameworks.length < 2}>Shared live previews stay running while you switch code examples and API documentation.</p>
 <p class="framework-status" data-framework-status role="status"></p>
-<noscript>
-  <p>JavaScript is required to switch documentation in place. <a href={framework === 'react' ? `/docs/vue/${page}` : `/docs/${page}`}>Read the {framework === 'react' ? 'Vue' : 'React'} documentation.</a></p>
-</noscript>
+{frameworks.includes(other) && (
+  <noscript>
+    <p>JavaScript is required to switch documentation in place. <a href={other === 'vue' ? `/docs/vue/${page}` : `/docs/${page}`}>Read the {other === 'vue' ? 'Vue' : 'React'} documentation.</a></p>
+  </noscript>
+)}
 
 <script>
   import '../lib/docs-navigation'

@@ -1,0 +1,91 @@
+---
+title: SpaceType
+description: Wraps a phrase around rotating rings with a soft radial wave.
+category: text
+tier: T2
+status: beta
+frameworks: [react]
+order: 2
+---
+
+import Demo from '../../components/Demo.astro'
+import Distribution from '../../components/Distribution.astro'
+import QuickStart from '../../components/QuickStart.astro'
+import { SpaceTypeSection } from '../../demos/space-type-playground.react.tsx'
+
+<Demo name="space-type-playground" title="Words in orbit · Make it yours" hideSource>
+  <SpaceTypeSection showHeading={false} client:load />
+</Demo>
+
+## Quick start
+
+SpaceType currently supports **React only**. Vue support is not available yet.
+
+<Distribution name="space-type" />
+
+<QuickStart name="space-type" />
+
+## Customization
+
+Edit the phrase, change its colors, add rows with the number control, and adjust speed, radius,
+and longitude. Set speed to zero to pause. Smaller rings pack the same-sized letters closer;
+larger rings spread them out. Radius changes preserve the current rotation and font size.
+
+Longitude makes the rings pulse inward and outward while the letters tilt to follow the
+cylinder's changing surface. The wave travels along the rows and completes eight pulses per
+rotation. Its strength changes without changing the base radius, resizing the letters, or
+resetting playback. The radius range reserves room for maximum Longitude strength upfront,
+so its value and limits stay fixed as you adjust the wave. The range still adapts to the
+container, text, and rows to keep the animation inside its frame. Compact
+rings intentionally produce dense, overlapping typography, like a typographic sculpture.
+
+## API
+
+### Props
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `text` | `string` | required | Phrase rendered around each ring. |
+| `rows` | `number` | `1` | Number of rings, rounded and clamped to 1–6. |
+| `speed` | `number` | `1` | Rotation rate from 0–3×. One turn takes 24 seconds at 1×. Zero freezes the current angle. |
+| `paused` | `boolean` | `false` | Pause and resume without resetting rotation. |
+| `radius` | `number` | auto | Base radius in CSS pixels, clamped to the measured frame. |
+| `longitude` | `number` | `0` | Strength of the pulsing rings and tilting letter surface, clamped to 0–100. |
+| `color` | `string` | CSS value | Front text color. Back letters blend this with the background. |
+| `background` | `string` | CSS value | Ring surface color. |
+| `onGeometryChange` | `(geometry: SpaceTypeGeometry \| null) => void` | — | Reports fitted `fontSize`, `radius`, `minRadius`, `maxRadius`, and `perspective`; `null` before measurement. |
+
+Native div attributes, `className`, `style`, event handlers, and a forwarded `ref` are passed to
+the root. Text, colors, radius, rows, and longitude update without restarting rotation.
+
+### CSS custom properties
+
+| Property | Default | Description |
+| --- | --- | --- |
+| `--kida-space-type-color` | `#211c24` | Front text color. |
+| `--kida-space-type-background` | `#fffafb` | Surface color used to blend the back letters. |
+| `--kida-space-type-font` | Helvetica Neue, Segoe UI, sans-serif | Thin display font. |
+| `--kida-space-type-height` | `clamp(15rem, 40vw, 28rem)` | Preview frame height; changes trigger measurement. |
+
+## Accessibility and input behavior
+
+The authored phrase is exposed once to assistive technology. Repeated rows and front/back
+glyphs are decorative copies hidden from the accessibility tree. Use SpaceType as display
+typography alongside readable essential copy. The customization controls use native labeled
+inputs and buttons; the text input keeps the complete phrase editable and copyable.
+
+Reduced motion keeps the ring static and preserves the authored phrase. Playback pauses
+off-screen and in hidden tabs. Observers, preference listeners, and animations are released on
+unmount, including React Strict Mode's repeated setup and cleanup.
+
+Server markup is deterministic and contains the phrase before hydration. Geometry fits the
+container after hydration using ResizeObserver. Modern browsers with CSS 3D transforms,
+registered custom properties, trigonometric functions, and Web Animations are required for
+the complete effect.
+
+## Troubleshooting
+
+> Use short display phrases. Long phrases automatically use smaller letters. Radius changes
+> never change their size. If a requested radius exceeds the frame, it is clamped; increase the
+> container size or `--kida-space-type-height` to give the ring more room. Letter spacing is
+> controlled by the circle's radius and has no separate prop or control.

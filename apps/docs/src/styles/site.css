@@ -558,6 +558,16 @@ a {
   min-height: 8rem;
 }
 
+.demo[data-demo="space-type-basic"] .demo-stage,
+.demo[data-demo="space-type-playground"] .demo-stage {
+  display: block;
+  padding: 1.25rem;
+}
+
+.component-preview[data-component="space-type"] {
+  padding: 0.5rem;
+}
+
 .demo .code {
   margin: 0;
 }
@@ -2452,6 +2462,10 @@ a {
   font: inherit;
   cursor: pointer;
   font-size: 0.85rem;
+}
+/* Pages list only the adapters they ship; the switcher itself stays mounted. */
+.framework-switcher button[hidden] {
+  display: none;
 }
 .framework-switcher button[aria-pressed="true"] {
   background: var(--ink, #211c24);

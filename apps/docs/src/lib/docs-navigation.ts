@@ -15,6 +15,14 @@ function preferredFramework(fallback: Framework = 'react'): Framework {
   return fallback
 }
 
+// Some components ship only one adapter. Pages and sidebar links list theirs;
+// a missing list means every framework is available.
+function availableFrameworks(element: HTMLElement | null | undefined): Framework[] {
+  const listed = element?.dataset.frameworks?.split(' ')
+  const frameworks = listed?.filter((item): item is Framework => item === 'react' || item === 'vue')
+  return frameworks?.length ? frameworks : ['react', 'vue']
+}
+
 function initializeFrameworkDocs() {
   cancelCurrentFramework()
   const content = document.querySelector<HTMLElement>('[data-framework-content]')
@@ -133,7 +141,7 @@ function initializeFrameworkDocs() {
     window.scrollTo({ left: scrollX, top: scrollY, behavior: 'instant' })
   }
 
-  async function selectFramework(framework: Framework) {
+  async function selectFramework(framework: Framework, remember = true) {
     if (!content || !article || !switcher) return
     const request = ++selection
     try {
@@ -153,7 +161,7 @@ function initializeFrameworkDocs() {
       }
       if (status) status.textContent = ''
       try {
-        localStorage.setItem(preferenceKey, framework)
+        if (remember) localStorage.setItem(preferenceKey, framework)
       } catch {
         /* Storage can be unavailable. */
       }
@@ -170,6 +178,10 @@ function initializeFrameworkDocs() {
   // A compatibility entry explicitly requests Vue. Canonical entries restore the
   // preference; client navigation already fetched that framework before the swap.
   if (framework !== 'vue') framework = preferredFramework(framework)
+  // A page without the preferred adapter shows its own framework, but keeps the
+  // saved preference for the pages that do ship it.
+  const supported = availableFrameworks(switcher).includes(framework)
+  if (!supported) framework = content.dataset.framework as Framework
   for (const button of switcher.querySelectorAll<HTMLButtonElement>('[data-framework-choice]'))
     button.disabled = false
   selectCurrentFramework = selectFramework
@@ -180,7 +192,7 @@ function initializeFrameworkDocs() {
     pending.clear()
     selectCurrentFramework = undefined
   }
-  void selectFramework(framework)
+  void selectFramework(framework, supported)
 }
 
 // Module scripts run once with ClientRouter. Delegation and a fresh controller
@@ -208,13 +220,14 @@ document.addEventListener(
   { capture: true },
 )
 
-function frameworkPage(url: URL): string | undefined {
+function frameworkTarget(url: URL): { page: string; frameworks: Framework[] } | undefined {
   if (url.origin !== location.origin) return
   const path = url.pathname.replace('/docs/vue/', '/docs/').replace(/\/$/, '')
   const link = [
     ...document.querySelectorAll<HTMLAnchorElement>('.sidebar [data-framework-link]'),
   ].find((link) => link.pathname === path)
-  return link ? path.slice('/docs/'.length) : undefined
+  if (!link) return
+  return { page: path.slice('/docs/'.length), frameworks: availableFrameworks(link) }
 }
 
 function contentSwap(nextDocument: Document): (() => void) | undefined {
@@ -283,8 +296,9 @@ function contentSwap(nextDocument: Document): (() => void) | undefined {
 }
 
 document.addEventListener('astro:before-preparation', (event: TransitionBeforePreparationEvent) => {
-  const page = frameworkPage(event.to)
-  if (!page || event.formData) return
+  const target = frameworkTarget(event.to)
+  if (!target || event.formData) return
+  const { page, frameworks } = target
   const canonical = new URL(event.to)
   canonical.pathname = `/docs/${page}`
   const explicitVue = event.to.pathname.startsWith('/docs/vue/')
@@ -293,14 +307,16 @@ document.addEventListener('astro:before-preparation', (event: TransitionBeforePr
   // the fetched document differs; the visible URL is always the canonical route.
   event.loader = async () => {
     let framework: Framework
-    const selected = () =>
-      explicitVue
+    const selected = () => {
+      const choice = explicitVue
         ? 'vue'
         : preferredFramework(
             document.querySelector<HTMLElement>('[data-framework-content]')?.dataset.framework as
               | Framework
               | undefined,
           )
+      return frameworks.includes(choice) ? choice : (frameworks[0] ?? 'react')
+    }
     try {
       do {
         framework = selected()
@@ -331,11 +347,13 @@ document.addEventListener('astro:before-swap', (event) => {
   const current = document.querySelector<HTMLElement>('.framework-switcher')
   if (next && current) {
     current.dataset.frameworkPage = next.dataset.frameworkPage
+    current.dataset.frameworks = next.dataset.frameworks
     for (const button of current.querySelectorAll<HTMLButtonElement>('[data-framework-choice]')) {
-      const pressed = next
-        .querySelector(`[data-framework-choice="${button.dataset.frameworkChoice}"]`)
-        ?.getAttribute('aria-pressed')
-      button.setAttribute('aria-pressed', pressed ?? 'false')
+      const counterpart = next.querySelector<HTMLButtonElement>(
+        `[data-framework-choice="${button.dataset.frameworkChoice}"]`,
+      )
+      button.setAttribute('aria-pressed', counterpart?.getAttribute('aria-pressed') ?? 'false')
+      button.hidden = counterpart?.hidden ?? true
     }
   }
   for (const link of document.querySelectorAll<HTMLAnchorElement>('.sidebar a')) {

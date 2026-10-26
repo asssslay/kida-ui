@@ -86,3 +86,9 @@ Responsive browser tests separately verify:
 - PhotoPile compact sizing, focus visibility, and absence of page-level overflow;
 - Collapse height remeasurement after content wraps in a narrower container; and
 - TextBloom wrapping, text preservation, and absence of horizontal overflow.
+
+SpaceType has separate responsive browser checks at mobile and desktop widths, on light and dark
+surfaces with color contrast enabled, in both normal and reduced motion. Its behavioral suite also
+samples the full rotation and wave at minimum and maximum radii. These checks do not replace a
+reviewed Linux screenshot baseline; adding SpaceType to the stored visual references remains a
+pre-alpha task.

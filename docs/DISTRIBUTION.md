@@ -2,11 +2,13 @@
 
 Status: **implemented for React and experimental Vue components** (2026-10-12)
 
-Both adapters cover all seven components. Component and installation pages have a React/Vue
-selector on one canonical `/docs/<name>` page. It changes the checked source, installation
-instructions, and API notes without navigation or restarting the live preview. The framework
-preference is remembered locally; legacy `/docs/vue/<name>` entries remain compatible. Native
-Vue SFC demos are independently verified against React.
+React covers eight components; experimental Vue covers the seven shared components. SpaceType
+currently supports React only, so its page hides the Vue choice. Component and installation pages
+have a React/Vue selector on one canonical `/docs/<name>` page. It changes the checked source,
+installation instructions, and API notes without navigation or restarting the live preview. The
+framework preference is remembered locally and kept when a React-only page is opened; legacy
+`/docs/vue/<name>` entries remain compatible. Native Vue SFC demos are independently verified
+against React.
 Sidebar navigation keeps the navigation controls mounted and prepares the selected framework's
 new article before displaying it, without changing the canonical URL format.
 Vue 3.5+ and a TypeScript project are required. npm publication remains pending.
