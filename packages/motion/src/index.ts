@@ -1,5 +1,11 @@
 export { type CollapseSizeObserver, observeCollapseSize } from './collapse.js'
 export { type DrawInViewOptions, drawInView } from './draw-in-view.js'
+export {
+  type ImageTextControls,
+  type ImageTextOptions,
+  imageText,
+  imageTextStyle,
+} from './image-text.js'
 export { type MagneticOptions, magnetic } from './magnetic.js'
 export { type PhotoPileOptions, photoPile } from './photo-pile.js'
 export { prefersReducedMotion, watchReducedMotion } from './reduced-motion.js'

@@ -2,8 +2,8 @@
 
 Status: **implemented for React and experimental Vue components** (2026-10-12)
 
-React covers eight components; experimental Vue covers the seven shared components. SpaceType
-currently supports React only, so its page hides the Vue choice. Component and installation pages
+React covers nine components; experimental Vue covers the seven shared components. SpaceType and
+ImageText currently support React only, so their pages hide the Vue choice. Component and installation pages
 have a React/Vue selector on one canonical `/docs/<name>` page. It changes the checked source,
 installation instructions, and API notes without navigation or restarting the live preview. The
 framework preference is remembered locally and kept when a React-only page is opened; legacy

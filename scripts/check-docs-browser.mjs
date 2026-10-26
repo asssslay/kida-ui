@@ -784,8 +784,8 @@ try {
     [],
     'Navigation removed or reparented persistent shell nodes',
   )
-  // SpaceType ships only a React adapter. Its page shows React and hides the Vue
-  // choice, but keeps the saved Vue preference for the components that have it.
+  // SpaceType and ImageText ship only a React adapter. Their pages show React and
+  // hide the Vue choice, but keep the saved Vue preference for the others.
   async function reactOnly(target) {
     assert(await target.locator('[data-framework-choice="vue"]').isHidden())
     assert(await target.locator('[data-framework-choice="react"]').isVisible())
@@ -800,9 +800,14 @@ try {
       'A React-only page replaced the saved framework preference',
     )
   }
-  await sidebar('space-type', 'react')
-  await reactOnly(page)
-  await hydrated('space-type-playground')
+  for (const [name, demo] of [
+    ['image-text', 'image-text-basic'],
+    ['space-type', 'space-type-playground'],
+  ]) {
+    await sidebar(name, 'react')
+    await reactOnly(page)
+    await hydrated(demo)
+  }
   const direct = await context.newPage()
   direct.on('pageerror', (error) => errors.push({ message: error.message, url: direct.url() }))
   const directResponse = await direct.goto(`${origin}/docs/space-type`)

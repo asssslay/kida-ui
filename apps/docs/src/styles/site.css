@@ -1040,6 +1040,25 @@ a {
   width: 100%;
 }
 
+.demo[data-demo="image-text-basic"] .demo-stage {
+  display: block;
+  padding: 0;
+  background: #fff;
+}
+
+.component-preview[data-component="image-text"] {
+  padding: 0;
+  background: #fff;
+}
+
+.component-preview[data-component="image-text"] .demo-image-text {
+  padding: 1.5rem;
+}
+
+.component-preview[data-component="image-text"] [data-kida-image-text] {
+  --kida-image-text-font-size: clamp(1.75rem, 11cqw, 3rem);
+}
+
 .demo-text-bloom h2 {
   margin: 0;
   color: var(--fg);
