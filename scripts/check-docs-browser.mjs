@@ -805,7 +805,12 @@ try {
   await hydrated('space-type-playground')
   const direct = await context.newPage()
   direct.on('pageerror', (error) => errors.push({ message: error.message, url: direct.url() }))
-  assert.equal((await direct.goto(`${origin}/docs/space-type`))?.status(), 200)
+  const directResponse = await direct.goto(`${origin}/docs/space-type`)
+  // Firefox can report the validated cache entry from the earlier visit as a 304.
+  assert(
+    [200, 304].includes(directResponse?.status()),
+    `/docs/space-type: HTTP ${directResponse?.status()}`,
+  )
   await direct.waitForFunction(
     () =>
       !!document.querySelector('[data-framework-choice]:not(:disabled)') &&
