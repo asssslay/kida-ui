@@ -62,7 +62,7 @@ bundle, and render deterministically in Node without Kida packages or workspace 
 Both framework catalogs and all 14 items must match the built documentation endpoints.
 
 The packed-consumer check in `DISTRIBUTION.md` verifies the displayed demos, production bundle,
-declaration resolution, and server imports. `/docs/vue/<name>` supplies the live examples and API notes.
+declaration resolution, and server imports. `/docs/<name>` supplies the live preview and framework-specific examples and API notes.
 The complete Vue catalog remains experimental. CI now defines Firefox/WebKit behavior gates for
 both adapters, in addition to Chromium, with Chromium/WebKit touch emulation. Real touch-device
 and screen-reader release conformance is still required. See
@@ -76,18 +76,28 @@ React Refresh elsewhere. Remove the patch after upgrading to a release with this
 the development smoke check.
 
 After building, `pnpm docs:test-browser` exercises the production documentation in Chromium.
-It requires matching demo lists and compares all seven basic demos, every customization variant,
-expanded Collapse, and Reveal's initial motion
-geometry across React and Vue. Framework switching must preserve the document, navigation shell,
-scroll position, keyboard focus, history, and working Copy buttons. CI also runs this gate with
+It requires matching demo lists and compares native React and Vue server-rendered demos,
+customization variants, expanded Collapse, and initial Reveal geometry at mobile and desktop sizes.
+Framework buttons update examples and API notes in place, without navigation or replacing live
+preview nodes. Checks require the same URL, document, preview state, scroll, focus, and history,
+working Copy buttons, and a preference that survives page navigation and refresh. Legacy Vue URLs
+remain compatible entries and normalize to the canonical component URL. CI also runs the gate with
 `KIDA_TEST_BROWSER=firefox` and `KIDA_TEST_BROWSER=webkit`.
 
-A version-pinned `@astrojs/react` patch completes a pending island's initial render before
-unmounting it during a router swap. Without it, rapid history traversal can unmount an unfinished
-hydration and report React error 424 in WebKit. The patch is limited to teardown; ordinary
-hydration remains concurrent. The docs gate repeats back/forward traversal without waiting for
-island hydration and requires zero browser errors. Remove the patch after the integration handles
-this lifecycle and passes the same checks.
+Sidebar navigation fetches the selected framework's document before swapping the article. A
+custom Astro swap updates the center heading and article, the TOC links, and page metadata in
+place. The body, layout, header, sidebar, framework controls, TOC containers, and footer are never
+replaced or reparented. Native visual transitions are skipped to avoid a full-page fade or
+glass-layer reset. The browser URL and history use canonical
+`/docs/<name>` paths. Checks sample rendered frames to reject a React selection flash, hold a
+Vue response to verify the old page stays usable, and exercise mobile/desktop navigation,
+same-page links, and rapid back/forward traversal. Mutation checks reject any removal of a
+persistent shell node; frame samples also reject full-page transition animations.
+
+The version-pinned `@astrojs/react` patch completes pending initial hydration before router
+teardown. This prevents React error 424 when rapid history traversal unmounts an unfinished
+island in WebKit. Normal hydration remains concurrent. Remove the patch once the integration
+handles this lifecycle and passes the same browser checks.
 
 ## Still required before a public alpha
 

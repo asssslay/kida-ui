@@ -22,7 +22,7 @@ const {
   framework = 'react',
   frameworkPage,
 } = Astro.props
-const docsPrefix = framework === 'vue' ? '/docs/vue' : '/docs'
+const docsPrefix = '/docs'
 
 const entries = (await getCollection('components')).sort(
   (a, b) =>
@@ -45,10 +45,11 @@ const toc = headings.filter((heading) => heading.depth === 2 || heading.depth ==
   title={`${title} — Kida UI`}
   description={description}
   bodyClass="soft-orbit-page docs-reference-page"
+  canonicalPath={currentPath}
   clientNavigation
 >
   <div class="docs">
-    <aside class="sidebar" transition:persist="docs-sidebar">
+    <aside class="sidebar">
       <h2>Documentation</h2>
       <section class="sidebar-group">
         <h3>Getting started</h3>
@@ -92,7 +93,7 @@ const toc = headings.filter((heading) => heading.depth === 2 || heading.depth ==
     </aside>
 
     <main class="prose" id="main">
-      <header class="docs-prose-head" transition:persist={`docs-heading-${frameworkPage ?? title}`}>
+      <header class="docs-prose-head">
         <p class="docs-prose-kicker">
           <a href="/docs">Documentation</a><span aria-hidden="true">/</span>{title}
         </p>

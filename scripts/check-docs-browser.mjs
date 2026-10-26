@@ -55,42 +55,75 @@ try {
     console.error('Documentation browser error:', detail)
   })
   const origin = `http://127.0.0.1:${server.port}`
+  let documentRequests = 0
+  page.on('request', (request) => {
+    if (request.isNavigationRequest() && request.frame() === page.mainFrame()) documentRequests++
+  })
 
   async function open(path) {
+    if (page.url().startsWith(origin))
+      await page.evaluate(() => localStorage.removeItem('kida-ui:framework'))
     const response = await page.goto(`${origin}${path}`)
-    // Firefox exposes the 304 from a validated cache entry on repeat navigations.
-    // The rendered page and hydrated demos are still checked below.
     assert([200, 304].includes(response?.status()), `${path}: HTTP ${response?.status()}`)
     await page.waitForFunction(
-      () => !!document.querySelector('[name="astro-view-transitions-enabled"]'),
+      () => !!document.querySelector('[data-framework-choice]:not(:disabled)'),
     )
+    await page.waitForURL(`${origin}${path.replace('/docs/vue/', '/docs/')}`)
   }
 
-  async function switchTo(framework, name) {
-    const path = `/docs/${framework === 'vue' ? 'vue/' : ''}${name}`
-    const link = page.locator(`.framework-switcher a[href="${path}"]`)
-    await link.focus()
-    await link.click()
-    await page.waitForURL(`${origin}${path}`)
+  async function switchTo(framework) {
+    const url = page.url()
+    const historyLength = await page.evaluate(() => history.length)
+    const requests = documentRequests
+    const button = page.locator(`[data-framework-choice="${framework}"]`)
+    await button.focus()
+    await button.click()
     await page.waitForFunction(
-      (path) =>
-        document
-          .querySelector(`.framework-switcher a[href="${path}"]`)
-          ?.getAttribute('aria-current') === 'page',
-      path,
+      (framework) =>
+        document.querySelector('[data-framework-content]')?.getAttribute('data-framework') ===
+          framework &&
+        !document.querySelector('[data-framework-content]')?.hasAttribute('aria-busy'),
+      framework,
     )
-    await page.waitForFunction(
-      () => !document.documentElement.hasAttribute('data-astro-transition'),
+    assert.equal(await button.getAttribute('aria-pressed'), 'true')
+    assert.equal(page.url(), url, 'Framework selection changed the URL')
+    assert.equal(
+      await page.evaluate(() => history.length),
+      historyLength,
+      'Framework selection added a history entry',
     )
+    assert.equal(documentRequests, requests, 'Framework selection requested another document')
   }
 
   async function hydrated(name) {
     const stage = page.locator(`[data-demo="${name}"] .demo-stage`)
     await stage.scrollIntoViewIfNeeded()
-    await page.waitForFunction((name) => {
-      const islands = [...document.querySelectorAll(`[data-demo="${name}"] astro-island`)]
-      return islands.length > 0 && islands.every((island) => !island.hasAttribute('ssr'))
-    }, name)
+    try {
+      await page.waitForFunction((name) => {
+        const islands = [...document.querySelectorAll(`[data-demo="${name}"] astro-island`)]
+        return islands.length > 0 && islands.every((island) => !island.hasAttribute('ssr'))
+      }, name)
+    } catch (error) {
+      console.error(
+        await page.evaluate(() => ({
+          url: location.href,
+          defined: !!customElements.get('astro-island'),
+          directives: Object.keys(window.Astro ?? {}),
+          islands: [...document.querySelectorAll('astro-island')].map((node) => ({
+            ssr: node.hasAttribute('ssr'),
+            component: node.getAttribute('component-url'),
+            bounds: node.getBoundingClientRect().toJSON(),
+            client: node.getAttribute('client'),
+          })),
+          scripts: [...document.querySelectorAll('script')].map((node) => ({
+            type: node.type,
+            src: node.src,
+            start: node.textContent.slice(0, 80),
+          })),
+        })),
+      )
+      throw error
+    }
     await page.evaluate(() => document.fonts.ready)
     await stage
       .locator('img')
@@ -207,44 +240,67 @@ try {
       const reactDemos = new Map()
       for (const demo of demoNames) reactDemos.set(demo, await capture(demo))
       await page.evaluate(() => {
-        window.__docsParityDocument = document
-        window.__docsParityHeader = document.querySelector('.docs-prose-head')
-        window.__docsParitySidebar = document.querySelector('.sidebar')
+        window.__docsDocument = document
+        window.__docsHeader = document.querySelector('.docs-prose-head')
+        window.__docsStages = [...document.querySelectorAll('.demo-stage')]
+        window.__docsIslands = [...document.querySelectorAll('astro-island')]
+        window.__docsHydrates = 0
+        document.addEventListener('astro:hydrate', () => window.__docsHydrates++, true)
       })
-      await switchTo('vue', name)
+      await switchTo('vue')
       assert(
-        await page.evaluate(() => window.__docsParityDocument === document),
-        'Framework switch reloaded the document',
+        await page.evaluate(
+          () =>
+            window.__docsDocument === document &&
+            window.__docsHeader === document.querySelector('.docs-prose-head'),
+        ),
       )
       assert(
         await page.evaluate(
-          () => window.__docsParityHeader === document.querySelector('.docs-prose-head'),
+          () =>
+            window.__docsStages.every(
+              (stage, index) => stage === document.querySelectorAll('.demo-stage')[index],
+            ) && window.__docsIslands.every((island) => island.isConnected),
         ),
-        'Framework switch replaced the page heading',
+      )
+      assert.equal(await page.locator('[data-distribution]').getAttribute('data-framework'), 'vue')
+      assert(
+        (await page.locator('[data-framework-article]').innerText()).includes('shadcn-vue@2.8.2'),
       )
       assert(
-        await page.evaluate(
-          () => window.__docsParitySidebar === document.querySelector('.sidebar'),
+        !(await page.locator('[data-framework-article]').innerText()).includes(
+          'npx shadcn@latest add',
         ),
-        'Framework switch replaced the sidebar',
       )
+      for (const demo of demoNames)
+        await compare(demo, width, reactDemos.get(demo), await capture(demo))
+      await switchTo('react')
       assert.equal(
-        await page.locator('.sidebar a[aria-current="page"]').getAttribute('href'),
-        `/docs/vue/${name}`,
+        await page.evaluate(() => window.__docsHydrates),
+        0,
+        'Framework selection rehydrated a live preview',
       )
+      assert(
+        await page.evaluate(() =>
+          [...document.querySelectorAll('[id]')].every(
+            (node, index, all) => all.findIndex((candidate) => candidate.id === node.id) === index,
+          ),
+        ),
+        'Duplicate active IDs',
+      )
+
+      // The compatibility entry renders the real Vue adapter initially. Compare it
+      // independently; selecting Vue on the canonical page deliberately keeps the live preview.
+      await open(`/docs/vue/${name}`)
       assert.deepEqual(
         await page
           .locator('.demo[data-demo]')
           .evaluateAll((nodes) => nodes.map((node) => node.dataset.demo)),
         demoNames,
-        'Framework pages must offer the same demo variants',
       )
-      for (const demo of demoNames) {
+      for (const demo of demoNames)
         await compare(demo, width, reactDemos.get(demo), await capture(demo))
-      }
-
       if (name === 'reveal') {
-        // Settled layout alone cannot detect changed entrance travel.
         const states = []
         for (const prefix of ['/docs', '/docs/vue']) {
           const html = await (await fetch(`${origin}${prefix}/reveal`)).text()
@@ -260,58 +316,63 @@ try {
             }, html),
           )
         }
-        assert.deepEqual(states[0], states[1], 'Reveal demo initial geometry differs by framework')
+        assert.deepEqual(states[0], states[1], 'Reveal initial geometry differs by framework')
       }
       if (name === 'collapse') {
         await page.locator('[data-demo="collapse-basic"] button').click()
-        await page.waitForFunction(
-          () => !!document.querySelector('[data-demo="collapse-basic"] [data-kida-collapse]'),
-        )
+        await page.waitForFunction(() => !!document.querySelector('[data-kida-collapse]'))
         const expandedVue = await capture(basic)
-        await switchTo('react', name)
+        await open('/docs/collapse')
         await hydrated(basic)
         await page.locator('[data-demo="collapse-basic"] button').click()
-        await page.waitForFunction(
-          () => !!document.querySelector('[data-demo="collapse-basic"] [data-kida-collapse]'),
-        )
+        await page.waitForFunction(() => !!document.querySelector('[data-kida-collapse]'))
         await compare('collapse-expanded', width, await capture(basic), expandedVue)
       }
     }
   }
 
-  await open('/docs/reveal')
-  await hydrated('reveal-basic')
-  await page.evaluate(() => window.scrollTo({ top: 140, behavior: 'instant' }))
-  const before = await page.evaluate(() => window.scrollY)
-  await switchTo('vue', 'reveal')
-  assert(
-    Math.abs((await page.evaluate(() => window.scrollY)) - before) <= 1,
-    'Framework switch changed scroll position',
+  await page.emulateMedia({ reducedMotion: 'no-preference' })
+  await open('/docs/collapse')
+  await hydrated('collapse-basic')
+  await page.locator('[data-demo="collapse-basic"] button').click()
+  await page.waitForFunction(
+    () =>
+      document
+        .querySelector('[data-demo="collapse-basic"] button')
+        ?.getAttribute('aria-expanded') === 'true',
   )
-  assert.equal(
-    await page.locator('.framework-switcher a:focus').getAttribute('href'),
-    '/docs/vue/reveal',
-  )
-  // Repeat without waiting for island hydration to finish between traversals.
+  await page.evaluate(() => {
+    window.__openPanel = document.querySelector('[data-kida-collapse]')
+    window.__previewButton = document.querySelector('[data-demo="collapse-basic"] button')
+    window.__retainedDocument = document
+    window.__stateHydrates = 0
+    document.addEventListener('astro:hydrate', () => window.__stateHydrates++, true)
+    window.scrollTo({ top: 140, behavior: 'instant' })
+  })
   for (let attempt = 0; attempt < 3; attempt++) {
-    await page.goBack()
-    await page.waitForURL(`${origin}/docs/reveal`)
-    await page.waitForFunction(
-      () =>
-        document
-          .querySelector('.framework-switcher a[href="/docs/reveal"]')
-          ?.getAttribute('aria-current') === 'page',
-    )
-    await page.goForward()
-    await page.waitForURL(`${origin}/docs/vue/reveal`)
-    await page.waitForFunction(
-      () =>
-        document
-          .querySelector('.framework-switcher a[href="/docs/vue/reveal"]')
-          ?.getAttribute('aria-current') === 'page',
-    )
+    for (const framework of ['vue', 'react']) {
+      await switchTo(framework)
+      assert.equal(await page.evaluate(() => window.scrollY), 140)
+      assert(
+        await page.evaluate(
+          () =>
+            window.__openPanel === document.querySelector('[data-kida-collapse]') &&
+            window.__previewButton ===
+              document.querySelector('[data-demo="collapse-basic"] button'),
+        ),
+      )
+      assert.equal(
+        await page.locator('[data-demo="collapse-basic"] button').getAttribute('aria-expanded'),
+        'true',
+      )
+    }
   }
-  // Clipboard is stubbed only at the host boundary; the actual post-navigation Copy handler runs.
+  assert.equal(await page.evaluate(() => window.__stateHydrates), 0)
+  await switchTo('vue')
+  assert.equal(
+    await page.locator('[data-framework-choice]:focus').getAttribute('data-framework-choice'),
+    'vue',
+  )
   await page.evaluate(() => {
     window.__copiedDocsText = ''
     Object.defineProperty(navigator, 'clipboard', {
@@ -324,71 +385,418 @@ try {
     })
   })
   await page.locator('[data-copy]').first().click()
-  await page.waitForFunction(() => window.__copiedDocsText.length > 0)
+  await page.waitForFunction(() => window.__copiedDocsText.includes('shadcn-vue'))
   assert.equal(await page.locator('[data-copy]').first().textContent(), 'Copied')
+  await page.locator('[data-demo="collapse-basic"] button').click()
+  await page.waitForFunction(() => !document.querySelector('[data-kida-collapse]'))
+  assert(await page.evaluate(() => window.__retainedDocument === document))
 
-  // Exercise the routed island lifecycle with real motion as well as settled comparisons.
-  await page.emulateMedia({ reducedMotion: 'no-preference' })
-  await open('/docs/reveal')
-  async function settledReveal() {
-    await hydrated('reveal-basic')
-    await page.waitForFunction(() => {
-      const element = document.querySelector('[data-demo="reveal-basic"] [data-kida-reveal]')
-      const style = getComputedStyle(element)
-      return style.opacity === '1' && style.transform === 'none'
-    })
-  }
-  await settledReveal()
-  await page.evaluate(() => {
-    window.__motionDocument = document
-  })
-  await switchTo('vue', 'reveal')
-  await settledReveal()
-  assert(await page.evaluate(() => window.__motionDocument === document))
-  // Clicking the already-selected framework is inert, including its scroll position.
-  await page.evaluate(() => window.scrollTo({ top: 140, behavior: 'instant' }))
-  const historyLength = await page.evaluate(() => history.length)
-  await switchTo('vue', 'reveal')
-  assert.equal(await page.evaluate(() => history.length), historyLength)
-  assert.equal(await page.evaluate(() => window.scrollY), 140)
-  await page.locator('.sidebar a[href="/docs/vue/collapse"]').click()
-  await page.waitForURL(`${origin}/docs/vue/collapse`)
-  await hydrated('collapse-basic')
-  assert.equal(await page.locator('h1').textContent(), 'Collapse')
-  await page.locator('[data-demo="collapse-basic"] button').click()
-  await page.waitForFunction(() => {
-    const button = document.querySelector('[data-demo="collapse-basic"] button')
-    return (
-      button.getAttribute('aria-expanded') === 'true' &&
-      document.getElementById(button.getAttribute('aria-controls'))
-    )
-  })
-  await page.locator('[data-demo="collapse-basic"] button').click()
-  await page.waitForFunction(
-    () => !document.querySelector('[data-demo="collapse-basic"] [data-kida-collapse]'),
-  )
-  await page.locator('.sidebar a[href="/docs/vue/installation"]').click()
-  await page.waitForURL(`${origin}/docs/vue/installation`)
-  await switchTo('react', 'installation')
-  assert(await page.evaluate(() => window.__motionDocument === document))
-  await page.locator('.sidebar a[href="/docs"]').click()
-  await page.waitForURL(`${origin}/docs`)
+  // Preference survives ordinary page navigation and refresh, without framework routes.
+  await page.locator('.sidebar a[href="/docs/text-bloom"]').click()
+  await page.waitForURL(`${origin}/docs/text-bloom`)
   await page.waitForFunction(
     () =>
-      document.querySelector('.docs-catalog') &&
-      document.querySelector('.site-nav a[href="/docs"]')?.getAttribute('aria-current') === 'page',
+      document.querySelector('[data-framework-content]')?.getAttribute('data-framework') === 'vue',
   )
-  // Catalog and marketing pages retain native navigation; only reference pages need
-  // client navigation for framework selection.
   assert(
-    await page.evaluate(() => !document.querySelector('[name="astro-view-transitions-enabled"]')),
+    (await page.locator('[data-framework-article] table').first().innerText()).includes('text'),
   )
-  await page.locator('.wordmark').click()
-  await page.waitForURL(`${origin}/`)
-  assert.equal(await page.locator('.site-nav a[href="/docs"]').getAttribute('aria-current'), null)
+  await page.reload()
+  await page.waitForFunction(
+    () =>
+      document.querySelector('[data-framework-choice="vue"]')?.getAttribute('aria-pressed') ===
+      'true',
+  )
+  await page.locator('[data-framework-choice="react"]').focus()
+  await page.keyboard.press('Space')
+  assert.equal(
+    await page.locator('[data-framework-choice="react"]').getAttribute('aria-pressed'),
+    'true',
+  )
+  await page.locator('[data-framework-choice="vue"]').focus()
+  await page.keyboard.press('Enter')
+  assert.equal(
+    await page.locator('[data-framework-choice="vue"]').getAttribute('aria-pressed'),
+    'true',
+  )
+  assert.equal(page.url(), `${origin}/docs/text-bloom`)
+  assert(
+    await page.evaluate(() =>
+      [...document.querySelectorAll('.toc a')].every((link) =>
+        document.getElementById(link.hash.slice(1)),
+      ),
+    ),
+  )
+  await page.locator('.sidebar a[href="/docs/installation"]').click()
+  await page.waitForURL(`${origin}/docs/installation`)
+  await page.waitForFunction(
+    () =>
+      document.querySelector('[data-framework-content]')?.getAttribute('data-framework') === 'vue',
+  )
+  assert((await page.locator('[data-framework-article]').innerText()).includes('vue-ts'))
+  await switchTo('react')
+  assert(!(await page.locator('[data-framework-article]').innerText()).includes('vue-ts'))
+
+  // Keep an active drag and the photo's focus, not just settled markup. Trigger
+  // the selector without releasing the pointer, as a keyboard/assistive action can.
+  await open('/docs/photo-pile')
+  await hydrated('photo-pile-basic')
+  const photo = page.locator('[data-demo="photo-pile-basic"] [data-kida-photo-item]').last()
+  await photo.scrollIntoViewIfNeeded()
+  await photo.focus()
+  const bounds = await photo.boundingBox()
+  assert(bounds, 'Missing draggable photo')
+  const pointer = { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 }
+  await page.mouse.move(pointer.x, pointer.y)
+  await page.mouse.down()
+  await page.mouse.move(pointer.x + 40, pointer.y + 20)
+  await page.waitForFunction(() =>
+    document
+      .querySelector('[data-kida-photo-item][data-dragging] [data-kida-photo-card]')
+      ?.style.transform.includes('40px'),
+  )
+  await page.evaluate(() => {
+    window.__draggedPhoto = document.querySelector('[data-kida-photo-item][data-dragging]')
+    window.__draggedCard = window.__draggedPhoto.querySelector('[data-kida-photo-card]')
+    window.__draggedTransform = window.__draggedCard.style.transform
+    document.querySelector('[data-framework-choice="vue"]').click()
+  })
+  await page.waitForFunction(
+    () => document.querySelector('[data-framework-content]')?.dataset.framework === 'vue',
+  )
+  assert(
+    await page.evaluate(
+      () =>
+        window.__draggedPhoto === document.querySelector('[data-kida-photo-item][data-dragging]') &&
+        window.__draggedPhoto === document.activeElement &&
+        window.__draggedCard.style.transform === window.__draggedTransform,
+    ),
+    'Framework selection interrupted the drag or lost photo focus',
+  )
+  await page.mouse.move(pointer.x + 56, pointer.y + 32)
+  await page.waitForFunction(() => window.__draggedCard.style.transform.includes('56px'))
+  await page.mouse.up()
+  await page.waitForFunction(
+    () =>
+      window.__draggedCard.style.transform === 'none' &&
+      !window.__draggedPhoto.hasAttribute('data-dragging'),
+  )
+
+  // A failed request leaves the current docs and open demo usable, and retrying
+  // the same choice loads it normally rather than caching the failure.
+  await open('/docs/collapse')
+  await hydrated('collapse-basic')
+  await page.locator('[data-demo="collapse-basic"] button').click()
+  await page.waitForFunction(() => !!document.querySelector('[data-kida-collapse]'))
+  const vueURL = `${origin}/docs/vue/collapse`
+  await page.route(vueURL, (route) => route.fulfill({ status: 503, body: 'Unavailable' }))
+  await page.locator('[data-framework-choice="vue"]').click()
+  await page.waitForFunction(() =>
+    document.querySelector('[data-framework-status]')?.textContent.includes('Could not load'),
+  )
+  assert.equal(
+    await page.locator('[data-framework-choice="react"]').getAttribute('aria-pressed'),
+    'true',
+  )
+  assert.equal(
+    await page.locator('[data-demo="collapse-basic"] button').getAttribute('aria-expanded'),
+    'true',
+  )
+  assert.equal(page.url(), `${origin}/docs/collapse`)
+  await page.unroute(vueURL)
+  await switchTo('vue')
+  assert.equal(
+    await page.locator('[data-demo="collapse-basic"] button').getAttribute('aria-expanded'),
+    'true',
+  )
+
+  // Selecting React while Vue is loading must win even if the old response
+  // arrives later. No framework request is a document navigation.
+  await open('/docs/collapse')
+  let release
+  const held = new Promise((resolve) => {
+    release = resolve
+  })
+  await page.route(vueURL, async (route) => {
+    await held
+    await route.continue()
+  })
+  await page.locator('[data-framework-choice="vue"]').click()
+  await page.waitForFunction(() =>
+    document.querySelector('[data-framework-content]')?.hasAttribute('aria-busy'),
+  )
+  await switchTo('react')
+  const response = page.waitForResponse(vueURL)
+  release()
+  await (await response).finished()
+  await page.evaluate(() => new Promise(requestAnimationFrame))
+  assert.equal(
+    await page.locator('[data-framework-content]').getAttribute('data-framework'),
+    'react',
+  )
+  assert.equal(
+    await page.locator('[data-framework-choice="react"]').getAttribute('aria-pressed'),
+    'true',
+  )
+  await page.unroute(vueURL)
+  await switchTo('vue')
+
+  // The selected framework and navigation shell must never flash back to the
+  // server's React default while moving between component pages.
+  await page.evaluate(() => {
+    window.__navigationDocument = document
+    window.__navigationHeader = document.querySelector('.site-header')
+    window.__navigationSidebar = document.querySelector('.sidebar')
+    window.__navigationSwitcher = document.querySelector('.framework-switcher')
+    window.__shellNodes = new Map(
+      [
+        'html',
+        'head',
+        'body',
+        '.skip-link',
+        '.site-header',
+        '.site-header .wordmark',
+        '.site-nav',
+        '.docs',
+        '.sidebar',
+        '.sidebar h2',
+        '.sidebar ul',
+        'main.prose',
+        '.docs-prose-head',
+        '.docs-prose-head h1',
+        '.docs-prose-head .lede',
+        '.framework-switcher',
+        '[data-framework-choice="react"]',
+        '[data-framework-choice="vue"]',
+        '.framework-preview-note',
+        '[data-framework-status]',
+        '[data-framework-content]',
+        '[data-framework-article]',
+        '.toc',
+        '.toc h2',
+        '.toc ul',
+        '.site-footer',
+      ].map((selector) => [selector, document.querySelector(selector)]),
+    )
+    window.__shellRemovals = []
+    window.__shellObserver = new MutationObserver((records) => {
+      for (const record of records)
+        for (const removed of record.removedNodes) {
+          for (const [selector, node] of window.__shellNodes) {
+            if (removed === node || removed.contains(node)) window.__shellRemovals.push(selector)
+          }
+        }
+    })
+    window.__shellObserver.observe(document.documentElement, { subtree: true, childList: true })
+    window.__navigationFrames = []
+    window.__samplingNavigation = true
+    const sample = () => {
+      if (!window.__samplingNavigation) return
+      window.__navigationFrames.push({
+        url: location.pathname,
+        framework: document.querySelector('[data-framework-choice][aria-pressed="true"]')?.dataset
+          .frameworkChoice,
+        shellStable: [...window.__shellNodes].every(
+          ([selector, node]) => node?.isConnected && node === document.querySelector(selector),
+        ),
+        transitionTargets: [
+          ...new Set(
+            document
+              .getAnimations()
+              .map((animation) => animation.effect?.pseudoElement)
+              .filter((pseudo) => pseudo?.startsWith('::view-transition'))
+              .map((pseudo) => pseudo.match(/\(([^)]*)\)/)?.[1] ?? ''),
+          ),
+        ],
+      })
+      requestAnimationFrame(sample)
+    }
+    requestAnimationFrame(sample)
+  })
+  const navigationRequests = documentRequests
+  async function sidebar(name, framework = 'vue') {
+    await page.locator(`.sidebar a[href="/docs/${name}"]`).click()
+    await page.waitForURL(`${origin}/docs/${name}`)
+    await page.waitForFunction(
+      ({ name, framework }) =>
+        document.querySelector('.framework-switcher')?.getAttribute('data-framework-page') ===
+          name &&
+        document.querySelector('[data-framework-content]')?.getAttribute('data-framework') ===
+          framework,
+      { name, framework },
+    )
+    assert(
+      await page.evaluate(
+        () =>
+          window.__navigationDocument === document &&
+          window.__navigationHeader === document.querySelector('.site-header') &&
+          window.__navigationSidebar === document.querySelector('.sidebar') &&
+          window.__navigationSwitcher === document.querySelector('.framework-switcher'),
+      ),
+      'Sidebar navigation replaced the document or navigation controls',
+    )
+    assert.equal(
+      await page.locator('.sidebar a[aria-current="page"]').getAttribute('href'),
+      `/docs/${name}`,
+    )
+    assert.equal(
+      await page.locator(`[data-framework-choice="${framework}"]`).getAttribute('aria-pressed'),
+      'true',
+    )
+    assert.equal(await page.locator('[data-framework-status]').textContent(), '')
+    assert(
+      (await page.locator('.astro-route-announcer').count()) <= 1,
+      'Route announcers accumulated in the persistent body',
+    )
+    assert.equal(
+      await page.locator('.framework-preview-note').evaluate((node) => node.hidden),
+      name === 'installation',
+    )
+    assert.equal(await page.title(), `${await page.locator('h1').textContent()} — Kida UI`)
+    assert(
+      await page.evaluate(() =>
+        [...window.__shellNodes].every(
+          ([selector, node]) => node?.isConnected && node === document.querySelector(selector),
+        ),
+      ),
+      'A route change replaced part of the persistent page shell',
+    )
+  }
+
+  // Hold the next Vue document to make the original flicker easy to reproduce.
+  // Keep the old page visible until the selected framework's new page is ready.
+  let releaseNavigation
+  let navigationStarted
+  const navigationHeld = new Promise((resolve) => {
+    releaseNavigation = resolve
+  })
+  const navigationRequested = new Promise((resolve) => {
+    navigationStarted = resolve
+  })
+  const delayedURL = `${origin}/docs/vue/photo-pile`
+  await page.route(delayedURL, async (route) => {
+    navigationStarted()
+    await navigationHeld
+    await route.continue()
+  })
+  await page.locator('.sidebar a[href="/docs/photo-pile"]').click()
+  await navigationRequested
+  assert.equal(page.url(), `${origin}/docs/collapse`)
+  assert.equal(await page.locator('h1').textContent(), 'Collapse')
+  assert.equal(
+    await page.locator('[data-framework-choice="vue"]').getAttribute('aria-pressed'),
+    'true',
+  )
+  releaseNavigation()
+  await page.waitForURL(`${origin}/docs/photo-pile`)
+  await hydrated('photo-pile-basic')
+  await page.unroute(delayedURL)
+  for (const width of [390, 1280]) {
+    await page.setViewportSize({ width, height: 900 })
+    for (const name of [...components, 'installation']) {
+      await sidebar(name)
+      if (name !== 'installation') await hydrated(`${name}-basic`)
+      else assert((await page.locator('[data-framework-article]').innerText()).includes('vue-ts'))
+    }
+  }
+  await sidebar('collapse')
+  await hydrated('collapse-basic')
+  await page.locator('[data-demo="collapse-basic"] button').click()
+  await page.waitForFunction(() => !!document.querySelector('[data-kida-collapse]'))
+  await page.evaluate(() => {
+    window.__samePagePanel = document.querySelector('[data-kida-collapse]')
+  })
+  await sidebar('collapse')
+  assert(
+    await page.evaluate(
+      () => window.__samePagePanel === document.querySelector('[data-kida-collapse]'),
+    ),
+    'Clicking the current sidebar item reset the preview',
+  )
+
+  await page.evaluate(() => {
+    window.__centerIslands = [...document.querySelectorAll('[data-framework-article] astro-island')]
+    window.__centerUnmounts = 0
+    for (const island of window.__centerIslands) {
+      island.addEventListener(
+        'astro:unmount',
+        () => {
+          window.__centerUnmounts++
+        },
+        { once: true },
+      )
+    }
+  })
+  await sidebar('text-bloom')
+  await page.waitForFunction(
+    () =>
+      window.__centerIslands.length > 0 &&
+      window.__centerUnmounts === window.__centerIslands.length,
+  )
+  await page.evaluate(() => window.scrollTo({ top: 180, behavior: 'instant' }))
+  await sidebar('collapse')
+  await page.goBack()
+  await page.waitForURL(`${origin}/docs/text-bloom`)
+  await page.waitForFunction(() => window.scrollY === 180)
+  await page.goForward()
+  await page.waitForURL(`${origin}/docs/collapse`)
+  for (let attempt = 0; attempt < 3; attempt++) {
+    await page.goBack()
+    await page.waitForFunction(
+      () =>
+        document.querySelector('.framework-switcher')?.getAttribute('data-framework-page') ===
+        'text-bloom',
+    )
+    await page.goForward()
+    await page.waitForFunction(
+      () =>
+        document.querySelector('.framework-switcher')?.getAttribute('data-framework-page') ===
+        'collapse',
+    )
+  }
+  assert.equal(
+    documentRequests,
+    navigationRequests,
+    'Sidebar or history traversal reloaded the document',
+  )
+  const frames = await page.evaluate(() => {
+    window.__samplingNavigation = false
+    window.__shellObserver.disconnect()
+    return window.__navigationFrames
+  })
+  assert(frames.length > 0)
+  assert(
+    frames.every((frame) => frame.framework === 'vue'),
+    `Framework flashed during navigation: ${JSON.stringify(frames)}`,
+  )
+  assert(
+    frames.every((frame) => frame.shellStable),
+    'Navigation detached the persistent shell',
+  )
+  assert(
+    frames.every((frame) => frame.transitionTargets.length === 0),
+    `Navigation ran a page transition: ${JSON.stringify(frames)}`,
+  )
+  assert.deepEqual(
+    await page.evaluate(() => window.__shellRemovals),
+    [],
+    'Navigation removed or reparented persistent shell nodes',
+  )
+  await switchTo('react')
+  await sidebar('text-bloom', 'react')
+  assert.equal(await page.locator('[data-distribution]').getAttribute('data-framework'), 'react')
+  await switchTo('vue')
+  assert(
+    (await page.locator('[data-framework-article] table').first().innerText()).includes('text'),
+  )
+  await page.waitForFunction(
+    () =>
+      document.querySelectorAll('.astro-route-announcer').length === 1 &&
+      document.querySelector('.astro-route-announcer').textContent === document.title,
+  )
   assert.deepEqual(errors, [], 'Documentation browser errors')
   console.log(
-    `✓ ${engine}: actual React/Vue demos match at mobile/desktop sizes; framework navigation preserves the document, shell, scroll, focus, history, and Copy behavior`,
+    `✓ ${engine}: matching React/Vue demos; framework selection preserves previews; sidebar/history navigation retains the shell and selected framework without a reload or React flash`,
   )
 } finally {
   await browser?.close()

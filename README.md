@@ -41,10 +41,12 @@ Registry tasks: `pnpm registry:build`, `pnpm registry:check`, `pnpm registry:che
 Vue milestone checks: `pnpm --filter @kida-ui/vue test` runs Node SSR and Chromium behavior,
 hydration, accessibility, settled pixel parity against React, and emulated touch input. After
 building, run `pnpm check:vue-consumer` to validate packed packages and the checked Vue demos outside the
-workspace. Vue installation is documented at `/docs/vue/installation`. Component pages offer React/Vue selection and copied-source installation through the respective shadcn CLI. Vue registry items are served at `/r/vue/<name>.json`.
+workspace. Installation is documented at `/docs/installation`. Component pages offer React/Vue selection and copied-source installation through the respective shadcn CLI. Vue registry items are served at `/r/vue/<name>.json`.
 `pnpm docs:check-dev` smoke-tests both renderers in development as well as the production build.
-After building, `pnpm docs:test-browser` compares the actual framework demos and checks client navigation,
-scroll/focus preservation, browser history, and Copy buttons.
+After building, `pnpm docs:test-browser` compares the actual framework demos and checks in-place framework selection,
+unchanged URLs, retained preview state, scroll/focus, saved framework preference, and Copy buttons.
+Sidebar and history navigation also preserve the navigation shell and display the selected
+framework immediately, without a React selection flash.
 
 Release checks: `pnpm test:cross-browser` builds the adapters and runs Firefox/WebKit behavior,
 responsive geometry, and adapter parity checks, plus WebKit touch taps. Install the locked browser

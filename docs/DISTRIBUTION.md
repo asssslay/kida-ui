@@ -3,7 +3,12 @@
 Status: **implemented for React and experimental Vue components** (2026-10-12)
 
 Both adapters cover all seven components. Component and installation pages have a React/Vue
-selector; Vue pages live at `/docs/vue/<name>` and use checked Vue quick starts and live SFC demos.
+selector on one canonical `/docs/<name>` page. It changes the checked source, installation
+instructions, and API notes without navigation or restarting the live preview. The framework
+preference is remembered locally; legacy `/docs/vue/<name>` entries remain compatible. Native
+Vue SFC demos are independently verified against React.
+Sidebar navigation keeps the navigation controls mounted and prepares the selected framework's
+new article before displaying it, without changing the canonical URL format.
 Vue 3.5+ and a TypeScript project are required. npm publication remains pending.
 
 React uses the existing `/r/<name>.json` registry through `shadcn`. Vue uses

@@ -6,54 +6,16 @@ interface Props {
 const { page, framework } = Astro.props
 ---
 
-<nav class="framework-switcher" aria-label="Documentation framework" transition:persist={`framework-switcher-${page}`}>
-  <a href={`/docs/${page}`} aria-current={framework === 'react' ? 'page' : undefined}>React</a>
-  <a href={`/docs/vue/${page}`} aria-current={framework === 'vue' ? 'page' : undefined}>Vue <span class="framework-badge">Experimental</span></a>
-</nav>
+<div class="framework-switcher" role="group" aria-label="Documentation framework" data-framework-page={page}>
+  <button type="button" data-framework-choice="react" aria-controls="framework-article" aria-pressed={framework === 'react'} disabled>React</button>
+  <button type="button" data-framework-choice="vue" aria-controls="framework-article" aria-pressed={framework === 'vue'} disabled>Vue <span class="framework-badge">Experimental</span></button>
+</div>
+<p class="framework-preview-note" hidden={page === 'installation'}>Shared live previews stay running while you switch code examples and API documentation.</p>
+<p class="framework-status" data-framework-status role="status"></p>
+<noscript>
+  <p>JavaScript is required to switch documentation in place. <a href={framework === 'react' ? `/docs/vue/${page}` : `/docs/${page}`}>Read the {framework === 'react' ? 'Vue' : 'React'} documentation.</a></p>
+</noscript>
 
 <script>
-  let pending: { x: number; y: number; focusHref?: string } | undefined
-
-  function syncNavigation() {
-    const prefix = location.pathname.startsWith('/docs/vue/') ? '/docs/vue' : '/docs'
-    for (const link of document.querySelectorAll<HTMLAnchorElement>('.sidebar [data-framework-link]')) {
-      const page = new URL(link.href).pathname.replace(/^\/docs\/(?:vue\/)?/, '')
-      link.href = `${prefix}/${page}`
-    }
-    for (const link of document.querySelectorAll<HTMLAnchorElement>('.sidebar a, .framework-switcher a')) {
-      if (link.pathname === location.pathname) link.setAttribute('aria-current', 'page')
-      else link.removeAttribute('aria-current')
-    }
-  }
-
-  document.addEventListener('click', (event) => {
-    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
-    const link = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>('.framework-switcher a') : null
-    if (link?.pathname === location.pathname) event.preventDefault()
-  }, { capture: true })
-
-  document.addEventListener('astro:before-swap', (event) => {
-    pending = undefined
-    const samePage = event.from.pathname.replace('/docs/vue/', '/docs/') === event.to.pathname.replace('/docs/vue/', '/docs/')
-    if (!samePage || event.from.pathname === event.to.pathname || event.navigationType === 'traverse') return
-    const focused = document.activeElement
-    pending = {
-      x: window.scrollX,
-      y: window.scrollY,
-      focusHref: focused instanceof HTMLAnchorElement && focused.closest('.framework-switcher') ? focused.href : undefined,
-    }
-  })
-
-  document.addEventListener('astro:after-swap', () => {
-    syncNavigation()
-    if (!pending) return
-    const { x, y, focusHref } = pending
-    pending = undefined
-    window.scrollTo({ left: x, top: y, behavior: 'instant' })
-    if (focusHref) {
-      const link = [...document.querySelectorAll<HTMLAnchorElement>('.framework-switcher a')].find((link) => link.href === focusHref)
-      link?.focus({ preventScroll: true })
-    }
-  })
-  document.addEventListener('astro:page-load', syncNavigation)
+  import '../lib/docs-navigation'
 </script>

@@ -22,7 +22,7 @@ const { code, lang = 'tsx' } = Astro.props
     await navigator.clipboard.writeText(text)
   }
 
-  // Delegation also handles code blocks inserted by client navigation.
+  // Delegation also handles code blocks selected in place.
   document.addEventListener('click', async (event) => {
     const button = event.target instanceof Element ? event.target.closest<HTMLButtonElement>('[data-copy]') : null
     if (!button) return

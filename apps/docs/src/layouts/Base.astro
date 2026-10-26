@@ -10,18 +10,33 @@ interface Props {
   title: string
   description: string
   bodyClass?: string
+  canonicalPath?: string
   clientNavigation?: boolean
 }
 
-const { title, description, bodyClass, clientNavigation = false } = Astro.props
-const canonical = new URL(Astro.url.pathname, Astro.site)
+const {
+  title,
+  description,
+  bodyClass,
+  canonicalPath = Astro.url.pathname,
+  clientNavigation = false,
+} = Astro.props
+const canonical = new URL(canonicalPath, Astro.site)
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    {clientNavigation && <ClientRouter fallback="swap" />}
+    {clientNavigation && <>
+      <script is:inline>
+        // Normalize compatibility entries before the router reads its initial URL.
+        if (location.pathname.startsWith('/docs/vue/')) {
+          history.replaceState(history.state, '', location.pathname.replace('/docs/vue/', '/docs/') + location.search + location.hash)
+        }
+      </script>
+      <ClientRouter fallback="swap" />
+    </>}
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
@@ -32,7 +47,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
   </head>
-  <body class={bodyClass} transition:animate="none">
+  <body class={bodyClass}>
     <a class="skip-link" href="#main">Skip to content</a>
     <Nav />
     <slot />

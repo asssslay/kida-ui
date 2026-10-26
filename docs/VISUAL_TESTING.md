@@ -71,7 +71,10 @@ pixels), including expanded Collapse and all customization variants.
 This catches drift between authored demos that identical adapter fixtures cannot detect. The
 adapter tests above remain the pixel comparison gate. Failed docs comparisons save screenshots
 and rendered element diagnostics under `apps/docs/.vitest-attachments/framework`, uploaded by CI.
-There are no stored baselines to update. CI runs this check in Chromium, Firefox, and WebKit.
+Native Vue demos are tested through fresh server-rendered compatibility entries, independently
+of the in-place selector. Selecting another framework must preserve the existing live preview
+nodes and state. There are no stored baselines to update. CI runs this check in Chromium, Firefox,
+and WebKit.
 
 The mobile and desktop galleries cover all seven components in deterministic settled states, on
 controlled light and dark surfaces. The same visual project also runs axe with color contrast
