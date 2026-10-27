@@ -1,5 +1,6 @@
 ---
 import { getCollection, render } from 'astro:content'
+import FrameworkContent from '../../components/FrameworkContent.astro'
 import DocsLayout from '../../layouts/DocsLayout.astro'
 
 export async function getStaticPaths() {
@@ -36,10 +37,12 @@ const { Content, headings } = await render(content)
 <DocsLayout
   title={entry.data.title}
   description={entry.data.description}
-  currentPath={`/docs/${framework === 'vue' ? 'vue/' : ''}${entry.id}`}
+  currentPath={`/docs/${entry.id}`}
   headings={headings}
   framework={framework}
   frameworkPage={entry.id}
 >
-  <Content />
+  <FrameworkContent framework={framework}>
+    <Content />
+  </FrameworkContent>
 </DocsLayout>

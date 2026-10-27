@@ -22,18 +22,18 @@ const {
   framework = 'react',
   frameworkPage,
 } = Astro.props
-const docsPrefix = framework === 'vue' ? '/docs/vue' : '/docs'
+const docsPrefix = '/docs'
 
 const catalog = await getCollection('components')
 const availableFrameworks = catalog.find((entry) => entry.id === frameworkPage)?.data.frameworks
-const entries = catalog
-  .filter((entry) => entry.data.frameworks.includes(framework))
-  .sort(
-    (a, b) =>
-      categoryOrder(a.data.category) - categoryOrder(b.data.category) ||
-      a.data.order - b.data.order ||
-      a.data.title.localeCompare(b.data.title),
-  )
+// The sidebar stays mounted across client navigation, so every framework's
+// document lists the same components; each link names the adapters it ships.
+const entries = [...catalog].sort(
+  (a, b) =>
+    categoryOrder(a.data.category) - categoryOrder(b.data.category) ||
+    a.data.order - b.data.order ||
+    a.data.title.localeCompare(b.data.title),
+)
 
 const groups = COMPONENT_CATEGORIES.map((category) => ({
   ...category,
@@ -49,6 +49,9 @@ const toc = headings.filter((heading) => heading.depth === 2 || heading.depth ==
   title={`${title} — Kida UI`}
   description={description}
   bodyClass="soft-orbit-page docs-reference-page"
+  canonicalPath={currentPath}
+  clientNavigation
+  frameworks={frameworkPage ? (availableFrameworks ?? ['react', 'vue']) : []}
 >
   <div class="docs">
     <aside class="sidebar">
@@ -63,6 +66,7 @@ const toc = headings.filter((heading) => heading.depth === 2 || heading.depth ==
           </li>
           <li>
             <a
+              data-framework-link
               href={`${docsPrefix}/installation`}
               aria-current={currentPath === `${docsPrefix}/installation` ? 'page' : undefined}
             >
@@ -79,6 +83,8 @@ const toc = headings.filter((heading) => heading.depth === 2 || heading.depth ==
               {group.entries.map((item) => (
                 <li>
                   <a
+                    data-framework-link
+                    data-frameworks={item.data.frameworks.join(' ')}
                     href={`${docsPrefix}/${item.id}`}
                     aria-current={currentPath === `${docsPrefix}/${item.id}` ? 'page' : undefined}
                   >
@@ -97,7 +103,15 @@ const toc = headings.filter((heading) => heading.depth === 2 || heading.depth ==
         <p class="docs-prose-kicker">
           <a href="/docs">Documentation</a><span aria-hidden="true">/</span>{title}
         </p>
-        <h1>{title}</h1>
+        <h1>
+          {/* Long component names wrap between words on narrow screens. */}
+          {title.split(/(?<=[a-z])(?=[A-Z])/).map((part, index) => (
+            <>
+              {index > 0 && <wbr />}
+              {part}
+            </>
+          ))}
+        </h1>
         <p class="lede">{description}</p>
       </header>
       {frameworkPage && <FrameworkSwitcher page={frameworkPage} framework={framework} frameworks={availableFrameworks} />}

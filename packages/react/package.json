@@ -26,7 +26,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:visual": "vitest run --config vitest.visual.config.ts",
-    "test:visual:update": "vitest run --config vitest.visual.config.ts --update"
+    "test:visual:update": "vitest run --config vitest.visual.config.ts --update",
+    "test:cross-browser": "vitest run --config vitest.cross-browser.config.ts"
   },
   "dependencies": {
     "@kida-ui/motion": "workspace:*",

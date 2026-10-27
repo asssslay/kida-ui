@@ -2,12 +2,13 @@ import Demo from '../../components/Demo.astro'
 import Distribution from '../../components/Distribution.astro'
 import QuickStart from '../../components/QuickStart.astro'
 import Basic from '../../demos/text-bloom-basic.vue'
+import Characters from '../../demos/text-bloom-characters.vue'
 
-<Demo name="text-bloom-basic" framework="vue" title="TextBloom" hideSource>
+<Demo name="text-bloom-basic" framework="vue" title="Pop by word" hideSource>
   <Basic client:visible={{ rootMargin: '200px' }} />
 </Demo>
 
-Pass plain text through the `text` prop. This Vue adapter is experimental. Native attributes use Vue spelling, and component refs expose `element`.
+Pass plain text through the `text` prop.. Native attributes use Vue spelling, and component refs expose `element`.
 
 ## Quick start
 
@@ -16,6 +17,10 @@ Pass plain text through the `text` prop. This Vue adapter is experimental. Nativ
 <QuickStart name="text-bloom" framework="vue" />
 
 ## Customization
+
+<Demo name="text-bloom-characters" framework="vue" title="Gentle by character">
+  <Characters client:visible={{ rootMargin: '200px' }} />
+</Demo>
 
 Use word segmentation for most interface copy. Character segmentation is best reserved for short
 display phrases, where its longer sequence will not delay comprehension.

@@ -1,0 +1,24 @@
+diff --git a/dist/client.js b/dist/client.js
+index 79b2a3b19d85f01c65d6eefd6abe1a6c72bde764..4ca0e599243e27f4ce99d385a4222f57c62dfb3a 100644
+--- a/dist/client.js
++++ b/dist/client.js
+@@ -1,4 +1,5 @@
+ import { createElement, startTransition } from "react";
++import { flushSync } from "react-dom";
+ import { createRoot, hydrateRoot } from "react-dom/client";
+ import StaticHtml from "./static-html.js";
+ function isAlreadyHydrated(element) {
+@@ -103,7 +104,12 @@ var client_default = (element) => (Component, props, { default: children, ...slo
+   startTransition(() => {
+     const root = getOrCreateRoot(element, () => {
+       const r = hydrateRoot(element, componentEl, renderOptions);
+-      element.addEventListener("astro:unmount", () => r.unmount(), { once: true });
++      element.addEventListener("astro:unmount", () => {
++        // A router swap can interrupt concurrent hydration. Commit the identical
++        // initial element before unmounting so React does not abandon hydration.
++        flushSync(() => r.render(componentEl));
++        r.unmount();
++      }, { once: true });
+       return r;
+     });
+     root.render(componentEl);

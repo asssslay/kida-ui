@@ -43,7 +43,7 @@ Run the behavioral evidence with `pnpm --filter @kida-ui/react test` and the res
 evidence with `pnpm --filter @kida-ui/react test:visual`. The repository-wide release candidate gate
 remains `pnpm verify` followed by `pnpm -r --filter './packages/*' exec publint`.
 
-## Experimental Vue milestone
+## Vue adapter
 
 `@kida-ui/vue` exports Reveal, Collapse, TextBloom, Magnetic, PhotoPile, ScribbleHighlight, and
 StickerBurst. It uses the same motion options,
@@ -51,7 +51,7 @@ measurement helper, CSS variables, and data attributes as React, with Vue defaul
 attributes/events, `@exit-complete`, and component refs exposing `element`.
 
 `pnpm --filter @kida-ui/vue test` builds the package before testing its public exports. Node tests
-check deterministic server rendering without browser globals. Chromium tests cover viewport entry,
+check deterministic server rendering without browser globals. Browser tests cover viewport entry,
 repetition, reactive options and root replacement, equivalent easing tuples, native events and refs,
 resize measurement, enter/exit and reversal, reduced motion, and controller/observer cleanup.
 Catalog tests also cover reactive text/segmentation and Unicode code points, pointer and keyboard
@@ -69,9 +69,13 @@ bundle, and render deterministically in Node without Kida packages or workspace 
 Both framework catalogs and all 17 items must match the built documentation endpoints.
 
 The packed-consumer check in `DISTRIBUTION.md` verifies the displayed demos, production bundle,
-declaration resolution, and server imports. `/docs/vue/<name>` supplies the live examples and API notes.
-SpaceType, GlowHighlight, and ImageText currently have only React adapters. The seven shared Vue components remain experimental;
-wider browser, touch-device, and screen-reader release conformance is still required.
+declaration resolution, and server imports. `/docs/<name>` supplies the live preview and framework-specific examples and API notes.
+SpaceType, GlowHighlight, and ImageText currently have only React adapters; their pages hide the
+Vue choice. The seven shared Vue components are supported to the same standard as React. CI
+defines Firefox/WebKit behavior gates for both adapters, in addition to Chromium, with
+Chromium/WebKit touch emulation. Manual real touch-device and screen-reader checks are
+recommended. See [the release checklist](RELEASE_CHECKLIST.md) for commands and the manual review
+guide.
 
 `pnpm docs:check-dev` starts an isolated Astro dev server and checks Vue/React docs and the home
 page, including the Vue client module. A version-pinned pnpm patch disables React Refresh only in
@@ -80,16 +84,41 @@ plugin-vue's TypeScript SFC transform, avoiding upstream
 React Refresh elsewhere. Remove the patch after upgrading to a release with this fix and passing
 the development smoke check.
 
-## Still required before a public alpha
+After building, `pnpm docs:test-browser` exercises the production documentation in Chromium.
+It requires matching demo lists and compares native React and Vue server-rendered demos,
+customization variants, expanded Collapse, and initial Reveal geometry at mobile and desktop sizes.
+Framework buttons update examples and API notes in place, without navigation or replacing live
+preview nodes. Checks require the same URL, document, preview state, scroll, focus, and history,
+working Copy buttons, and a preference that survives page navigation and refresh. Legacy Vue URLs
+remain compatible entries and normalize to the canonical component URL. CI also runs the gate with
+`KIDA_TEST_BROWSER=firefox` and `KIDA_TEST_BROWSER=webkit`.
 
-The following work is deliberately not represented as complete:
+Sidebar navigation fetches the selected framework's document before swapping the article. A
+custom Astro swap updates the center heading and article, the TOC links, and page metadata in
+place. The body, layout, header, sidebar, framework controls, TOC containers, and footer are never
+replaced or reparented. Native visual transitions are skipped to avoid a full-page fade or
+glass-layer reset. The browser URL and history use canonical
+`/docs/<name>` paths. Checks sample rendered frames to reject a React selection flash, hold a
+Vue response to verify the old page stays usable, and exercise mobile/desktop navigation,
+same-page links, and rapid back/forward traversal. Mutation checks reject any removal of a
+persistent shell node; frame samples also reject full-page transition animations.
 
-1. Run manual screen-reader checks on at least VoiceOver/Safari and NVDA/Chrome. Axe guards markup
-   rules; it cannot prove announcement quality.
-2. Run real touch-device smoke tests for PhotoPile and coarse-pointer behavior. Synthetic pointer
+The version-pinned `@astrojs/react` patch completes pending initial hydration before router
+teardown. This prevents React error 424 when rapid history traversal unmounts an unfinished
+island in WebKit. Normal hydration remains concurrent. Remove the patch once the integration
+handles this lifecycle and passes the same browser checks.
+
+## Before a public alpha
+
+Require green Chromium, Firefox, and WebKit CI jobs for the release candidate, including Vue
+adapter parity and the touch-emulation scenarios. A configured job is not passing evidence.
+
+These manual checks are recommended, not required:
+
+1. Screen-reader checks on VoiceOver/Safari and NVDA/Chrome. Axe guards markup rules; it cannot
+   prove announcement quality.
+2. Real touch-device smoke tests for PhotoPile and coarse-pointer behavior. Synthetic pointer
    coverage does not validate browser gesture arbitration.
-3. Expand the browser matrix beyond Chromium once CI ownership and expected support targets are
-   decided.
 
-Any failure found by those checks should be fixed on a narrowly named `fix/<component>-<problem>`
+Any failure found by these checks should be fixed on a narrowly named `fix/<component>-<problem>`
 branch when it is larger than a small conformance correction.

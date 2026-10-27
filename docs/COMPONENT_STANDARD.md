@@ -134,6 +134,11 @@ Every component page includes:
 The preview and displayed source must be read from real checked-in files. Documentation examples
 must typecheck as part of the workspace.
 
+Equivalent framework demos must use the same content, semantic markup, layout, motion options,
+and customization variants. Framework syntax and lifecycle wiring may differ; the visible result
+must not. `pnpm docs:test-browser` compares the actual React/Vue demos at mobile and desktop sizes
+and requires framework selection to preserve the URL and live preview state without navigation.
+
 Every cataloged component also has one purpose-built preview at
 `apps/docs/src/demos/catalog-previews/<component-slug>.react.tsx`. It accepts the shared `active`
 prop and stays still until its card is hovered or focused. Preview modules are discovered by

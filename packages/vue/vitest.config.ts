@@ -27,14 +27,22 @@ export default defineConfig({
     browser: {
       enabled: true,
       headless: true,
-      provider: playwright({ launchOptions: { channel } }),
+      // Keep both parity viewports at 1:1 CSS scale inside Vitest's iframe.
+      provider: playwright({
+        // Software rasterization avoids GPU shadow dithering between the two captures.
+        launchOptions: { channel, args: ['--disable-gpu'] },
+        contextOptions: { viewport: { width: 1440, height: 1000 } },
+      }),
       instances: [{ browser: 'chromium' }],
       commands: {
+        touchTap: async ({ iframe }, selector: string) => {
+          await iframe.locator(selector).tap()
+        },
         setReducedMotion: async ({ page }, reduced: boolean) => {
           await page.emulateMedia({ reducedMotion: reduced ? 'reduce' : 'no-preference' })
         },
         serverMarkup: async (_, open: boolean) => serverMarkup(open),
-        compareAdapters: async ({ iframe }) => {
+        compareAdapters: async ({ iframe, project }) => {
           const options = { animations: 'disabled', caret: 'hide', scale: 'css' } as const
           const reactRoot = iframe.locator('[data-parity="react"]')
           const vueRoot = iframe.locator('[data-parity="vue"]')
@@ -49,11 +57,33 @@ export default defineConfig({
             node.style.visibility = 'hidden'
           })
           const vue = await vueRoot.screenshot(options)
-          const equal = PNG.sync.read(react).data.equals(PNG.sync.read(vue).data)
+          const reactPixels = PNG.sync.read(react)
+          const vuePixels = PNG.sync.read(vue)
+          const bounds = await reactRoot.evaluate((node) => ({
+            width: node.getBoundingClientRect().width,
+            height: node.getBoundingClientRect().height,
+          }))
+          if (
+            reactPixels.width !== Math.round(bounds.width) ||
+            reactPixels.height !== Math.round(bounds.height)
+          ) {
+            throw new Error(
+              'Adapter parity requires a 1:1 CSS-pixel capture; check the host viewport.',
+            )
+          }
+          const equal =
+            reactPixels.width === vuePixels.width &&
+            reactPixels.height === vuePixels.height &&
+            reactPixels.data.equals(vuePixels.data)
           if (!equal) {
-            await mkdir('.vitest-attachments/parity', { recursive: true })
-            await writeFile('.vitest-attachments/parity/react.png', react)
-            await writeFile('.vitest-attachments/parity/vue.png', vue)
+            // Keep artifacts from parallel engines and viewport cases separate.
+            const width = await iframe
+              .locator('[data-parity="react"]')
+              .evaluate((node) => node.getBoundingClientRect().width)
+            const directory = `.vitest-attachments/parity/${project.name}-${width}`
+            await mkdir(directory, { recursive: true })
+            await writeFile(`${directory}/react.png`, react)
+            await writeFile(`${directory}/vue.png`, vue)
             const geometry = await iframe.locator('[data-parity]').evaluateAll((roots) =>
               roots.map((root) => ({
                 adapter: root.getAttribute('data-parity'),
@@ -70,10 +100,7 @@ export default defineConfig({
                 })),
               })),
             )
-            await writeFile(
-              '.vitest-attachments/parity/geometry.json',
-              JSON.stringify(geometry, null, 2),
-            )
+            await writeFile(`${directory}/geometry.json`, JSON.stringify(geometry, null, 2))
           }
           return equal
         },

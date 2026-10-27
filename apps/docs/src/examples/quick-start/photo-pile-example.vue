@@ -10,5 +10,5 @@ const photos: readonly PhotoPilePhoto[] = [
 </script>
 
 <template>
-  <PhotoPile :photos="photos" aria-label="Summer snapshots" />
+  <PhotoPile :photos="photos" />
 </template>
