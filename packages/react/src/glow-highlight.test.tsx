@@ -5,7 +5,7 @@ import { act, type CSSProperties, createRef, StrictMode } from 'react'
 import { hydrateRoot } from 'react-dom/client'
 import { renderToString } from 'react-dom/server'
 import { afterEach, expect, test, vi } from 'vitest'
-import { commands } from 'vitest/browser'
+import { commands, userEvent } from 'vitest/browser'
 import { render } from 'vitest-browser-react'
 import { GlowHighlight } from './glow-highlight.js'
 
@@ -237,16 +237,21 @@ test('named palettes apply the exported colors, and inline variables still overr
 })
 
 test('hover trigger follows the enclosing link for pointer and keyboard focus', async () => {
+  // Keep the link clear of the real cursor. Linux Chromium sends genuine pointer events to a
+  // link drawn under it, which would mix with the simulated ones below and keep it hovered.
+  await userEvent.hover(document.body, { position: { x: 1, y: 1 } })
   await render(
-    <a href="#notes">
-      Read the <GlowHighlight trigger="hover">notes</GlowHighlight>
-    </a>,
+    <p style={{ margin: '240px 0 0 240px' }}>
+      <a href="#notes">
+        Read the <GlowHighlight trigger="hover">notes</GlowHighlight>
+      </a>
+    </p>,
   )
   const link = document.querySelector('a')
   if (!link) throw new Error('Link is missing')
 
-  // Dispatch focus events like the pointer ones: headless Linux Chromium may not deliver
-  // focusout from blur() when its window lacks system focus, leaving the glow lit.
+  // Focus is dispatched like the pointer events so the result does not depend on whether the
+  // test window has system focus.
   link.dispatchEvent(new PointerEvent('pointerenter'))
   await expect.poll(() => root().dataset.state).not.toBe('off')
   link.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
