@@ -304,6 +304,58 @@ export const registryDefinitions = [
     ],
   },
   {
+    name: 'glow-highlight',
+    frameworks: ['react'],
+    title: 'GlowHighlight',
+    description: 'Traces soft, layered candy-colored rings around the words that matter.',
+    category: 'decorative',
+    package: {
+      name: '@kida-ui/react',
+      exportName: 'GlowHighlight',
+      styleImports: ['@kida-ui/styles/components/glow-highlight.css'],
+    },
+    dependencies: [],
+    files: [
+      {
+        source: 'packages/react/src/glow-highlight.tsx',
+        type: 'registry:ui',
+        target: '@ui/kida/glow-highlight.tsx',
+        styleImport: './glow-highlight.css',
+        importReplacements: { '@kida-ui/motion': './motion/glow-highlight.js' },
+      },
+      {
+        source: 'packages/react/src/compose-refs.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/compose-refs.ts',
+      },
+      {
+        source: 'packages/react/src/use-isomorphic-layout-effect.ts',
+        type: 'registry:hook',
+        target: '@ui/kida/use-isomorphic-layout-effect.ts',
+      },
+      {
+        source: 'packages/styles/components/glow-highlight.css',
+        type: 'registry:ui',
+        target: '@ui/kida/glow-highlight.css',
+      },
+      {
+        source: 'packages/motion/src/glow-highlight.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/glow-highlight.ts',
+      },
+      {
+        source: 'packages/motion/src/glow-highlight-math.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/glow-highlight-math.ts',
+      },
+      {
+        source: 'packages/motion/src/reduced-motion.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/reduced-motion.ts',
+      },
+    ],
+  },
+  {
     name: 'photo-pile',
     title: 'PhotoPile',
     description: 'Layers draggable photos that spring back into a playful composition.',

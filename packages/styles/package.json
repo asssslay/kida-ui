@@ -22,7 +22,8 @@
     "./components/text-bloom.css": "./components/text-bloom.css",
     "./components/magnetic.css": "./components/magnetic.css",
     "./components/scribble-highlight.css": "./components/scribble-highlight.css",
-    "./components/space-type.css": "./components/space-type.css"
+    "./components/space-type.css": "./components/space-type.css",
+    "./components/glow-highlight.css": "./components/glow-highlight.css"
   },
   "publishConfig": {
     "access": "public"

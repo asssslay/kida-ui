@@ -19,6 +19,7 @@ should be added.
 | ScribbleHighlight | Browser | Browser | Observer re-arm | Viewport options and variant | Shared browser gate | SVG decoration hidden |
 | StickerBurst | Browser | Browser | Listener cleanup via Strict Mode | Stable layout inputs | Shared browser gate | Native click path; decoration hidden |
 | SpaceType (React only) | Browser + geometry unit tests | Browser | Observer and animation cleanup | Text, rows, speed, pause, radius, longitude, colors | Browser | Authored phrase exposed once |
+| GlowHighlight (React only) | Browser + ring/timing unit tests | Browser, including mid-flight | Reversal, unmount, Strict Mode, frame loop stops | Finish, spread, duration, trigger, active, font size | Browser | Text exposed once; traced copy hidden and inert |
 
 Cross-component gates also verify:
 
@@ -33,8 +34,9 @@ Responsive and visual evidence is defined in `VISUAL_TESTING.md`. It adds mobile
 geometry checks, deterministic settled-state screenshots for the seven shared components, controlled
 light/dark surfaces, and a color-contrast-enabled axe pass. SpaceType additionally has responsive
 light/dark checks in normal and reduced motion, empty/single/long content coverage, independent
-instances, and hidden-document playback checks. Its stored Linux screenshot baseline is still
-required before public alpha.
+instances, and hidden-document playback checks. GlowHighlight has responsive light/dark checks in
+normal and reduced motion, including a wrapped highlight that must not cause horizontal overflow
+at mobile width. Stored Linux screenshot baselines for both are still required before public alpha.
 
 Run the behavioral evidence with `pnpm --filter @kida-ui/react test` and the responsive/visual
 evidence with `pnpm --filter @kida-ui/react test:visual`. The repository-wide release candidate gate
@@ -63,11 +65,11 @@ reference images and does not replace the existing authoritative Linux React bas
 Copied-source conformance installs every Vue registry item through the pinned shadcn-vue CLI,
 then tests a combined installation with a custom UI alias. The displayed quick starts typecheck,
 bundle, and render deterministically in Node without Kida packages or workspace aliases.
-Both framework catalogs and all 15 items must match the built documentation endpoints.
+Both framework catalogs and all 16 items must match the built documentation endpoints.
 
 The packed-consumer check in `DISTRIBUTION.md` verifies the displayed demos, production bundle,
 declaration resolution, and server imports. `/docs/vue/<name>` supplies the live examples and API notes.
-SpaceType currently has only a React adapter. The seven shared Vue components remain experimental;
+SpaceType and GlowHighlight currently have only a React adapter. The seven shared Vue components remain experimental;
 wider browser, touch-device, and screen-reader release conformance is still required.
 
 `pnpm docs:check-dev` starts an isolated Astro dev server and checks Vue/React docs and the home

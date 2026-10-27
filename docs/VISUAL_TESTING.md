@@ -74,3 +74,8 @@ surfaces with color contrast enabled, in both normal and reduced motion. Its beh
 samples the full rotation and wave at minimum and maximum radii. These checks do not replace a
 reviewed Linux screenshot baseline; adding SpaceType to the stored visual references remains a
 pre-alpha task.
+
+GlowHighlight has the same kind of responsive checks: a wrapped headline highlight and a recolored
+sticker on an ink surface, at mobile and desktop widths, in normal and reduced motion, with color
+contrast enabled. The traced rings paint outside the text's box, so the check also asserts that
+the page never scrolls horizontally. Its stored Linux screenshot baseline is also a pre-alpha task.

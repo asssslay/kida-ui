@@ -1,6 +1,7 @@
 import '@kida-ui/styles/kida.css'
 import { Collapse, Reveal, useReducedMotion } from '@kida-ui/react'
 import { useState } from 'react'
+import { GlowHighlightSection } from '../../docs/src/demos/glow-highlight-playground.react'
 import { SpaceTypeSection } from '../../docs/src/demos/space-type-playground.react'
 
 const CARDS = [
@@ -99,6 +100,7 @@ export function App() {
         </p>
       </header>
       <SpaceTypeSection />
+      <GlowHighlightSection />
       <CollapseSection />
       <div className="spacer">↓ scroll ↓</div>
       <RevealSection />

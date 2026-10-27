@@ -25,14 +25,17 @@
       "inputs": [
         "$TURBO_DEFAULT$",
         "$TURBO_ROOT$/apps/docs/src/demos/space-type-playground.react.tsx",
-        "$TURBO_ROOT$/apps/docs/src/demos/space-type.css"
+        "$TURBO_ROOT$/apps/docs/src/demos/space-type.css",
+        "$TURBO_ROOT$/apps/docs/src/demos/glow-highlight-playground.react.tsx",
+        "$TURBO_ROOT$/apps/docs/src/demos/glow-highlight.css"
       ]
     },
     "@kida-ui/playground#typecheck": {
       "dependsOn": ["^build"],
       "inputs": [
         "$TURBO_DEFAULT$",
-        "$TURBO_ROOT$/apps/docs/src/demos/space-type-playground.react.tsx"
+        "$TURBO_ROOT$/apps/docs/src/demos/space-type-playground.react.tsx",
+        "$TURBO_ROOT$/apps/docs/src/demos/glow-highlight-playground.react.tsx"
       ]
     },
     "@kida-ui/vue#typecheck": { "dependsOn": ["build"] },

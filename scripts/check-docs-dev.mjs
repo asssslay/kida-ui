@@ -15,7 +15,8 @@ const vueComponents = [
   'scribble-highlight',
   'sticker-burst',
 ]
-const components = [...vueComponents, 'space-type']
+const reactOnlyComponents = ['space-type', 'glow-highlight']
+const components = [...vueComponents, ...reactOnlyComponents]
 const docs = join(root, 'apps/docs')
 const require = createRequire(join(docs, 'package.json'))
 const { dev } = await import(pathToFileURL(require.resolve('astro')).href)
@@ -47,8 +48,10 @@ try {
     const html = await response.text()
     assert.equal(response.status, 200, `${path}: development SSR failed`)
     if (path === '/' || path === '/docs') {
-      assert(html.includes('href="/docs/space-type"'), `${path}: SpaceType catalog link is missing`)
-      assert(html.includes('data-component="space-type"'), `${path}: SpaceType preview is missing`)
+      for (const name of reactOnlyComponents) {
+        assert(html.includes(`href="/docs/${name}"`), `${path}: ${name} catalog link is missing`)
+        assert(html.includes(`data-component="${name}"`), `${path}: ${name} preview is missing`)
+      }
     }
     if (path === '/') {
       assert(
@@ -66,11 +69,23 @@ try {
         'SpaceType links to an unavailable adapter',
       )
     }
-    if (path.startsWith('/docs/vue/')) {
+    if (path === '/docs/glow-highlight') {
+      assert(html.includes('data-kida-glow'), 'React GlowHighlight did not render on the server')
+      assert(html.includes('space-type-panel'), 'GlowHighlight customization controls are missing')
+      assert(html.includes('/r/glow-highlight.json'), 'GlowHighlight installation link is missing')
+      assert(html.includes('React only'), 'GlowHighlight framework availability is missing')
       assert(
-        !html.includes('href="/docs/vue/space-type"'),
-        `${path}: unavailable Vue component in navigation`,
+        !html.includes('href="/docs/vue/glow-highlight"'),
+        'GlowHighlight links to an unavailable adapter',
       )
+    }
+    if (path.startsWith('/docs/vue/')) {
+      for (const name of reactOnlyComponents) {
+        assert(
+          !html.includes(`href="/docs/vue/${name}"`),
+          `${path}: unavailable Vue component in navigation`,
+        )
+      }
     }
     if (path.startsWith('/docs/vue/') && path !== '/docs/vue/installation') {
       const name = path.split('/').at(-1)
