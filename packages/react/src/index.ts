@@ -1,4 +1,10 @@
 export { Collapse, type CollapseProps } from './collapse.js'
+export {
+  DualWave,
+  type DualWaveItem,
+  type DualWaveLayout,
+  type DualWaveProps,
+} from './dual-wave.js'
 export { GlowHighlight, type GlowHighlightProps } from './glow-highlight.js'
 export { ImageText, type ImageTextProps } from './image-text.js'
 export { Magnetic, type MagneticProps } from './magnetic.js'

@@ -63,7 +63,7 @@ The React/Vue buttons change only the code examples and API notes, never the run
   `/docs/<name>`, so do not use Reload to restart a check: a reload loads React previews.
   Open the `/docs/vue/<name>` address again instead.
 - **React:** select React on any component page, then type each `/docs/<name>` address. The same
-  seven components apply; SpaceType and ImageText have React previews only.
+  seven components apply; SpaceType, ImageText, and DualWave have React previews only.
 - **Sidebar:** after a component page is open, sidebar links load previews for the selected
   framework.
 

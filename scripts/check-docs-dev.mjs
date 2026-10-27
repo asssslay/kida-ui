@@ -15,7 +15,7 @@ const vueComponents = [
   'scribble-highlight',
   'sticker-burst',
 ]
-const reactOnlyComponents = ['space-type', 'glow-highlight', 'image-text']
+const reactOnlyComponents = ['space-type', 'glow-highlight', 'image-text', 'dual-wave']
 const components = [...vueComponents, ...reactOnlyComponents]
 const docs = join(root, 'apps/docs')
 const require = createRequire(join(docs, 'package.json'))
@@ -81,6 +81,16 @@ try {
       assert(
         !html.includes('href="/docs/vue/glow-highlight"'),
         'GlowHighlight links to an unavailable adapter',
+      )
+    }
+    if (path === '/docs/dual-wave') {
+      assert(html.includes('data-kida-dual-wave'), 'React DualWave did not render on the server')
+      assert(html.includes('dual-wave-settings'), 'DualWave customization controls are missing')
+      assert(html.includes('/r/dual-wave.json'), 'DualWave installation link is missing')
+      assert(html.includes('React only'), 'DualWave framework availability is missing')
+      assert(
+        !html.includes('href="/docs/vue/dual-wave"'),
+        'DualWave links to an unavailable adapter',
       )
     }
     if (path === '/docs/image-text') {

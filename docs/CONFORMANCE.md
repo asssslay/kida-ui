@@ -19,6 +19,7 @@ should be added.
 | PhotoPile | Browser | Browser | Drag settle + collection replacement | Photos and drag options | Shared browser gate | Focus and pointer paths |
 | ScribbleHighlight | Browser | Browser | Observer re-arm | Viewport options and variant | Shared browser gate | SVG decoration hidden |
 | StickerBurst | Browser | Browser | Listener cleanup via Strict Mode | Stable layout inputs | Shared browser gate | Native click path; decoration hidden |
+| DualWave (React only) | Browser + math unit tests | Browser | Observer, listener, and frame cleanup via Strict Mode | Items, layout, grid, options in place, `index` | Browser | Keyboard, click, wheel; live region announces each item |
 | SpaceType (React only) | Browser + geometry unit tests | Browser | Observer and animation cleanup | Text, rows, speed, pause, radius, longitude, colors | Browser | Authored phrase exposed once |
 | GlowHighlight (React only) | Browser + ring/timing unit tests | Browser, including mid-flight | Reversal, unmount, Strict Mode, frame loop stops | Finish, palette, spread, duration, trigger, active, font size | Browser | Text exposed once; traced copy hidden and inert; agent notes checked against the API and docs |
 
@@ -37,7 +38,9 @@ light/dark surfaces, and a color-contrast-enabled axe pass. SpaceType additional
 light/dark checks in normal and reduced motion, empty/single/long content coverage, independent
 instances, and hidden-document playback checks. GlowHighlight has responsive light/dark checks in
 normal and reduced motion, including a wrapped highlight that must not cause horizontal overflow
-at mobile width. Stored Linux screenshot baselines for both are still required before public alpha.
+at mobile width. DualWave additionally has browser checks for mobile and desktop geometry,
+empty/single/long item lists, the first frame after a layout switch, and Frame's instant swap.
+Their stored Linux screenshot baselines are still required before public alpha.
 
 Run the behavioral evidence with `pnpm --filter @kida-ui/react test` and the responsive/visual
 evidence with `pnpm --filter @kida-ui/react test:visual`. The repository-wide release candidate gate
@@ -70,9 +73,9 @@ Both framework catalogs and all 17 items must match the built documentation endp
 
 The packed-consumer check in `DISTRIBUTION.md` verifies the displayed demos, production bundle,
 declaration resolution, and server imports. `/docs/<name>` supplies the live preview and framework-specific examples and API notes.
-SpaceType, GlowHighlight, and ImageText currently have only React adapters; their pages hide the
-Vue choice. The seven shared Vue components are supported to the same standard as React. CI
-defines Firefox/WebKit behavior gates for both adapters, in addition to Chromium, with
+SpaceType, GlowHighlight, ImageText, and DualWave currently have only React adapters; their pages
+hide the Vue choice. The seven shared Vue components are supported to the same standard as React.
+CI defines Firefox/WebKit behavior gates for both adapters, in addition to Chromium, with
 Chromium/WebKit touch emulation. Manual real touch-device and screen-reader checks are
 recommended. See [the release checklist](RELEASE_CHECKLIST.md) for commands and the manual review
 guide.

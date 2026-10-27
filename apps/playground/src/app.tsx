@@ -3,6 +3,7 @@ import { Collapse, Reveal, useReducedMotion } from '@kida-ui/react'
 import { useState } from 'react'
 import { GlowHighlightSection } from '../../docs/src/demos/glow-highlight-playground.react'
 import { SpaceTypeSection } from '../../docs/src/demos/space-type-playground.react'
+import { DualWavePlayground } from './dual-wave'
 import { ImageTextPlayground } from './image-text/image-text-playground'
 
 const CARDS = [
@@ -97,6 +98,14 @@ export function App() {
     )
   }
 
+  if (demo === 'dual-wave') {
+    return (
+      <main className="dual-wave-page">
+        <DualWavePlayground standalone />
+      </main>
+    )
+  }
+
   return (
     <main>
       <header>
@@ -112,6 +121,7 @@ export function App() {
       <ImageTextPlayground />
       <SpaceTypeSection />
       <GlowHighlightSection />
+      <DualWavePlayground />
       <CollapseSection />
       <div className="spacer">↓ scroll ↓</div>
       <RevealSection />

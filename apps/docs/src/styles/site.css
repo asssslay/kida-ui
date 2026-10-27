@@ -628,6 +628,11 @@ a {
   min-height: 20rem;
 }
 
+.demo[data-demo="dual-wave-playground"] .demo-stage {
+  display: block;
+  padding: 1.25rem;
+}
+
 /* ---------------------------------------------------------------- landing */
 
 .hero {
@@ -932,6 +937,21 @@ a {
 
 .catalog-preview-collapse-trigger {
   display: inline-block;
+}
+
+.component-preview[data-component="dual-wave"] {
+  padding: 0.5rem;
+}
+
+.component-preview [data-kida-dual-wave] {
+  --kida-dual-wave-height: 100%;
+  --kida-dual-wave-radius: 0.75rem;
+  --kida-dual-wave-font-size: 0.6875rem;
+  --kida-dual-wave-row-height: 1.125rem;
+
+  width: 100%;
+  /* The card already frames the preview. */
+  border: 0;
 }
 
 .component-preview [data-kida-photo-pile] {

@@ -102,3 +102,8 @@ ImageText has mobile/desktop geometry, text-only markup, decoded licensed-photo 
 reduced-motion, and contrast-enabled axe checks in `image-text.visual.test.tsx`. The website
 shows only the approved white composition. A stored ImageText screenshot must still be reviewed
 in the canonical Linux environment before public alpha; no macOS baseline is introduced.
+
+DualWave's browser suite checks that the stage's parts stay inside it at mobile and desktop widths,
+without page overflow, and that long titles stay inside their columns. These checks do not replace a
+reviewed Linux screenshot baseline; adding DualWave to the stored visual references remains a
+pre-alpha task.
