@@ -79,3 +79,8 @@ GlowHighlight has the same kind of responsive checks: a wrapped headline highlig
 sticker on an ink surface, at mobile and desktop widths, in normal and reduced motion, with color
 contrast enabled. The traced rings paint outside the text's box, so the check also asserts that
 the page never scrolls horizontally. Its stored Linux screenshot baseline is also a pre-alpha task.
+
+ImageText has mobile/desktop geometry, text-only markup, decoded licensed-photo rendering,
+reduced-motion, and contrast-enabled axe checks in `image-text.visual.test.tsx`. The website
+shows only the approved white composition. A stored ImageText screenshot must still be reviewed
+in the canonical Linux environment before public alpha; no macOS baseline is introduced.

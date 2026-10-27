@@ -23,7 +23,8 @@
     "./components/magnetic.css": "./components/magnetic.css",
     "./components/scribble-highlight.css": "./components/scribble-highlight.css",
     "./components/space-type.css": "./components/space-type.css",
-    "./components/glow-highlight.css": "./components/glow-highlight.css"
+    "./components/glow-highlight.css": "./components/glow-highlight.css",
+    "./components/image-text.css": "./components/image-text.css"
   },
   "publishConfig": {
     "access": "public"

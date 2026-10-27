@@ -5,6 +5,61 @@
  */
 export const registryDefinitions = [
   {
+    name: 'image-text',
+    title: 'ImageText',
+    description: 'Moves a photograph through one stationary, selectable text element.',
+    category: 'text',
+    package: {
+      name: '@kida-ui/react',
+      exportName: 'ImageText',
+      styleImports: ['@kida-ui/styles/components/image-text.css'],
+    },
+    dependencies: [],
+    files: [
+      {
+        source: 'packages/react/src/image-text.tsx',
+        type: 'registry:ui',
+        target: '@ui/kida/image-text.tsx',
+        styleImport: './image-text.css',
+        importReplacements: {
+          '@kida-ui/motion': './motion/image-text.js',
+        },
+      },
+      {
+        source: 'packages/react/src/compose-refs.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/compose-refs.ts',
+      },
+      {
+        source: 'packages/react/src/use-isomorphic-layout-effect.ts',
+        type: 'registry:hook',
+        target: '@ui/kida/use-isomorphic-layout-effect.ts',
+      },
+      {
+        source: 'packages/motion/src/image-text.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/image-text.ts',
+      },
+      {
+        source: 'packages/motion/src/reduced-motion.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/reduced-motion.ts',
+      },
+      {
+        source: 'packages/styles/components/image-text.css',
+        type: 'registry:ui',
+        target: '@ui/kida/image-text.css',
+        imports: ['./tokens.css'],
+      },
+      {
+        source: 'packages/styles/tokens.css',
+        type: 'registry:ui',
+        target: '@ui/kida/tokens.css',
+      },
+    ],
+    frameworks: ['react'],
+  },
+  {
     name: 'space-type',
     frameworks: ['react'],
     title: 'SpaceType',

@@ -2,8 +2,8 @@
 
 Status: **implemented for React and experimental Vue components** (2026-10-12)
 
-React covers nine components; experimental Vue covers the seven shared components.
-SpaceType and GlowHighlight currently support React only. Component and installation pages list available
+React covers ten components; experimental Vue covers the seven shared components.
+SpaceType, GlowHighlight, and ImageText currently support React only. Component and installation pages list available
 frameworks; Vue pages live at `/docs/vue/<name>` and use checked Vue quick starts and live SFC demos.
 Vue 3.5+ and a TypeScript project are required. npm publication remains pending.
 

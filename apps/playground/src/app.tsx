@@ -3,6 +3,7 @@ import { Collapse, Reveal, useReducedMotion } from '@kida-ui/react'
 import { useState } from 'react'
 import { GlowHighlightSection } from '../../docs/src/demos/glow-highlight-playground.react'
 import { SpaceTypeSection } from '../../docs/src/demos/space-type-playground.react'
+import { ImageTextPlayground } from './image-text/image-text-playground'
 
 const CARDS = [
   { title: 'Default', options: {} },
@@ -86,6 +87,15 @@ function StressSection() {
 
 export function App() {
   const reduced = useReducedMotion()
+  const demo = new URLSearchParams(window.location.search).get('demo')
+
+  if (demo === 'image-text') {
+    return (
+      <main className="photo-type-page">
+        <ImageTextPlayground standalone />
+      </main>
+    )
+  }
 
   return (
     <main>
@@ -99,6 +109,7 @@ export function App() {
           appear instantly and the collapse should still close and unmount.
         </p>
       </header>
+      <ImageTextPlayground />
       <SpaceTypeSection />
       <GlowHighlightSection />
       <CollapseSection />

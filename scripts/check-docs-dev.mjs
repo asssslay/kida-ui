@@ -15,7 +15,7 @@ const vueComponents = [
   'scribble-highlight',
   'sticker-burst',
 ]
-const reactOnlyComponents = ['space-type', 'glow-highlight']
+const reactOnlyComponents = ['space-type', 'glow-highlight', 'image-text']
 const components = [...vueComponents, ...reactOnlyComponents]
 const docs = join(root, 'apps/docs')
 const require = createRequire(join(docs, 'package.json'))
@@ -77,6 +77,21 @@ try {
       assert(
         !html.includes('href="/docs/vue/glow-highlight"'),
         'GlowHighlight links to an unavailable adapter',
+      )
+    }
+    if (path === '/docs/image-text') {
+      assert(html.includes('data-kida-image-text'), 'React ImageText did not render on the server')
+      assert(html.includes('/r/image-text.json'), 'ImageText installation link is missing')
+      assert(html.includes('React only'), 'ImageText framework availability is missing')
+      assert(
+        !html.includes('href="/docs/vue/image-text"'),
+        'ImageText links to an unavailable adapter',
+      )
+      const stage = html.match(/<figure[^>]*data-demo="image-text-basic"[\s\S]*?<\/figure>/)?.[0]
+      assert(stage, 'ImageText preview is missing')
+      assert(
+        !/<(?:span|button)\b/.test(stage),
+        'ImageText preview must contain only the white text variant',
       )
     }
     if (path.startsWith('/docs/vue/')) {

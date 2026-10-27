@@ -7,6 +7,12 @@ export {
   type GlowHighlightTrigger,
   glowHighlight,
 } from './glow-highlight.js'
+export {
+  type ImageTextControls,
+  type ImageTextOptions,
+  imageText,
+  imageTextStyle,
+} from './image-text.js'
 export { type MagneticOptions, magnetic } from './magnetic.js'
 export { type PhotoPileOptions, photoPile } from './photo-pile.js'
 export { prefersReducedMotion, watchReducedMotion } from './reduced-motion.js'
