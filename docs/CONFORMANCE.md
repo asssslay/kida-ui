@@ -69,7 +69,7 @@ reference images and does not replace the existing authoritative Linux React bas
 Copied-source conformance installs every Vue registry item through the pinned shadcn-vue CLI,
 then tests a combined installation with a custom UI alias. The displayed quick starts typecheck,
 bundle, and render deterministically in Node without Kida packages or workspace aliases.
-Both framework catalogs and all 17 items must match the built documentation endpoints.
+Both framework catalogs and all 18 items must match the built documentation endpoints.
 
 The packed-consumer check in `DISTRIBUTION.md` verifies the displayed demos, production bundle,
 declaration resolution, and server imports. `/docs/<name>` supplies the live preview and framework-specific examples and API notes.
