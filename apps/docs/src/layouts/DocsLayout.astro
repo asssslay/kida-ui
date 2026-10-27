@@ -103,7 +103,15 @@ const toc = headings.filter((heading) => heading.depth === 2 || heading.depth ==
         <p class="docs-prose-kicker">
           <a href="/docs">Documentation</a><span aria-hidden="true">/</span>{title}
         </p>
-        <h1>{title}</h1>
+        <h1>
+          {/* Long component names wrap between words on narrow screens. */}
+          {title.split(/(?<=[a-z])(?=[A-Z])/).map((part, index) => (
+            <>
+              {index > 0 && <wbr />}
+              {part}
+            </>
+          ))}
+        </h1>
         <p class="lede">{description}</p>
       </header>
       {frameworkPage && <FrameworkSwitcher page={frameworkPage} framework={framework} frameworks={availableFrameworks} />}
