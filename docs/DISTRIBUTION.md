@@ -1,8 +1,8 @@
 # Kida UI Distribution
 
-Status: **implemented for React and experimental Vue components** (2026-10-12)
+Status: **implemented for React and Vue components** (2026-10-12)
 
-React covers nine components; experimental Vue covers the seven shared components. SpaceType and
+React covers nine components; Vue covers the seven shared components. SpaceType and
 ImageText currently support React only, so their pages hide the Vue choice. Component and installation pages
 have a React/Vue selector on one canonical `/docs/<name>` page. It changes the checked source,
 installation instructions, and API notes without navigation or restarting the live preview. The

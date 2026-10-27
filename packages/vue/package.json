@@ -1,7 +1,7 @@
 {
   "name": "@kida-ui/vue",
   "version": "0.0.0",
-  "description": "Experimental Vue 3 adapters for the Kida UI animation catalog.",
+  "description": "Vue 3 adapters for the Kida UI animation catalog.",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,

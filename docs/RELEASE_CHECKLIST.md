@@ -1,8 +1,9 @@
 # Release conformance checklist
 
-The seven React and Vue components have package and copied-source distribution. Vue remains
-experimental until release evidence is reviewed. Passing automation does not establish real-device
-or screen-reader support. Do not mark an unperformed check as passed.
+The seven shared components have React and Vue package and copied-source distribution. The
+automated gates are required for a release. The manual checks are recommended: automation does not
+establish real-device or screen-reader support, so run them when you can, especially after changing
+interaction, touch handling, or announced text. Record only checks that were actually performed.
 
 ## Automated gates
 
@@ -44,7 +45,7 @@ The locked Playwright version cannot install Firefox/WebKit on macOS 13. Use a s
 Ubuntu CI for those engines; system Chrome remains the local Chromium fallback. A missing engine
 is an outstanding check, not a pass. Playwright WebKit coverage does not prove iOS Safari support.
 
-## Manual review setup
+## Manual review setup (recommended)
 
 Build shared packages and run the documentation site:
 
@@ -73,20 +74,20 @@ For a phone/tablet, connect it to the same Wi-Fi as the Mac and open
 `http://<Mac-LAN-IP>:<Astro-port>/docs/vue/photo-pile`. Find the Mac's LAN address in
 System Settings → Network → Wi-Fi → Details → TCP/IP. Keep the server running during review.
 
-## Required hardware and assistive technology
+## Recommended hardware and assistive technology
 
-Record each combination separately:
+These combinations give the most useful manual coverage:
 
-| Combination | Required evidence | Result |
-|---|---|---|
-| macOS Safari + VoiceOver | Announcement quality, keyboard use, focus | Pending |
-| Windows Chrome + NVDA | Announcement quality, keyboard use, focus | Pending |
-| iOS Safari on a real iPhone/iPad | Touch actions, PhotoPile drag/scroll, reduced motion | Pending |
-| Android Chrome on a real phone/tablet | Touch actions, PhotoPile drag/scroll, reduced motion | Pending |
+| Combination | What it shows |
+|---|---|
+| macOS Safari + VoiceOver | Announcement quality, keyboard use, focus |
+| Windows Chrome + NVDA | Announcement quality, keyboard use, focus |
+| iOS Safari on a real iPhone/iPad | Touch actions, PhotoPile drag/scroll, reduced motion |
+| Android Chrome on a real phone/tablet | Touch actions, PhotoPile drag/scroll, reduced motion |
 
-For each combination, record the commit SHA (`git rev-parse HEAD`), OS/device, browser and screen
-reader versions, date, tester, normal/reduced-motion results, and any recording or issue link.
-Do not infer a pass for one adapter or device from a different adapter or emulator.
+When you run one, record the commit SHA (`git rev-parse HEAD`), OS/device, browser and screen
+reader versions, date, tester, normal/reduced-motion results, and any recording or issue link in
+the release PR. A result applies only to the adapter and device actually tested.
 
 ## Keyboard and screen readers
 
@@ -134,12 +135,12 @@ For each device and framework, review both normal and reduced motion:
 
 ## Release decision
 
-Attach completed records and green CI links to the release PR. Resolve failures before changing
-Vue's support status. Confirm that required branch-protection checks include the new browser jobs;
+Attach green CI links to the release PR, plus any manual check records. Resolve failures found by
+either before release. Confirm that required branch-protection checks include the new browser jobs;
 repository settings are a separate maintainer action.
 
-After manual sign-off, review `pnpm changeset status` and prepare a versioning PR with Changesets.
+Then review `pnpm changeset status` and prepare a versioning PR with Changesets.
 Check generated versions/changelogs and packed consumers together, including shared motion/styles.
 Confirm npm scope access, release credentials, and the intended prerelease dist-tag before
-publication. Publication and promotion out of experimental status require a release decision;
-adding these checks does not publish packages or change component APIs.
+publication. Publication requires a release decision; these checks do not publish packages or change
+component APIs.

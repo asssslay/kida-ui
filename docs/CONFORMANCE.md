@@ -41,7 +41,7 @@ Run the behavioral evidence with `pnpm --filter @kida-ui/react test` and the res
 evidence with `pnpm --filter @kida-ui/react test:visual`. The repository-wide release candidate gate
 remains `pnpm verify` followed by `pnpm -r --filter './packages/*' exec publint`.
 
-## Experimental Vue milestone
+## Vue adapter
 
 `@kida-ui/vue` exports Reveal, Collapse, TextBloom, Magnetic, PhotoPile, ScribbleHighlight, and
 StickerBurst. It uses the same motion options,
@@ -69,10 +69,10 @@ Both framework catalogs and all 16 items must match the built documentation endp
 The packed-consumer check in `DISTRIBUTION.md` verifies the displayed demos, production bundle,
 declaration resolution, and server imports. `/docs/<name>` supplies the live preview and framework-specific examples and API notes.
 SpaceType and ImageText currently have only React adapters; their pages hide the Vue choice. The
-seven shared Vue components remain experimental. CI now defines Firefox/WebKit behavior gates for
-both adapters, in addition to Chromium, with Chromium/WebKit touch emulation. Real touch-device and
-screen-reader release conformance is still required. See [the release checklist](RELEASE_CHECKLIST.md)
-for commands and evidence requirements.
+seven shared Vue components are supported to the same standard as React. CI defines Firefox/WebKit
+behavior gates for both adapters, in addition to Chromium, with Chromium/WebKit touch emulation.
+Manual real touch-device and screen-reader checks are recommended. See
+[the release checklist](RELEASE_CHECKLIST.md) for commands and the manual review guide.
 
 `pnpm docs:check-dev` starts an isolated Astro dev server and checks Vue/React docs and the home
 page, including the Vue client module. A version-pinned pnpm patch disables React Refresh only in
@@ -105,16 +105,17 @@ teardown. This prevents React error 424 when rapid history traversal unmounts an
 island in WebKit. Normal hydration remains concurrent. Remove the patch once the integration
 handles this lifecycle and passes the same browser checks.
 
-## Still required before a public alpha
+## Before a public alpha
 
-The following work is deliberately not represented as complete:
+Require green Chromium, Firefox, and WebKit CI jobs for the release candidate, including Vue
+adapter parity and the touch-emulation scenarios. A configured job is not passing evidence.
 
-1. Run manual screen-reader checks on at least VoiceOver/Safari and NVDA/Chrome. Axe guards markup
-   rules; it cannot prove announcement quality.
-2. Run real touch-device smoke tests for PhotoPile and coarse-pointer behavior. Synthetic pointer
+These manual checks are recommended, not required:
+
+1. Screen-reader checks on VoiceOver/Safari and NVDA/Chrome. Axe guards markup rules; it cannot
+   prove announcement quality.
+2. Real touch-device smoke tests for PhotoPile and coarse-pointer behavior. Synthetic pointer
    coverage does not validate browser gesture arbitration.
-3. Require green Chromium, Firefox, and WebKit CI jobs for the release candidate, including Vue
-   adapter parity and the touch-emulation scenarios. A configured job is not passing evidence.
 
-Any failure found by those checks should be fixed on a narrowly named `fix/<component>-<problem>`
+Any failure found by these checks should be fixed on a narrowly named `fix/<component>-<problem>`
 branch when it is larger than a small conformance correction.

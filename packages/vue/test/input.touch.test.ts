@@ -7,7 +7,7 @@ import { defineComponent, h, ref } from 'vue'
 import { node, photos } from './fixtures.js'
 
 // Playwright's touchscreen input exercises trusted pointer/touch/click events and hit testing.
-// This is emulation; real-device drag/scroll arbitration remains a manual release check.
+// This is emulation; real-device drag/scroll arbitration remains a recommended manual check.
 afterEach(async () => {
   await commands.setReducedMotion(false)
 })

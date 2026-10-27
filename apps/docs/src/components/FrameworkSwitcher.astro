@@ -10,7 +10,7 @@ const other = framework === 'react' ? 'vue' : 'react'
 
 <div class="framework-switcher" role="group" aria-label="Documentation framework" data-framework-page={page} data-frameworks={frameworks.join(' ')}>
   <button type="button" data-framework-choice="react" aria-controls="framework-article" aria-pressed={framework === 'react'} hidden={!frameworks.includes('react')} disabled>React</button>
-  <button type="button" data-framework-choice="vue" aria-controls="framework-article" aria-pressed={framework === 'vue'} hidden={!frameworks.includes('vue')} disabled>Vue <span class="framework-badge">Experimental</span></button>
+  <button type="button" data-framework-choice="vue" aria-controls="framework-article" aria-pressed={framework === 'vue'} hidden={!frameworks.includes('vue')} disabled>Vue</button>
 </div>
 <p class="framework-preview-note" hidden={page === 'installation' || frameworks.length < 2}>Shared live previews stay running while you switch code examples and API documentation.</p>
 <p class="framework-status" data-framework-status role="status"></p>
