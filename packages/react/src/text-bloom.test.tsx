@@ -46,7 +46,10 @@ test('blooms on viewport entry and settles without a transform', async () => {
   if (!first) throw new Error('TextBloom segment is not mounted')
   expect(getComputedStyle(first).opacity).toBe('0')
 
-  element.scrollIntoView()
+  // Keep the inline root fully inside the viewport, including its moving Pop segments.
+  element.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' })
+  expect(element.getBoundingClientRect().top).toBeGreaterThan(0)
+  expect(element.getBoundingClientRect().bottom).toBeLessThan(window.innerHeight)
   await expect.poll(() => element.dataset.state).toBe('active')
   await expect.poll(() => element.dataset.state).toBe('settled')
   expect(getComputedStyle(first).opacity).toBe('1')

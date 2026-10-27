@@ -1,6 +1,6 @@
 # Kida UI — Architecture Decision Record
 
-Status: **decided** (2026-10-08) · Scope: React catalog + experimental Vue milestone · Rev 8
+Status: **decided** (2026-10-08) · Scope: React catalog + Vue adapter · Rev 8
 
 ## 1. Positioning
 
@@ -18,7 +18,7 @@ tactile and playful motion in response to intent. `DESIGN_DIRECTION.md` owns the
 | # | Decision | Rationale |
 |---|---|---|
 | D1 | Layered architecture: core / styles / adapters / distribution | Zag + Ark's proven shape; framework #2 must cost ~300 LOC, not a rewrite |
-| D2 | React covers the catalog; experimental Vue 3.5 covers seven shared components | SpaceType and ImageText currently ship for React only. Keep their behavior and CSS shared for future adapters, and document availability per component. Require package, SSR, lifecycle, and parity evidence before adding another adapter. |
+| D2 | React covers the catalog; Vue 3.5 covers seven shared components | SpaceType and ImageText currently ship for React only. Keep their behavior and CSS shared for future adapters, and document availability per component. Require package, SSR, lifecycle, and parity evidence before adding another adapter. |
 | D3 | Animation engine built on vanilla `motion`, NOT `framer-motion` | `motion` is framework-agnostic → identical motion in every framework later |
 | D3a | **`@kida-ui/motion` has zero framework code and zero framework peer deps** | The real boundary. CI-enforceable. React adapter lives in `@kida-ui/react`, not `@kida-ui/motion/react` — otherwise React has two entry points. |
 | D4 | Behavior from Zag.js | 60+ audited machines, already supports 6 frameworks |
@@ -39,7 +39,7 @@ tactile and playful motion in response to intent. `DESIGN_DIRECTION.md` owns the
 ```
 L4  DISTRIBUTION   registry JSON (copy)   +   npm packages (install)
                    ▲── both generated from the SAME source ──▲
-L3  ADAPTERS       react/  vue/ (experimental) [svelte/ solid/ — later]     thin
+L3  ADAPTERS       react/  vue/  [svelte/ solid/ — later]                   thin
 L2  STYLES         plain CSS custom properties + data-* selectors  100% shared
                    (+ optional @theme layer for Tailwind users)
 L1  CORE           @kida-ui/motion (agnostic) + Zag machines        100% shared
@@ -72,7 +72,7 @@ packages/motion/          @kida-ui/motion — NO framework dependency, of any ki
 packages/react/           @kida-ui/react — the ONLY React surface
   src/motion/             useReveal, useStagger …  (~50 LOC each)
   src/components/         the components
-packages/vue/             @kida-ui/vue — experimental SFC adapters for all seven components
+packages/vue/             @kida-ui/vue — SFC adapters for the seven shared components
 ```
 
 Note: `motion@13.1.0` ships `.` + `./react` in one package using
@@ -136,7 +136,7 @@ kida-ui/
 │  ├─ motion/          L1  animation engine — zero framework deps
 │  ├─ styles/          L2  plain CSS tokens + keyframes (+ optional tailwind.css)
 │  ├─ react/           L3  React adapter (motion hooks) + components
-│  ├─ vue/             L3  Experimental Vue 3.5 adapter + all seven components
+│  ├─ vue/             L3  Vue 3.5 adapter + the seven shared components
 │  └─ cli/             (v2) `kida add <c> --framework svelte`
 ├─ registry/
 │  ├─ registry.json
@@ -191,9 +191,9 @@ Vitest + Playwright + axe · Biome · Astro (docs) · Shiki
 - **P3 — current:** TextBloom, Magnetic, ScribbleHighlight, PhotoPile, and StickerBurst are complete;
   next are CandyDock, one background, and one composed hero
 - **P4:** package metadata, visual regression and accessibility audit → **v0.1 alpha (React)**
-- **P5 — current:** experimental Vue covers all seven components with package/SSR/browser evidence
+- **P5 — current:** Vue supports the seven shared components with package/SSR/browser evidence
   and parity, generated copied-source distribution, and framework-specific documentation;
-  next complete release conformance before a public beta
+  manual screen-reader and real-device checks are recommended, not release gates
 
 ## 10. Known risks
 
@@ -201,8 +201,8 @@ Vitest + Playwright + axe · Biome · Astro (docs) · Shiki
 - **R2** vanilla `motion` lacks React-style layout animations → own FLIP helper in `@kida-ui/motion`
 - **R2a** Zag presence is CSS-animation-only → keep all mount/unmount transitions in CSS; never route them through the JS engine
 - **R3** copy-source drift → `build-registry.ts` is the only writer; CI fails on manual edits to `registry/r/`
-- **R4** breadth-before-depth → keep Vue experimental with explicit component availability;
-  expand only after the initial milestone passes the shared component contract
+- **R4** breadth-before-depth → keep Vue component availability explicit;
+  add a Vue adapter only when it passes the shared component contract
 - ~~**R5** npm `@kida` scope unconfirmed~~ → **resolved 2026-08-18: `@kida` is taken.** `GET registry.npmjs.org/-/org/kida/user` returns `{"kida":"owner"}` (200), while `kida-ui` returns 404 `Scope not found`. That endpoint resolves *user* scopes too — control: `sindresorhus` → 200, `zzq9xnope` → 404 — so zero published packages never meant available. **All packages are `@kida-ui/*`.** → **Closed 2026-08-25: the `kida-ui` org exists and is owned by `asssslay`** (`npm org ls kida-ui` → `asssslay - owner`; the scope endpoint now returns 200 where it returned 404). Free plan, unlimited public packages. Publishing is unblocked.
 - **R7** the JS engine keeps its own idea of an element's current value → never re-hide an element by writing `style` behind its back and expect the next `animate()` to infer a start: spell both keyframes out. Verified in the browser: a `once: false` reveal otherwise resolves instantly on re-entry and never animates.
 - **R8** Playwright ships no bundled Chromium for macOS 13 → `packages/react/vitest.config.ts` falls back to the system Chrome when the bundled build is missing; CI is unaffected

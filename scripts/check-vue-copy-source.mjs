@@ -222,10 +222,11 @@ async function consumer(selected, uiPath) {
     'src/main.ts',
     `import { createApp, h } from 'vue'\n${imports}\ncreateApp({ render: () => ${content} }).mount('#app')\n`,
   )
+  const hasCollapse = selected.some((item) => item.name === 'collapse')
   await write(
     directory,
     'src/server.ts',
-    `import { createSSRApp, h } from 'vue'\nimport { renderToString } from 'vue/server-renderer'\n${imports}\nexport const render = () => renderToString(createSSRApp({ render: () => ${content} }))\n`,
+    `import { createSSRApp, h } from 'vue'\nimport { renderToString } from 'vue/server-renderer'\n${imports}\n${hasCollapse ? `import CollapseProbe from '@/${uiPath}/kida/collapse.vue'\nexport const renderOpenCollapse = () => renderToString(createSSRApp({ render: () => h(CollapseProbe, { open: true }, () => h('p', 'Copied Collapse content')) }))\n` : ''}export const render = () => renderToString(createSSRApp({ render: () => ${content} }))\n`,
   )
   if (selected.length === items.length) {
     await write(
@@ -267,7 +268,7 @@ void voice
   await write(
     directory,
     'check-server.mjs',
-    `import assert from 'node:assert/strict'\nimport { render } from './server/entry.mjs'\nassert.equal(typeof window, 'undefined')\nconst first = await render()\nassert.equal(first, await render())\nfor(const marker of ${JSON.stringify(selected.map((item) => ({ 'scribble-highlight': 'scribble' })[item.name] ?? item.name))}) assert(first.includes('data-kida-' + marker), marker)\n`,
+    `import assert from 'node:assert/strict'\nimport * as server from './server/entry.mjs'\nconst { render } = server\nassert.equal(typeof window, 'undefined')\nconst first = await render()\nassert.equal(first, await render())\nfor(const marker of ${JSON.stringify(selected.filter((item) => item.name !== 'collapse').map((item) => ({ 'scribble-highlight': 'scribble' })[item.name] ?? item.name))}) assert(first.includes('data-kida-' + marker), marker)\n${hasCollapse ? `assert(first.includes('aria-expanded="false"'))\nassert(!first.includes('data-kida-collapse'))\nconst opened = await server.renderOpenCollapse()\nassert.equal(opened, await server.renderOpenCollapse())\nassert(opened.includes('data-kida-collapse'))\nassert(opened.includes('Copied Collapse content'))\n` : ''}`,
   )
   await run(process.execPath, [join(directory, 'check-server.mjs')], { cwd: directory })
   console.log(

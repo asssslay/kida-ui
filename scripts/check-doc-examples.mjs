@@ -171,10 +171,12 @@ async function checkComponentDocs(items) {
     }
   }
 
-  const installationPath = join(root, 'apps/docs/src/components/InstallationGuide.astro')
+  const installationPath = join(root, 'apps/docs/src/components/InstallationContent.astro')
   const installationSource = await readFile(installationPath, 'utf8')
   if (!installationSource.includes('<QuickStart name="text-bloom" framework={framework} />')) {
-    throw new Error('InstallationGuide.astro: usage must reuse the selected framework quick start')
+    throw new Error(
+      'InstallationContent.astro: usage must reuse the selected framework quick start',
+    )
   }
 }
 

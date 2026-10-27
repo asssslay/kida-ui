@@ -92,7 +92,14 @@ try {
       assert(html.includes(`data-framework="vue"`), `${path}: Vue distribution is missing`)
       assert(html.includes(`/r/vue/${name}.json`), `${path}: incorrect registry command`)
       const marker = name === 'scribble-highlight' ? 'scribble' : name
-      assert(html.includes(`data-kida-${marker}`), `${path}: Vue demo did not render on the server`)
+      if (name === 'collapse') {
+        assert(html.includes('aria-expanded="false"'), `${path}: Collapse must start closed`)
+      } else {
+        assert(
+          html.includes(`data-kida-${marker}`),
+          `${path}: Vue demo did not render on the server`,
+        )
+      }
       assert(
         html.includes(`aria-label="Documentation framework"`),
         `${path}: framework switch is missing`,

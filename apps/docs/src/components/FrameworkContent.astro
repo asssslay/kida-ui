@@ -1,0 +1,12 @@
+---
+interface Props {
+  framework?: 'react' | 'vue'
+}
+const { framework = 'react' } = Astro.props
+---
+
+<div data-framework-content data-framework={framework}>
+  <div id="framework-article" data-framework-article>
+    <slot />
+  </div>
+</div>

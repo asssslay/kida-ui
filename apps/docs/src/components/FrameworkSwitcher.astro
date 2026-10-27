@@ -5,9 +5,21 @@ interface Props {
   frameworks?: ('react' | 'vue')[]
 }
 const { page, framework, frameworks = ['react', 'vue'] } = Astro.props
+const other = framework === 'react' ? 'vue' : 'react'
 ---
 
-<nav class="framework-switcher" aria-label="Documentation framework">
-  {frameworks.includes('react') && <a href={`/docs/${page}`} aria-current={framework === 'react' ? 'page' : undefined}>React</a>}
-  {frameworks.includes('vue') && <a href={`/docs/vue/${page}`} aria-current={framework === 'vue' ? 'page' : undefined}>Vue <span class="framework-badge">Experimental</span></a>}
-</nav>
+<div class="framework-switcher" role="group" aria-label="Documentation framework" data-framework-page={page} data-frameworks={frameworks.join(' ')}>
+  <button type="button" data-framework-choice="react" aria-controls="framework-article" aria-pressed={framework === 'react'} hidden={!frameworks.includes('react')} disabled>React</button>
+  <button type="button" data-framework-choice="vue" aria-controls="framework-article" aria-pressed={framework === 'vue'} hidden={!frameworks.includes('vue')} disabled>Vue</button>
+</div>
+<p class="framework-preview-note" hidden={page === 'installation' || frameworks.length < 2}>Shared live previews stay running while you switch code examples and API documentation.</p>
+<p class="framework-status" data-framework-status role="status"></p>
+{frameworks.includes(other) && (
+  <noscript>
+    <p>JavaScript is required to switch documentation in place. <a href={other === 'vue' ? `/docs/vue/${page}` : `/docs/${page}`}>Read the {other === 'vue' ? 'Vue' : 'React'} documentation.</a></p>
+  </noscript>
+)}
+
+<script>
+  import '../lib/docs-navigation'
+</script>

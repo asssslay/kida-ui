@@ -2,12 +2,13 @@ import Demo from '../../components/Demo.astro'
 import Distribution from '../../components/Distribution.astro'
 import QuickStart from '../../components/QuickStart.astro'
 import Basic from '../../demos/scribble-highlight-basic.vue'
+import Circle from '../../demos/scribble-highlight-circle.vue'
 
-<Demo name="scribble-highlight-basic" framework="vue" title="ScribbleHighlight" hideSource>
+<Demo name="scribble-highlight-basic" framework="vue" title="Underline" hideSource>
   <Basic client:visible={{ rootMargin: '200px' }} />
 </Demo>
 
-Place content in the default slot. This Vue adapter is experimental. Native attributes use Vue spelling, and component refs expose `element`.
+Place content in the default slot.. Native attributes use Vue spelling, and component refs expose `element`.
 
 ## Quick start
 
@@ -16,6 +17,10 @@ Place content in the default slot. This Vue adapter is experimental. Native attr
 <QuickStart name="scribble-highlight" framework="vue" />
 
 ## Customization
+
+<Demo name="scribble-highlight-circle" framework="vue" title="Mint circle">
+  <Circle client:visible={{ rootMargin: '200px' }} />
+</Demo>
 
 Use `variant="circle"` for a surrounding mark. Set `--kida-scribble-color`, `--kida-scribble-width`, and `--kida-scribble-duration` on the root to customize the stroke.
 
