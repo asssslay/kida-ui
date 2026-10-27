@@ -15,20 +15,24 @@
     "format": "biome check --write .",
     "registry:build": "node scripts/build-registry.mjs",
     "registry:check": "node scripts/build-registry.mjs --check",
-    "registry:check-copy": "node scripts/check-copy-source.mjs",
+    "registry:check-copy": "node scripts/check-copy-source.mjs && node scripts/check-vue-copy-source.mjs",
     "docs:check-examples": "node scripts/check-doc-examples.mjs",
     "docs:check-dev": "node scripts/check-docs-dev.mjs",
     "gate:agnostic": "node scripts/check-framework-deps.mjs",
     "check:vue-consumer": "pnpm --filter @kida-ui/vue check:consumer",
-    "verify": "pnpm lint && pnpm registry:check && pnpm registry:check-copy && pnpm docs:check-examples && pnpm typecheck && pnpm test && pnpm build && pnpm check:vue-consumer && pnpm docs:check-dev && pnpm gate:agnostic",
+    "verify": "pnpm lint && pnpm registry:check && pnpm registry:check-copy && pnpm docs:check-examples && pnpm typecheck && pnpm test && pnpm build && pnpm check:vue-consumer && pnpm docs:check-dev && pnpm docs:test-browser && pnpm gate:agnostic",
     "changeset": "changeset",
-    "release": "turbo run build && changeset publish"
+    "release": "turbo run build && changeset publish",
+    "test:cross-browser": "turbo run build --filter=@kida-ui/react --filter=@kida-ui/vue && pnpm --filter @kida-ui/react test:cross-browser && pnpm --filter @kida-ui/vue test:cross-browser",
+    "docs:test-browser": "node scripts/check-docs-browser.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.9",
     "@changesets/cli": "3.0.0",
+    "eslint": "10.2.0",
     "publint": "0.3.23",
     "shadcn": "4.20.1",
+    "shadcn-vue": "2.8.2",
     "turbo": "2.10.11",
     "typescript": "6.0.3"
   }

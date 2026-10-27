@@ -1,7 +1,7 @@
 {
   "name": "@kida-ui/vue",
   "version": "0.0.0",
-  "description": "Experimental Vue 3 adapters for the Kida UI animation catalog.",
+  "description": "Vue 3 adapters for the Kida UI animation catalog.",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
@@ -24,8 +24,10 @@
     "build": "vite build && vue-tsc -p tsconfig.build.json && node scripts/finalize-types.mjs",
     "dev": "pnpm build && vite build --watch --emptyOutDir false",
     "typecheck": "vue-tsc --noEmit",
-    "test": "pnpm build && vitest run --config vitest.ssr.config.ts && vitest run",
-    "check:consumer": "node ../../scripts/check-vue-consumer.mjs"
+    "test": "pnpm build && vitest run --config vitest.ssr.config.ts && vitest run && pnpm test:touch",
+    "check:consumer": "node ../../scripts/check-vue-consumer.mjs",
+    "test:cross-browser": "vitest run --config vitest.cross-browser.config.ts",
+    "test:touch": "vitest run --config vitest.touch.config.ts"
   },
   "dependencies": {
     "@kida-ui/motion": "workspace:*",

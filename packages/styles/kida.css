@@ -7,11 +7,13 @@
 @import "./components/reveal.css";
 @import "./components/collapse.css";
 @import "./components/text-bloom.css";
+@import "./components/image-text.css";
 @import "./components/magnetic.css";
 @import "./components/scribble-highlight.css";
 @import "./components/photo-pile.css";
 @import "./components/sticker-burst.css";
 @import "./components/dual-wave.css";
+@import "./components/space-type.css";
 
 /*
  * The data-attribute contract (ADR D6).

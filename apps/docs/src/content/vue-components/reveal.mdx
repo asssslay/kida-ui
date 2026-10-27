@@ -1,0 +1,67 @@
+import Demo from '../../components/Demo.astro'
+import Distribution from '../../components/Distribution.astro'
+import QuickStart from '../../components/QuickStart.astro'
+import Basic from '../../demos/reveal-basic.vue'
+import Options from '../../demos/reveal-options.vue'
+
+<Demo name="reveal-basic" framework="vue" title="Basic" hideSource>
+  <Basic client:visible={{ rootMargin: '200px' }} />
+</Demo>
+
+Place content in the default slot.. Native attributes use Vue spelling, and component refs expose `element`.
+
+## Quick start
+
+<Distribution name="reveal" framework="vue" />
+
+<QuickStart name="reveal" framework="vue" />
+
+The copy-source command includes the stylesheet that keeps server-rendered content visible under
+reduced motion before hydration. Package consumers must import `@kida-ui/styles/kida.css` once.
+
+## Customization
+
+<Demo name="reveal-options" framework="vue" title="Travel, timing and repetition">
+  <Options client:visible={{ rootMargin: '200px' }} />
+</Demo>
+
+Bind Boolean options explicitly, such as `:once="false"`. Use `x`, `y`, `scale`, `duration`, and `ease` to tune the entrance.
+
+## API
+
+### Props
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `y` | `number` | `8` | Vertical travel in px. Positive starts below and rises. |
+| `x` | `number` | `0` | Horizontal travel in px. |
+| `scale` | `number` | `1` | Starting scale. |
+| `duration` | `number` | `0.5` | Seconds. |
+| `delay` | `number` | `0` | Seconds. |
+| `ease` | `RevealEase` | `[0.16, 1, 0.3, 1]` | The same curve as `--kida-ease-out`. |
+| `once` | `boolean` | `true` | Animate only the first entry into the viewport. |
+| `amount` | `'some' \| 'all' \| number` | `0.3` | How much must be visible before it fires. |
+| `margin` | `string` | — | Margin around the viewport, CSS-style. |
+| `as` | `keyof HTMLElementTagNameMap` | `'div'` | Element to render. |
+| `class` | Vue class binding | — | Passed straight through. |
+| `style` | Vue style binding | — | Merged over the pre-animation state. |
+
+Safe native attributes, event handlers, and native Vue class/style bindings are passed to the root.
+
+### Easing values
+
+`ease` accepts `'linear'`, `'easeIn'`, `'easeOut'`, `'easeInOut'`, a four-number cubic
+bézier, or your own `(t: number) => number`. The set is deliberately narrower than what the
+underlying engine accepts.
+
+## Accessibility and input behavior
+
+Reveal does not change the semantics or focus order of its content. Server-rendered output includes
+the starting visual state, so hydration does not flash visible content before the animation begins.
+Under `prefers-reduced-motion: reduce`, the required stylesheet makes content visible before
+hydration, and the controller skips animation when it mounts.
+
+## Troubleshooting
+
+Changing a motion option cleans up the current controller and re-arms Reveal with the new behavior.
+Equivalent inline cubic-bézier tuples are compared by value and do not restart the animation.

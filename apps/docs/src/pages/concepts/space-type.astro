@@ -1,0 +1,28 @@
+---
+import { SpaceTypeSection } from '../../demos/space-type-playground.react'
+import Base from '../../layouts/Base.astro'
+---
+
+<Base
+  title="Space Type — Kida UI component study"
+  description="Play with text, colors, rows, speed, radius, and longitude in Kida UI's Space Type prototype."
+>
+  <main id="main" class="space-type-study">
+    <a class="space-type-study-back" href="/docs">← Component library</a>
+    <SpaceTypeSection client:load />
+  </main>
+</Base>
+
+<style>
+  .space-type-study {
+    max-width: 60rem;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+  }
+
+  .space-type-study-back {
+    color: var(--muted);
+    font-size: 0.8rem;
+    text-decoration: none;
+  }
+</style>

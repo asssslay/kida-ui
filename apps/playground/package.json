@@ -8,15 +8,16 @@
     "build": "vite build",
     "preview": "vite preview",
     "test:dual-wave": "pnpm --filter @kida-ui/motion exec vitest run src/dual-wave-math.test.ts && pnpm --filter @kida-ui/react exec vitest run src/dual-wave.test.tsx",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:image-text": "vitest run src/image-text"
   },
   "dependencies": {
-    "@fontsource-variable/instrument-sans": "5.3.0",
     "@kida-ui/motion": "workspace:*",
     "@kida-ui/react": "workspace:*",
     "@kida-ui/styles": "workspace:*",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "@fontsource-variable/instrument-sans": "5.3.0"
   },
   "devDependencies": {
     "@types/node": "^26.4.0",
@@ -24,6 +25,10 @@
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^6.1.0",
     "typescript": "6.0.3",
-    "vite": "^8.2.2"
+    "vite": "^8.2.2",
+    "@vitest/browser-playwright": "4.1.11",
+    "playwright": "^1.62.1",
+    "vitest": "4.1.11",
+    "vitest-browser-react": "^2.2.0"
   }
 }

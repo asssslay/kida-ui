@@ -52,11 +52,29 @@ tests so one mismatch cannot hide the remaining comparisons and their artifacts.
 
 ## Scope
 
-The experimental Vue milestone also compares all seven components against the built React adapter
-in the same Chromium session at both viewport widths. These settled reduced-motion captures use
-fixed, identical content and integer geometry; exact decoded pixel equality is required. The comparison has
-no stored baselines to update. Run it with `pnpm --filter @kida-ui/vue test`. The React Linux
-baselines remain the independent styling regression gate.
+The Vue adapter also compares all seven components against the built React adapter
+in the same browser session at both viewport widths. Chromium runs under `pnpm verify`;
+Firefox/WebKit run under `pnpm test:cross-browser` and their separate CI jobs. These settled
+reduced-motion captures use fixed, identical content and integer geometry; exact decoded pixel
+equality is required. The comparison has no stored baselines to update. Run the Chromium checks
+with `pnpm --filter @kida-ui/vue test`. The React Linux baselines remain the independent styling
+regression gate. The parity host window is larger than either test viewport so Vitest
+does not scale its iframe; captures must contain one image pixel per CSS pixel. This prevents
+rotated cards and SVG strokes from being compared at a fractional raster scale. Chromium uses
+software rasterization for these adapter checks to avoid GPU shadow dithering between captures;
+the independent Linux React screenshot environment is unchanged.
+
+After building, `pnpm docs:test-browser` additionally compares production documentation demos
+in the same browser at mobile and desktop widths. It requires matching demo lists and checks
+content, semantic markup, computed styles, and layout relative to each stage (within 0.05 CSS
+pixels), including expanded Collapse and all customization variants.
+This catches drift between authored demos that identical adapter fixtures cannot detect. The
+adapter tests above remain the pixel comparison gate. Failed docs comparisons save screenshots
+and rendered element diagnostics under `apps/docs/.vitest-attachments/framework`, uploaded by CI.
+Native Vue demos are tested through fresh server-rendered compatibility entries, independently
+of the in-place selector. Selecting another framework must preserve the existing live preview
+nodes and state. There are no stored baselines to update. CI runs this check in Chromium, Firefox,
+and WebKit.
 
 The mobile and desktop galleries cover all seven components in deterministic settled states, on
 controlled light and dark surfaces. The same visual project also runs axe with color contrast
@@ -68,6 +86,17 @@ Responsive browser tests separately verify:
 - PhotoPile compact sizing, focus visibility, and absence of page-level overflow;
 - Collapse height remeasurement after content wraps in a narrower container; and
 - TextBloom wrapping, text preservation, and absence of horizontal overflow.
+
+SpaceType has separate responsive browser checks at mobile and desktop widths, on light and dark
+surfaces with color contrast enabled, in both normal and reduced motion. Its behavioral suite also
+samples the full rotation and wave at minimum and maximum radii. These checks do not replace a
+reviewed Linux screenshot baseline; adding SpaceType to the stored visual references remains a
+pre-alpha task.
+
+ImageText has mobile/desktop geometry, text-only markup, decoded licensed-photo rendering,
+reduced-motion, and contrast-enabled axe checks in `image-text.visual.test.tsx`. The website
+shows only the approved white composition. A stored ImageText screenshot must still be reviewed
+in the canonical Linux environment before public alpha; no macOS baseline is introduced.
 
 DualWave's browser suite checks that the stage's parts stay inside it at mobile and desktop widths,
 without page overflow, and that long titles stay inside their columns. These checks do not replace a

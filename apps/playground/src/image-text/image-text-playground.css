@@ -1,0 +1,17 @@
+main.photo-type-page {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  min-height: 100svh;
+  background: #fff;
+}
+
+.photo-type-shell {
+  padding: 0;
+  border: 0;
+  background: #fff;
+}
+
+.photo-type-shell .demo-image-text {
+  padding: clamp(20px, 4vw, 64px);
+}

@@ -23,6 +23,9 @@ const vueDirectory = join(root, 'packages/vue')
 const fixture = await mkdtemp(join(tmpdir(), 'kida-vue-consumer-'))
 const demos = [
   'reveal-basic',
+  'reveal-options',
+  'text-bloom-characters',
+  'scribble-highlight-circle',
   'collapse-basic',
   'text-bloom-basic',
   'magnetic-basic',

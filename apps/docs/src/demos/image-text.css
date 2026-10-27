@@ -1,0 +1,22 @@
+.demo-image-text {
+  width: 100%;
+  min-width: 0;
+  padding: clamp(1rem, 3vw, 2.5rem);
+  background: #fff;
+  color: #211c24;
+  container-type: inline-size;
+}
+
+.demo-image-text [data-kida-image-text],
+.docs-reference-page .demo-image-text [data-kida-image-text] {
+  --kida-image-text-font-size: clamp(2.25rem, 8.7cqw, 7.375rem);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-family: "Instrument Sans Variable", "Avenir Next", ui-sans-serif, system-ui, sans-serif;
+  font-size: var(--kida-image-text-font-size);
+  font-weight: 520;
+  line-height: 1.06;
+  letter-spacing: -0.065em;
+  text-align: left;
+}

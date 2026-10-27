@@ -1,0 +1,36 @@
+---
+import type { MarkdownHeading } from 'astro'
+import DocsLayout from '../layouts/DocsLayout.astro'
+import FrameworkContent from './FrameworkContent.astro'
+import InstallationContent from './InstallationContent.astro'
+
+interface Props {
+  framework?: 'react' | 'vue'
+}
+const { framework = 'react' } = Astro.props
+const headings = [
+  { depth: 2, slug: 'before-you-start', text: 'Before you start' },
+  { depth: 2, slug: 'prepare-your-project', text: 'Prepare your project' },
+  { depth: 3, slug: 'start-a-new-project', text: 'Start a new project' },
+  { depth: 3, slug: 'use-an-existing-project', text: 'Use an existing project' },
+  { depth: 2, slug: 'install-a-component', text: 'Install a component' },
+  { depth: 2, slug: 'use-the-component', text: 'Use the component' },
+  { depth: 2, slug: 'understand-the-copied-files', text: 'Understand the copied files' },
+  { depth: 2, slug: 'copy-manually', text: 'Copy manually' },
+  { depth: 2, slug: 'troubleshooting', text: 'Troubleshooting' },
+  { depth: 2, slug: 'verify-your-installation', text: 'Verify your installation' },
+] satisfies MarkdownHeading[]
+---
+
+<DocsLayout
+  title="Installation"
+  description="Copy a Kida animation into your project, then customize the source as your own."
+  currentPath="/docs/installation"
+  framework={framework}
+  frameworkPage="installation"
+  headings={headings}
+>
+  <FrameworkContent framework={framework}>
+    <InstallationContent framework={framework} />
+  </FrameworkContent>
+</DocsLayout>

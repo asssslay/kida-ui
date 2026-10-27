@@ -37,6 +37,12 @@ html {
   scroll-padding-top: 5rem;
 }
 
+/* Route changes restore scroll instantly; animating it makes the restored page
+   visibly scroll into place. */
+html[data-astro-transition] {
+  scroll-behavior: auto;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -552,6 +558,16 @@ a {
   min-height: 8rem;
 }
 
+.demo[data-demo="space-type-basic"] .demo-stage,
+.demo[data-demo="space-type-playground"] .demo-stage {
+  display: block;
+  padding: 1.25rem;
+}
+
+.component-preview[data-component="space-type"] {
+  padding: 0.5rem;
+}
+
 .demo .code {
   margin: 0;
 }
@@ -1042,6 +1058,25 @@ a {
   justify-items: center;
   gap: 1.25rem;
   width: 100%;
+}
+
+.demo[data-demo="image-text-basic"] .demo-stage {
+  display: block;
+  padding: 0;
+  background: #fff;
+}
+
+.component-preview[data-component="image-text"] {
+  padding: 0;
+  background: #fff;
+}
+
+.component-preview[data-component="image-text"] .demo-image-text {
+  padding: 1.5rem;
+}
+
+.component-preview[data-component="image-text"] [data-kida-image-text] {
+  --kida-image-text-font-size: clamp(1.75rem, 11cqw, 3rem);
 }
 
 .demo-text-bloom h2 {
@@ -2446,4 +2481,66 @@ a {
   .docs-reference-page .prose table {
     background: rgb(255 255 255 / 62%);
   }
+}
+
+.framework-switcher {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1.5rem 0 2rem;
+}
+.framework-switcher button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--line, #ddd0d8);
+  border-radius: 999px;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+/* Pages list only the adapters they ship; the switcher itself stays mounted. */
+.framework-switcher button[hidden] {
+  display: none;
+}
+.framework-switcher button[aria-pressed="true"] {
+  background: var(--ink, #211c24);
+  color: #fffafb;
+}
+.framework-switcher button:focus-visible {
+  outline: 2px solid #6d52a8;
+  outline-offset: 4px;
+}
+
+[data-framework-article] {
+  overflow-anchor: none;
+}
+
+.framework-preview-note,
+.framework-status {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* Keep the empty live region in the accessibility tree; screen readers often
+   miss a status region that appears in the same moment as its text. */
+.framework-status:empty {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* With Vue saved, the server-rendered React text is replaced right after load.
+   Hide the authored text and section links until then; previews stay visible. */
+html[data-framework-pending] [data-framework-article] > :not([data-demo]),
+html[data-framework-pending] [data-framework-article] [data-demo] > :not(.demo-stage),
+html[data-framework-pending] .toc ul {
+  visibility: hidden;
 }

@@ -5,6 +5,113 @@
  */
 export const registryDefinitions = [
   {
+    name: 'image-text',
+    title: 'ImageText',
+    description: 'Moves a photograph through one stationary, selectable text element.',
+    category: 'text',
+    package: {
+      name: '@kida-ui/react',
+      exportName: 'ImageText',
+      styleImports: ['@kida-ui/styles/components/image-text.css'],
+    },
+    dependencies: [],
+    files: [
+      {
+        source: 'packages/react/src/image-text.tsx',
+        type: 'registry:ui',
+        target: '@ui/kida/image-text.tsx',
+        styleImport: './image-text.css',
+        importReplacements: {
+          '@kida-ui/motion': './motion/image-text.js',
+        },
+      },
+      {
+        source: 'packages/react/src/compose-refs.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/compose-refs.ts',
+      },
+      {
+        source: 'packages/react/src/use-isomorphic-layout-effect.ts',
+        type: 'registry:hook',
+        target: '@ui/kida/use-isomorphic-layout-effect.ts',
+      },
+      {
+        source: 'packages/motion/src/image-text.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/image-text.ts',
+      },
+      {
+        source: 'packages/motion/src/reduced-motion.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/reduced-motion.ts',
+      },
+      {
+        source: 'packages/styles/components/image-text.css',
+        type: 'registry:ui',
+        target: '@ui/kida/image-text.css',
+        imports: ['./tokens.css'],
+      },
+      {
+        source: 'packages/styles/tokens.css',
+        type: 'registry:ui',
+        target: '@ui/kida/tokens.css',
+      },
+    ],
+    frameworks: ['react'],
+  },
+  {
+    name: 'space-type',
+    frameworks: ['react'],
+    title: 'SpaceType',
+    description: 'Wraps a phrase around rotating rings with a soft radial wave.',
+    category: 'text',
+    package: {
+      name: '@kida-ui/react',
+      exportName: 'SpaceType',
+      styleImports: ['@kida-ui/styles/components/space-type.css'],
+    },
+    dependencies: [],
+    files: [
+      {
+        source: 'packages/react/src/space-type.tsx',
+        type: 'registry:ui',
+        target: '@ui/kida/space-type.tsx',
+        styleImport: './space-type.css',
+        importReplacements: { '@kida-ui/motion': './motion/space-type.js' },
+      },
+      {
+        source: 'packages/react/src/compose-refs.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/compose-refs.ts',
+      },
+      {
+        source: 'packages/react/src/use-isomorphic-layout-effect.ts',
+        type: 'registry:hook',
+        target: '@ui/kida/use-isomorphic-layout-effect.ts',
+      },
+      {
+        source: 'packages/styles/components/space-type.css',
+        type: 'registry:ui',
+        target: '@ui/kida/space-type.css',
+      },
+      {
+        source: 'packages/motion/src/space-type.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/space-type.ts',
+      },
+      {
+        source: 'packages/motion/src/space-type-geometry.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/space-type-geometry.ts',
+      },
+      {
+        source: 'packages/motion/src/reduced-motion.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/reduced-motion.ts',
+      },
+    ],
+  },
+  {
     name: 'reveal',
     title: 'Reveal',
     description: 'Animates its children in when they enter the viewport.',
@@ -299,6 +406,7 @@ export const registryDefinitions = [
   },
   {
     name: 'dual-wave',
+    frameworks: ['react'],
     title: 'DualWave',
     description:
       'Waves two text columns past a photo that changes as a tile mosaic or a clean cut.',

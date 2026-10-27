@@ -1,4 +1,10 @@
 {
   "extends": "../../tsconfig.base.json",
-  "include": ["src", "tsdown.config.ts", "vitest.config.ts", "vitest.visual.config.ts"]
+  "include": [
+    "src",
+    "tsdown.config.ts",
+    "vitest.config.ts",
+    "vitest.visual.config.ts",
+    "vitest.cross-browser.config.ts"
+  ]
 }
