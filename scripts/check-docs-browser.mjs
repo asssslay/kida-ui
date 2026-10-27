@@ -813,6 +813,7 @@ try {
   for (const [name, demo] of [
     ['image-text', 'image-text-basic'],
     ['space-type', 'space-type-playground'],
+    ['glow-highlight', 'glow-highlight-playground'],
     ['dual-wave', 'dual-wave-playground'],
   ]) {
     await sidebar(name, 'react')

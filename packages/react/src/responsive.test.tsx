@@ -1,9 +1,11 @@
 import '@kida-ui/styles/kida.css'
 import axe from 'axe-core'
+import type { CSSProperties } from 'react'
 import { afterEach, expect, test } from 'vitest'
 import { commands, page } from 'vitest/browser'
 import { render } from 'vitest-browser-react'
 import { Collapse } from './collapse.js'
+import { GlowHighlight } from './glow-highlight.js'
 import { PhotoPile, type PhotoPilePhoto } from './photo-pile.js'
 import { SpaceType } from './space-type.js'
 import { TextBloom } from './text-bloom.js'
@@ -91,6 +93,56 @@ test.each([false, true])(
     const front = dark.querySelector<HTMLElement>('[data-kida-space-type-face="front"]')
     if (!front) throw new Error('Dark surface text is missing')
     expect(getComputedStyle(front).color).toBe('rgb(255, 250, 251)')
+    const results = await axe.run(document.body)
+    expect(results.violations).toEqual([])
+    await view.unmount()
+  },
+)
+
+test.each([false, true])(
+  'GlowHighlight stays legible on light and dark surfaces at both widths (reduced motion: %s)',
+  async (reduced) => {
+    await commands.setReducedMotion(reduced)
+    const view = await render(
+      <main style={{ maxWidth: 760, margin: 0, padding: 0 }}>
+        <h1 style={{ margin: 0, fontSize: 'clamp(2rem, 9vw, 4rem)', lineHeight: 1.05 }}>
+          Calm at rest.{' '}
+          <GlowHighlight trigger="manual" active>
+            A playful phrase that wraps
+          </GlowHighlight>
+        </h1>
+        <p style={{ margin: 0, padding: '1rem', background: '#211c24', color: '#fffafb' }}>
+          After{' '}
+          <GlowHighlight
+            trigger="manual"
+            active
+            finish="sticker"
+            style={
+              {
+                '--kida-glow-core': '#8f2350',
+                '--kida-glow-rim': '#c23a6e',
+              } as CSSProperties
+            }
+          >
+            dark
+          </GlowHighlight>
+        </p>
+      </main>,
+    )
+    const roots = [...document.querySelectorAll<HTMLElement>('[data-kida-glow]')]
+    expect(roots).toHaveLength(2)
+    for (const width of [1280, 390]) {
+      await page.viewport(width, width === 390 ? 844 : 900)
+      for (const root of roots) {
+        await expect.poll(() => root.dataset.state).toBe('on')
+        const layer = root.querySelector<HTMLElement>('[data-kida-glow-layer]')
+        expect(layer && getComputedStyle(layer).visibility).toBe('visible')
+      }
+      // The traced layer reaches past the text; it must not make the page scroll sideways.
+      expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(
+        document.documentElement.clientWidth,
+      )
+    }
     const results = await axe.run(document.body)
     expect(results.violations).toEqual([])
     await view.unmount()

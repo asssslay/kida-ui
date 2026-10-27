@@ -1,6 +1,7 @@
 import '@kida-ui/styles/kida.css'
 import { Collapse, Reveal, useReducedMotion } from '@kida-ui/react'
 import { useState } from 'react'
+import { GlowHighlightSection } from '../../docs/src/demos/glow-highlight-playground.react'
 import { SpaceTypeSection } from '../../docs/src/demos/space-type-playground.react'
 import { DualWavePlayground } from './dual-wave'
 import { ImageTextPlayground } from './image-text/image-text-playground'
@@ -119,6 +120,7 @@ export function App() {
       </header>
       <ImageTextPlayground />
       <SpaceTypeSection />
+      <GlowHighlightSection />
       <DualWavePlayground />
       <CollapseSection />
       <div className="spacer">↓ scroll ↓</div>

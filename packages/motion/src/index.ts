@@ -9,6 +9,16 @@ export {
   getDualWaveMosaicRows,
 } from './dual-wave.js'
 export {
+  GLOW_PALETTES,
+  type GlowHighlightControls,
+  type GlowHighlightFinish,
+  type GlowHighlightOptions,
+  type GlowHighlightPalette,
+  type GlowHighlightTrigger,
+  type GlowPaletteColors,
+  glowHighlight,
+} from './glow-highlight.js'
+export {
   type ImageTextControls,
   type ImageTextOptions,
   imageText,

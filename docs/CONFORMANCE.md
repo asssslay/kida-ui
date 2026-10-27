@@ -21,6 +21,7 @@ should be added.
 | StickerBurst | Browser | Browser | Listener cleanup via Strict Mode | Stable layout inputs | Shared browser gate | Native click path; decoration hidden |
 | DualWave (React only) | Browser + math unit tests | Browser | Observer, listener, and frame cleanup via Strict Mode | Items, layout, grid, options in place, `index` | Browser | Keyboard, click, wheel; live region announces each item |
 | SpaceType (React only) | Browser + geometry unit tests | Browser | Observer and animation cleanup | Text, rows, speed, pause, radius, longitude, colors | Browser | Authored phrase exposed once |
+| GlowHighlight (React only) | Browser + ring/timing unit tests | Browser, including mid-flight | Reversal, unmount, Strict Mode, frame loop stops | Finish, palette, spread, duration, trigger, active, font size | Browser | Text exposed once; traced copy hidden and inert; agent notes checked against the API and docs |
 
 Cross-component gates also verify:
 
@@ -35,9 +36,11 @@ Responsive and visual evidence is defined in `VISUAL_TESTING.md`. It adds mobile
 geometry checks, deterministic settled-state screenshots for the seven shared components, controlled
 light/dark surfaces, and a color-contrast-enabled axe pass. SpaceType additionally has responsive
 light/dark checks in normal and reduced motion, empty/single/long content coverage, independent
-instances, and hidden-document playback checks. DualWave additionally has browser checks for mobile
-and desktop geometry, empty/single/long item lists, the first frame after a layout switch, and
-Frame's instant swap. Their stored Linux screenshot baselines are still required before public alpha.
+instances, and hidden-document playback checks. GlowHighlight has responsive light/dark checks in
+normal and reduced motion, including a wrapped highlight that must not cause horizontal overflow
+at mobile width. DualWave additionally has browser checks for mobile and desktop geometry,
+empty/single/long item lists, the first frame after a layout switch, and Frame's instant swap.
+Their stored Linux screenshot baselines are still required before public alpha.
 
 Run the behavioral evidence with `pnpm --filter @kida-ui/react test` and the responsive/visual
 evidence with `pnpm --filter @kida-ui/react test:visual`. The repository-wide release candidate gate
@@ -66,15 +69,16 @@ reference images and does not replace the existing authoritative Linux React bas
 Copied-source conformance installs every Vue registry item through the pinned shadcn-vue CLI,
 then tests a combined installation with a custom UI alias. The displayed quick starts typecheck,
 bundle, and render deterministically in Node without Kida packages or workspace aliases.
-Both framework catalogs and all 16 items must match the built documentation endpoints.
+Both framework catalogs and all 18 items must match the built documentation endpoints.
 
 The packed-consumer check in `DISTRIBUTION.md` verifies the displayed demos, production bundle,
 declaration resolution, and server imports. `/docs/<name>` supplies the live preview and framework-specific examples and API notes.
-SpaceType, ImageText, and DualWave currently have only React adapters; their pages hide the Vue choice. The
-seven shared Vue components are supported to the same standard as React. CI defines Firefox/WebKit
-behavior gates for both adapters, in addition to Chromium, with Chromium/WebKit touch emulation.
-Manual real touch-device and screen-reader checks are recommended. See
-[the release checklist](RELEASE_CHECKLIST.md) for commands and the manual review guide.
+SpaceType, GlowHighlight, ImageText, and DualWave currently have only React adapters; their pages
+hide the Vue choice. The seven shared Vue components are supported to the same standard as React.
+CI defines Firefox/WebKit behavior gates for both adapters, in addition to Chromium, with
+Chromium/WebKit touch emulation. Manual real touch-device and screen-reader checks are
+recommended. See [the release checklist](RELEASE_CHECKLIST.md) for commands and the manual review
+guide.
 
 `pnpm docs:check-dev` starts an isolated Astro dev server and checks Vue/React docs and the home
 page, including the Vue client module. A version-pinned pnpm patch disables React Refresh only in

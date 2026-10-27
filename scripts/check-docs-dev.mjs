@@ -15,7 +15,8 @@ const vueComponents = [
   'scribble-highlight',
   'sticker-burst',
 ]
-const components = [...vueComponents, 'space-type', 'image-text', 'dual-wave']
+const reactOnlyComponents = ['space-type', 'glow-highlight', 'image-text', 'dual-wave']
+const components = [...vueComponents, ...reactOnlyComponents]
 const docs = join(root, 'apps/docs')
 const require = createRequire(join(docs, 'package.json'))
 const { dev } = await import(pathToFileURL(require.resolve('astro')).href)
@@ -47,10 +48,10 @@ try {
     const html = await response.text()
     assert.equal(response.status, 200, `${path}: development SSR failed`)
     if (path === '/' || path === '/docs') {
-      assert(html.includes('href="/docs/space-type"'), `${path}: SpaceType catalog link is missing`)
-      assert(html.includes('data-component="space-type"'), `${path}: SpaceType preview is missing`)
-      assert(html.includes('href="/docs/dual-wave"'), `${path}: DualWave catalog link is missing`)
-      assert(html.includes('data-component="dual-wave"'), `${path}: DualWave preview is missing`)
+      for (const name of reactOnlyComponents) {
+        assert(html.includes(`href="/docs/${name}"`), `${path}: ${name} catalog link is missing`)
+        assert(html.includes(`data-component="${name}"`), `${path}: ${name} preview is missing`)
+      }
     }
     if (path === '/') {
       assert(
@@ -66,6 +67,20 @@ try {
       assert(
         !html.includes('href="/docs/vue/space-type"'),
         'SpaceType links to an unavailable adapter',
+      )
+    }
+    if (path === '/docs/glow-highlight') {
+      assert(html.includes('data-kida-glow'), 'React GlowHighlight did not render on the server')
+      assert(html.includes('space-type-panel'), 'GlowHighlight customization controls are missing')
+      assert(
+        html.includes('data-demo="glow-highlight-finishes"'),
+        'GlowHighlight code customization example is missing',
+      )
+      assert(html.includes('/r/glow-highlight.json'), 'GlowHighlight installation link is missing')
+      assert(html.includes('React only'), 'GlowHighlight framework availability is missing')
+      assert(
+        !html.includes('href="/docs/vue/glow-highlight"'),
+        'GlowHighlight links to an unavailable adapter',
       )
     }
     if (path === '/docs/dual-wave') {
@@ -94,11 +109,12 @@ try {
       )
     }
     if (path.startsWith('/docs/vue/')) {
-      assert(
-        !html.includes('href="/docs/vue/space-type"') &&
-          !html.includes('href="/docs/vue/dual-wave"'),
-        `${path}: unavailable Vue component in navigation`,
-      )
+      for (const name of reactOnlyComponents) {
+        assert(
+          !html.includes(`href="/docs/vue/${name}"`),
+          `${path}: unavailable Vue component in navigation`,
+        )
+      }
     }
     if (path.startsWith('/docs/vue/') && path !== '/docs/vue/installation') {
       const name = path.split('/').at(-1)

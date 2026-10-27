@@ -30,7 +30,9 @@
         "$TURBO_ROOT$/apps/docs/src/demos/dual-wave.css",
         "$TURBO_ROOT$/apps/docs/public/demo/dual-wave/**",
         "$TURBO_ROOT$/apps/docs/src/demos/space-type-playground.react.tsx",
-        "$TURBO_ROOT$/apps/docs/src/demos/space-type.css"
+        "$TURBO_ROOT$/apps/docs/src/demos/space-type.css",
+        "$TURBO_ROOT$/apps/docs/src/demos/glow-highlight-playground.react.tsx",
+        "$TURBO_ROOT$/apps/docs/src/demos/glow-highlight.css"
       ],
       "outputs": ["dist/**"]
     },
@@ -40,7 +42,8 @@
         "$TURBO_DEFAULT$",
         "$TURBO_ROOT$/apps/docs/src/demos/dual-wave-playground.react.tsx",
         "$TURBO_ROOT$/apps/docs/src/demos/dual-wave-photos.ts",
-        "$TURBO_ROOT$/apps/docs/src/demos/space-type-playground.react.tsx"
+        "$TURBO_ROOT$/apps/docs/src/demos/space-type-playground.react.tsx",
+        "$TURBO_ROOT$/apps/docs/src/demos/glow-highlight-playground.react.tsx"
       ]
     },
     "@kida-ui/vue#typecheck": { "dependsOn": ["build"] },

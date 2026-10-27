@@ -568,6 +568,44 @@ a {
   padding: 0.5rem;
 }
 
+.demo[data-demo="glow-highlight-playground"] .demo-stage {
+  display: block;
+  padding: 1.25rem;
+}
+
+/* Finishes in code: one finish per line, sized like running headings. */
+.demo .demo-stage .demo-glow-finishes {
+  display: grid;
+  gap: 0.9rem;
+  width: 100%;
+  padding: clamp(1rem, 4vw, 2rem) 0.5rem;
+  text-align: center;
+}
+
+.demo .demo-stage .demo-glow-finishes p {
+  margin: 0;
+  color: var(--fg);
+  font-size: clamp(1.5rem, 4.5vw, 2.25rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.25;
+}
+
+/* After dark: the same component on an ink surface, recolored with custom properties.
+   Scoped to the stage so it outranks the reference page's paragraph color. */
+.demo .demo-stage p.glow-highlight-dark {
+  width: 100%;
+  margin: 0;
+  padding: clamp(2rem, 6vw, 3.5rem) 1.5rem;
+  border-radius: 0.75rem;
+  background: #211c24;
+  color: #fffafb;
+  font-size: clamp(1.75rem, 5vw, 2.75rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  text-align: center;
+}
+
 .demo .code {
   margin: 0;
 }
@@ -1119,6 +1157,16 @@ a {
   outline-offset: 4px;
 }
 
+.demo-glow-copy {
+  margin: 0;
+  color: var(--fg);
+  font-size: 2rem;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.2;
+  text-align: center;
+}
+
 .demo-scribble-copy {
   max-width: 30rem;
   margin: 0;
@@ -1215,7 +1263,8 @@ a {
     font-size: 1.65rem;
   }
 
-  .demo-scribble-copy {
+  .demo-scribble-copy,
+  .demo-glow-copy {
     font-size: 1.35rem;
   }
 }

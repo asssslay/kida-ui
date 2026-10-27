@@ -1,0 +1,78 @@
+/*
+ * GlowHighlight. Every colour is a custom property, so palettes are compositions, not props.
+ * Defaults: a Cherry core with a blush rim, then butter and tangerine bands. Ink on Cherry is
+ * about 4.75:1.
+ */
+[data-kida-glow] {
+  --kida-glow-core: #e94f86;
+  --kida-glow-rim: #ffe1ec;
+  --kida-glow-band: #ffd76a;
+  --kida-glow-fringe: #ff8a3d;
+  --kida-glow-shadow: rgb(33 28 36 / 0.2);
+
+  /* Breathing room so the outer band does not paint over neighbouring letters. */
+  --kida-glow-gap: 0.1em;
+
+  position: relative;
+  display: inline-block;
+  margin-inline: var(--kida-glow-gap);
+  isolation: isolate;
+}
+
+[data-kida-glow] [data-kida-glow-layer] {
+  position: absolute;
+  z-index: -1;
+  /* Exactly the text's box, so wrapped lines trace identically. The engine's filter region
+     paints the rings outside it without adding to the page's scrollable area. */
+  inset: 0;
+  /* Only alpha is read. If a browser drops the filter, an opaque copy exactly under the text
+     is the least visible failure. */
+  color: #000;
+  pointer-events: none;
+  user-select: none;
+  /* Hidden until the engine runs, so server markup never shows a raw copy. */
+  visibility: hidden;
+}
+
+[data-kida-glow] [data-kida-glow-content] {
+  position: relative;
+}
+
+[data-kida-glow] [data-kida-glow-defs] {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/* Named palettes, selected with `palette` (data-palette). Candy is the default above. Inline
+   --kida-glow-* values still override any palette. Mirrored by GLOW_PALETTES in the motion
+   package; a test keeps the two identical. */
+[data-kida-glow][data-palette="sorbet"] {
+  --kida-glow-core: #ffb07a;
+  --kida-glow-rim: #fff0e4;
+  --kida-glow-band: #ffd76a;
+  --kida-glow-fringe: #e94f86;
+}
+
+[data-kida-glow][data-palette="berry"] {
+  --kida-glow-core: #cdbdff;
+  --kida-glow-rim: #f6f1ff;
+  --kida-glow-band: #f9a8c9;
+  --kida-glow-fringe: #e94f86;
+}
+
+/* For dark surfaces: a deeper core keeps light text readable. */
+[data-kida-glow][data-palette="after-dark"] {
+  --kida-glow-core: #8f2350;
+  --kida-glow-rim: #c23a6e;
+  --kida-glow-band: #ffd76a;
+  --kida-glow-fringe: #ff8a3d;
+}
+
+/* System colours replace the palette; the decoration would only fight them. */
+@media (forced-colors: active) {
+  [data-kida-glow] [data-kida-glow-layer] {
+    display: none;
+  }
+}

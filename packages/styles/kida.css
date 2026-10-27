@@ -10,6 +10,7 @@
 @import "./components/image-text.css";
 @import "./components/magnetic.css";
 @import "./components/scribble-highlight.css";
+@import "./components/glow-highlight.css";
 @import "./components/photo-pile.css";
 @import "./components/sticker-burst.css";
 @import "./components/dual-wave.css";

@@ -4,7 +4,8 @@ Animation-first UI components, built to reach every stack.
 
 **Status: pre-alpha.** The `@kida-ui` npm scope is claimed, and the first vertical slice includes
 `Reveal`, `Collapse`, five signature motion components, a browser-tested React adapter,
-Vue 3.5 adapters for the seven shared components, React-only `SpaceType`, `ImageText`, and `DualWave`, and an Astro documentation site. The
+Vue 3.5 adapters for the seven shared components, React-only `SpaceType`, `GlowHighlight`,
+`ImageText`, and `DualWave`, and an Astro documentation site. The
 packages are not published yet.
 Project decisions live in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). New components follow the
 [`component standard`](docs/COMPONENT_STANDARD.md) and the first collection's
