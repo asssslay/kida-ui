@@ -15,7 +15,7 @@ const vueComponents = [
   'scribble-highlight',
   'sticker-burst',
 ]
-const components = [...vueComponents, 'space-type', 'image-text']
+const components = [...vueComponents, 'space-type', 'image-text', 'dual-wave']
 const docs = join(root, 'apps/docs')
 const require = createRequire(join(docs, 'package.json'))
 const { dev } = await import(pathToFileURL(require.resolve('astro')).href)
@@ -49,6 +49,8 @@ try {
     if (path === '/' || path === '/docs') {
       assert(html.includes('href="/docs/space-type"'), `${path}: SpaceType catalog link is missing`)
       assert(html.includes('data-component="space-type"'), `${path}: SpaceType preview is missing`)
+      assert(html.includes('href="/docs/dual-wave"'), `${path}: DualWave catalog link is missing`)
+      assert(html.includes('data-component="dual-wave"'), `${path}: DualWave preview is missing`)
     }
     if (path === '/') {
       assert(
@@ -64,6 +66,16 @@ try {
       assert(
         !html.includes('href="/docs/vue/space-type"'),
         'SpaceType links to an unavailable adapter',
+      )
+    }
+    if (path === '/docs/dual-wave') {
+      assert(html.includes('data-kida-dual-wave'), 'React DualWave did not render on the server')
+      assert(html.includes('dual-wave-settings'), 'DualWave customization controls are missing')
+      assert(html.includes('/r/dual-wave.json'), 'DualWave installation link is missing')
+      assert(html.includes('React only'), 'DualWave framework availability is missing')
+      assert(
+        !html.includes('href="/docs/vue/dual-wave"'),
+        'DualWave links to an unavailable adapter',
       )
     }
     if (path === '/docs/image-text') {
@@ -83,7 +95,8 @@ try {
     }
     if (path.startsWith('/docs/vue/')) {
       assert(
-        !html.includes('href="/docs/vue/space-type"'),
+        !html.includes('href="/docs/vue/space-type"') &&
+          !html.includes('href="/docs/vue/dual-wave"'),
         `${path}: unavailable Vue component in navigation`,
       )
     }

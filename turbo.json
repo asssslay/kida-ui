@@ -25,14 +25,21 @@
       "dependsOn": ["^build"],
       "inputs": [
         "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/apps/docs/src/demos/dual-wave-playground.react.tsx",
+        "$TURBO_ROOT$/apps/docs/src/demos/dual-wave-photos.ts",
+        "$TURBO_ROOT$/apps/docs/src/demos/dual-wave.css",
+        "$TURBO_ROOT$/apps/docs/public/demo/dual-wave/**",
         "$TURBO_ROOT$/apps/docs/src/demos/space-type-playground.react.tsx",
         "$TURBO_ROOT$/apps/docs/src/demos/space-type.css"
-      ]
+      ],
+      "outputs": ["dist/**"]
     },
     "@kida-ui/playground#typecheck": {
       "dependsOn": ["^build"],
       "inputs": [
         "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/apps/docs/src/demos/dual-wave-playground.react.tsx",
+        "$TURBO_ROOT$/apps/docs/src/demos/dual-wave-photos.ts",
         "$TURBO_ROOT$/apps/docs/src/demos/space-type-playground.react.tsx"
       ]
     },

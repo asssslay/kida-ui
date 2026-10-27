@@ -405,6 +405,59 @@ export const registryDefinitions = [
     ],
   },
   {
+    name: 'dual-wave',
+    frameworks: ['react'],
+    title: 'DualWave',
+    description:
+      'Waves two text columns past a photo that changes as a tile mosaic or a clean cut.',
+    category: 'image',
+    package: {
+      name: '@kida-ui/react',
+      exportName: 'DualWave',
+      styleImports: ['@kida-ui/styles/components/dual-wave.css'],
+    },
+    dependencies: [],
+    files: [
+      {
+        source: 'packages/react/src/dual-wave.tsx',
+        type: 'registry:ui',
+        target: '@ui/kida/dual-wave.tsx',
+        styleImport: './dual-wave.css',
+        importReplacements: { '@kida-ui/motion': './motion/dual-wave.js' },
+      },
+      {
+        source: 'packages/react/src/compose-refs.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/compose-refs.ts',
+      },
+      {
+        source: 'packages/react/src/use-isomorphic-layout-effect.ts',
+        type: 'registry:hook',
+        target: '@ui/kida/use-isomorphic-layout-effect.ts',
+      },
+      {
+        source: 'packages/styles/components/dual-wave.css',
+        type: 'registry:ui',
+        target: '@ui/kida/dual-wave.css',
+      },
+      {
+        source: 'packages/motion/src/dual-wave.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/dual-wave.ts',
+      },
+      {
+        source: 'packages/motion/src/dual-wave-math.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/dual-wave-math.ts',
+      },
+      {
+        source: 'packages/motion/src/reduced-motion.ts',
+        type: 'registry:lib',
+        target: '@ui/kida/motion/reduced-motion.ts',
+      },
+    ],
+  },
+  {
     name: 'sticker-burst',
     title: 'StickerBurst',
     description: 'Bursts colorful decorative symbols around an existing control when activated.',

@@ -794,7 +794,7 @@ try {
     [],
     'Navigation removed or reparented persistent shell nodes',
   )
-  // SpaceType and ImageText ship only a React adapter. Their pages show React and
+  // SpaceType, ImageText, and DualWave ship only a React adapter. Their pages show React and
   // hide the Vue choice, but keep the saved Vue preference for the others.
   async function reactOnly(target) {
     assert(await target.locator('[data-framework-choice="vue"]').isHidden())
@@ -813,6 +813,7 @@ try {
   for (const [name, demo] of [
     ['image-text', 'image-text-basic'],
     ['space-type', 'space-type-playground'],
+    ['dual-wave', 'dual-wave-playground'],
   ]) {
     await sidebar(name, 'react')
     await reactOnly(page)

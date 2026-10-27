@@ -1,0 +1,158 @@
+/* Playground chrome around the docs demo; the component itself is styled by @kida-ui/styles. */
+.dual-wave-shell {
+  --kida-surface: #fffdfa;
+  --kida-ink: #241d21;
+  --kida-accent: #e75588;
+  --dual-wave-muted: #71666b;
+  --dual-wave-line: #e9dfda;
+  --dual-wave-pink: #f8dbe5;
+  border: 0;
+  color: var(--kida-ink);
+  font-family: "Instrument Sans Variable", "Avenir Next", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.dual-wave-shell a:focus-visible {
+  outline: 2px solid var(--kida-accent, #e75588);
+  outline-offset: 4px;
+}
+
+.dual-wave-brandbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 48px;
+}
+
+.dual-wave-wordmark {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+  color: var(--kida-ink);
+  font-size: 22px;
+  font-weight: 620;
+  letter-spacing: -0.06em;
+  text-decoration: none;
+}
+
+.dual-wave-wordmark > span:first-child {
+  font-weight: 430;
+}
+.dual-wave-brand-dot {
+  align-self: center;
+  width: 6px;
+  height: 6px;
+  margin-left: 5px;
+  border-radius: 50%;
+  background: var(--kida-accent);
+}
+
+.dual-wave-study-badge {
+  padding: 8px 14px;
+  border: 1px solid var(--dual-wave-line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--dual-wave-muted);
+  font-size: 11px;
+  font-weight: 550;
+}
+
+.dual-wave-back,
+.dual-wave-intro > a {
+  color: var(--kida-ink);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration-color: var(--dual-wave-pink);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 5px;
+  white-space: nowrap;
+}
+
+.dual-wave-back > span,
+.dual-wave-intro > a > span {
+  margin-left: 8px;
+  color: var(--kida-accent);
+}
+
+.dual-wave-intro {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding-block: 28px 24px;
+}
+
+.dual-wave-eyebrow {
+  margin: 0 0 10px;
+  color: #8e526b;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.dual-wave-intro h1,
+.dual-wave-intro h2 {
+  margin: 0;
+  font-size: clamp(36px, 4.2vw, 56px);
+  font-weight: 450;
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+.dual-wave-intro em {
+  color: var(--kida-accent);
+  font-weight: inherit;
+}
+.dual-wave-description {
+  margin: 12px 0 0;
+  color: var(--dual-wave-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.dual-wave-intro-note {
+  padding-bottom: 3px;
+  color: var(--dual-wave-muted);
+  font-size: 12px;
+  line-height: 1.6;
+  text-align: right;
+}
+
+main.dual-wave-page {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  background: #fffdfa;
+}
+.dual-wave-standalone {
+  max-width: 1600px;
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: 16px clamp(16px, 3.5vw, 56px) 24px;
+  background: var(--kida-surface);
+}
+.dual-wave-standalone [data-kida-dual-wave] {
+  --kida-dual-wave-height: max(26rem, calc(100svh - 330px));
+}
+
+@media (max-width: 700px) {
+  .dual-wave-intro-note {
+    display: none;
+  }
+  .dual-wave-intro {
+    gap: 16px;
+    padding-top: 24px;
+  }
+}
+@media (max-width: 480px) {
+  .dual-wave-study-badge {
+    display: none;
+  }
+  .dual-wave-intro {
+    flex-wrap: wrap;
+  }
+  .dual-wave-description {
+    font-size: 12px;
+  }
+}

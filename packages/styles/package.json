@@ -22,6 +22,7 @@
     "./components/text-bloom.css": "./components/text-bloom.css",
     "./components/magnetic.css": "./components/magnetic.css",
     "./components/scribble-highlight.css": "./components/scribble-highlight.css",
+    "./components/dual-wave.css": "./components/dual-wave.css",
     "./components/space-type.css": "./components/space-type.css",
     "./components/image-text.css": "./components/image-text.css"
   },

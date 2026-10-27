@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "test:dual-wave": "pnpm --filter @kida-ui/motion exec vitest run src/dual-wave-math.test.ts && pnpm --filter @kida-ui/react exec vitest run src/dual-wave.test.tsx",
     "typecheck": "tsc --noEmit",
     "test:image-text": "vitest run src/image-text"
   },

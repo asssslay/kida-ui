@@ -1,6 +1,14 @@
 export { type CollapseSizeObserver, observeCollapseSize } from './collapse.js'
 export { type DrawInViewOptions, drawInView } from './draw-in-view.js'
 export {
+  type DualWaveControls,
+  type DualWaveLayout,
+  type DualWaveOptions,
+  type DualWaveSetup,
+  dualWave,
+  getDualWaveMosaicRows,
+} from './dual-wave.js'
+export {
   type ImageTextControls,
   type ImageTextOptions,
   imageText,

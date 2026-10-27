@@ -6,7 +6,7 @@ const src = (path: string) => fileURLToPath(new URL(path, import.meta.url))
 
 export default defineConfig({
   plugins: [react()],
-  // Serve the licensed demo image from the same asset as the website.
+  // Demo media is shared with the docs site rather than copied.
   publicDir: src('../docs/public'),
   resolve: {
     // Point at package SOURCE, not dist. Editing the engine hot-reloads the page with no

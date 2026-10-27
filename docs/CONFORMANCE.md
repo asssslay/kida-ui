@@ -19,6 +19,7 @@ should be added.
 | PhotoPile | Browser | Browser | Drag settle + collection replacement | Photos and drag options | Shared browser gate | Focus and pointer paths |
 | ScribbleHighlight | Browser | Browser | Observer re-arm | Viewport options and variant | Shared browser gate | SVG decoration hidden |
 | StickerBurst | Browser | Browser | Listener cleanup via Strict Mode | Stable layout inputs | Shared browser gate | Native click path; decoration hidden |
+| DualWave (React only) | Browser + math unit tests | Browser | Observer, listener, and frame cleanup via Strict Mode | Items, layout, grid, options in place, `index` | Browser | Keyboard, click, wheel; live region announces each item |
 | SpaceType (React only) | Browser + geometry unit tests | Browser | Observer and animation cleanup | Text, rows, speed, pause, radius, longitude, colors | Browser | Authored phrase exposed once |
 
 Cross-component gates also verify:
@@ -34,8 +35,9 @@ Responsive and visual evidence is defined in `VISUAL_TESTING.md`. It adds mobile
 geometry checks, deterministic settled-state screenshots for the seven shared components, controlled
 light/dark surfaces, and a color-contrast-enabled axe pass. SpaceType additionally has responsive
 light/dark checks in normal and reduced motion, empty/single/long content coverage, independent
-instances, and hidden-document playback checks. Its stored Linux screenshot baseline is still
-required before public alpha.
+instances, and hidden-document playback checks. DualWave additionally has browser checks for mobile
+and desktop geometry, empty/single/long item lists, the first frame after a layout switch, and
+Frame's instant swap. Their stored Linux screenshot baselines are still required before public alpha.
 
 Run the behavioral evidence with `pnpm --filter @kida-ui/react test` and the responsive/visual
 evidence with `pnpm --filter @kida-ui/react test:visual`. The repository-wide release candidate gate
@@ -68,7 +70,7 @@ Both framework catalogs and all 16 items must match the built documentation endp
 
 The packed-consumer check in `DISTRIBUTION.md` verifies the displayed demos, production bundle,
 declaration resolution, and server imports. `/docs/<name>` supplies the live preview and framework-specific examples and API notes.
-SpaceType and ImageText currently have only React adapters; their pages hide the Vue choice. The
+SpaceType, ImageText, and DualWave currently have only React adapters; their pages hide the Vue choice. The
 seven shared Vue components are supported to the same standard as React. CI defines Firefox/WebKit
 behavior gates for both adapters, in addition to Chromium, with Chromium/WebKit touch emulation.
 Manual real touch-device and screen-reader checks are recommended. See
