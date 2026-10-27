@@ -245,13 +245,15 @@ test('hover trigger follows the enclosing link for pointer and keyboard focus', 
   const link = document.querySelector('a')
   if (!link) throw new Error('Link is missing')
 
+  // Dispatch focus events like the pointer ones: headless Linux Chromium may not deliver
+  // focusout from blur() when its window lacks system focus, leaving the glow lit.
   link.dispatchEvent(new PointerEvent('pointerenter'))
   await expect.poll(() => root().dataset.state).not.toBe('off')
-  link.focus()
+  link.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
   link.dispatchEvent(new PointerEvent('pointerleave'))
   await expect.poll(() => root().dataset.state, { timeout: 2000 }).toBe('on')
 
-  link.blur()
+  link.dispatchEvent(new FocusEvent('focusout', { bubbles: true }))
   await expect.poll(() => root().dataset.state, { timeout: 2000 }).toBe('off')
 })
 
