@@ -1,6 +1,7 @@
 import '@kida-ui/styles/kida.css'
+import { GLOW_PALETTES, type GlowHighlightPalette } from '@kida-ui/motion'
 import axe from 'axe-core'
-import { act, createRef, StrictMode } from 'react'
+import { act, type CSSProperties, createRef, StrictMode } from 'react'
 import { hydrateRoot } from 'react-dom/client'
 import { renderToString } from 'react-dom/server'
 import { afterEach, expect, test, vi } from 'vitest'
@@ -199,6 +200,40 @@ test('finish and spread rebuild the rings without restarting or losing state', a
   )
   expect(core().radius).toBeCloseTo(base + 0.07 * 40, 1)
   expect(root().querySelector('filter')).toBe(filter)
+})
+
+test('named palettes apply the exported colors, and inline variables still override them', async () => {
+  const names = Object.keys(GLOW_PALETTES) as GlowHighlightPalette[]
+  await render(
+    <p>
+      <GlowHighlight>default</GlowHighlight>
+      {names.map((name) => (
+        <GlowHighlight key={name} palette={name}>
+          {name}
+        </GlowHighlight>
+      ))}
+      <GlowHighlight palette="berry" style={{ '--kida-glow-core': '#123456' } as CSSProperties}>
+        custom
+      </GlowHighlight>
+    </p>,
+  )
+  const colors = (element: HTMLElement) => {
+    const style = getComputedStyle(element)
+    const read = (name: string) => style.getPropertyValue(`--kida-glow-${name}`).trim()
+    return { core: read('core'), rim: read('rim'), band: read('band'), fringe: read('fringe') }
+  }
+  const [fallback, ...named] = roots()
+  const custom = named.pop()
+  if (!fallback || !custom) throw new Error('Palette fixtures are missing')
+
+  expect(fallback.dataset.palette).toBe('candy')
+  expect(colors(fallback)).toEqual(GLOW_PALETTES.candy)
+  named.forEach((element, index) => {
+    const name = names[index] as GlowHighlightPalette
+    expect(element.dataset.palette).toBe(name)
+    expect(colors(element)).toEqual(GLOW_PALETTES[name])
+  })
+  expect(colors(custom)).toEqual({ ...GLOW_PALETTES.berry, core: '#123456' })
 })
 
 test('hover trigger follows the enclosing link for pointer and keyboard focus', async () => {

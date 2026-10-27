@@ -10,6 +10,12 @@
   padding: clamp(1.5rem, 5vw, 3rem) clamp(0.5rem, 3vw, 2rem);
 }
 
+/* After dark is meant for dark surfaces, so the preview switches to ink when it is picked. */
+.glow-highlight-stage[data-surface="dark"] {
+  border-radius: 1rem;
+  background: #211c24;
+}
+
 .glow-highlight-headline {
   max-width: 15ch;
   margin: 0;
@@ -20,6 +26,10 @@
   letter-spacing: -0.045em;
   text-align: center;
   text-wrap: balance;
+}
+
+.glow-highlight-stage[data-surface="dark"] .glow-highlight-headline {
+  color: #fffafb;
 }
 
 .glow-highlight-headline [data-kida-glow]:focus-visible {
@@ -170,6 +180,10 @@
   transition: box-shadow 160ms ease;
 }
 
+.glow-highlight-stage[data-surface="dark"] .glow-highlight-action {
+  background: #fffafb;
+}
+
 .glow-highlight-action:hover {
   box-shadow:
     inset 0 1px 0 #fff,
@@ -195,6 +209,17 @@
 
   .space-type-customizations.glow-highlight-color-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Four palettes do not fit one row on a phone; lay them out two by two. */
+  .glow-highlight-segmented > div:has(> label:nth-child(4)) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    height: auto;
+  }
+
+  .glow-highlight-segmented > div:has(> label:nth-child(4)) label > span {
+    min-height: 2.15rem;
   }
 
   .glow-highlight-stage {

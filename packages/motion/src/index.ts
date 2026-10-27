@@ -1,10 +1,13 @@
 export { type CollapseSizeObserver, observeCollapseSize } from './collapse.js'
 export { type DrawInViewOptions, drawInView } from './draw-in-view.js'
 export {
+  GLOW_PALETTES,
   type GlowHighlightControls,
   type GlowHighlightFinish,
   type GlowHighlightOptions,
+  type GlowHighlightPalette,
   type GlowHighlightTrigger,
+  type GlowPaletteColors,
   glowHighlight,
 } from './glow-highlight.js'
 export {

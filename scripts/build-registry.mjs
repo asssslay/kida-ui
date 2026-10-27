@@ -49,6 +49,10 @@ function assertInsideRoot(path) {
   if (pathFromRoot.startsWith('..') || pathFromRoot.startsWith('/')) {
     throw new Error(`Registry source escapes the repository: ${path}`)
   }
+  // Installs ship only the component. Docs playgrounds and their controls live in apps/.
+  if (!pathFromRoot.startsWith('packages/')) {
+    throw new Error(`Registry source must come from a library package: ${path}`)
+  }
 }
 
 function addStyleImport(source, styleImport) {
@@ -60,7 +64,9 @@ function addStyleImport(source, styleImport) {
 
   const directive = /^(['"]use client['"])\s*\n+/
   if (directive.test(source)) {
-    return source.replace(directive, `$1\n\nimport '${styleImport}'\n`)
+    // Keep a blank line before a header comment that follows the directive.
+    const gap = /^(['"]use client['"])\s*\n+import\b/.test(source) ? '\n' : '\n\n'
+    return source.replace(directive, `$1\n\nimport '${styleImport}'${gap}`)
   }
   return `import '${styleImport}'\n\n${source}`
 }

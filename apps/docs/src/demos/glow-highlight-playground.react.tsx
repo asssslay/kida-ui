@@ -1,3 +1,4 @@
+import { GLOW_PALETTES, type GlowHighlightPalette, type GlowPaletteColors } from '@kida-ui/motion'
 import { GlowHighlight, type GlowHighlightProps, useReducedMotion } from '@kida-ui/react'
 import { type CSSProperties, useId, useState } from 'react'
 // The panel shares SpaceType's customization styles so every component page reads the same.
@@ -6,23 +7,16 @@ import './glow-highlight.css'
 
 type Finish = NonNullable<GlowHighlightProps['finish']>
 type Trigger = NonNullable<GlowHighlightProps['trigger']>
-type Colors = Record<'core' | 'rim' | 'band' | 'fringe', string>
+type Colors = GlowPaletteColors
 
 const DEFAULT_TEXT = 'Playful'
 
-/** The component's own defaults, so the first render matches an unstyled GlowHighlight. */
-const CANDY: Colors = { core: '#e94f86', rim: '#ffe1ec', band: '#ffd76a', fringe: '#ff8a3d' }
-
-const PALETTES: { name: string; colors: Colors }[] = [
-  { name: 'Candy', colors: CANDY },
-  {
-    name: 'Sorbet',
-    colors: { core: '#ffb07a', rim: '#fff0e4', band: '#ffd76a', fringe: '#e94f86' },
-  },
-  {
-    name: 'Berry',
-    colors: { core: '#cdbdff', rim: '#f6f1ff', band: '#f9a8c9', fringe: '#e94f86' },
-  },
+/** The component's named palettes; picking one here is the same as the `palette` prop. */
+const PALETTES: { value: GlowHighlightPalette; label: string }[] = [
+  { value: 'candy', label: 'Candy' },
+  { value: 'sorbet', label: 'Sorbet' },
+  { value: 'berry', label: 'Berry' },
+  { value: 'after-dark', label: 'After dark' },
 ]
 
 const COLOR_FIELDS: { key: keyof Colors; label: string }[] = [
@@ -141,23 +135,29 @@ export function GlowHighlightSection() {
   const colorId = useId()
   const [text, setText] = useState(DEFAULT_TEXT)
   const [finish, setFinish] = useState<Finish>('glow')
-  const [colors, setColors] = useState<Colors>(CANDY)
+  const [palette, setPalette] = useState<GlowHighlightPalette>('candy')
+  const [colors, setColors] = useState<Colors>(GLOW_PALETTES.candy)
   const [spread, setSpread] = useState(1)
   const [duration, setDuration] = useState(600)
   const [trigger, setTrigger] = useState<Trigger>('view')
   const [active, setActive] = useState(true)
   const [replay, setReplay] = useState(0)
   const reduced = useReducedMotion()
-  const palette = PALETTES.find((option) => sameColors(option.colors, colors))?.name
+  // Editing a color keeps the chosen palette as the base and overrides it inline.
+  const custom = !sameColors(colors, GLOW_PALETTES[palette])
   const finishHint = FINISHES.find((option) => option.value === finish)?.hint
 
   return (
     <section className="space-type-section glow-highlight-section" data-embedded="">
-      <div className="glow-highlight-stage">
+      <div
+        className="glow-highlight-stage"
+        data-surface={palette === 'after-dark' ? 'dark' : undefined}
+      >
         <p className="glow-highlight-headline" key={`${trigger}-${replay}`}>
           Calm at rest.{' '}
           <GlowHighlight
             finish={finish}
+            palette={palette}
             spread={spread}
             duration={duration}
             trigger={trigger}
@@ -165,12 +165,14 @@ export function GlowHighlightSection() {
             // Hover also answers keyboard focus, so the word joins the tab order for that demo.
             tabIndex={trigger === 'hover' ? 0 : undefined}
             style={
-              {
-                '--kida-glow-core': colors.core,
-                '--kida-glow-rim': colors.rim,
-                '--kida-glow-band': colors.band,
-                '--kida-glow-fringe': colors.fringe,
-              } as CSSProperties
+              custom
+                ? ({
+                    '--kida-glow-core': colors.core,
+                    '--kida-glow-rim': colors.rim,
+                    '--kida-glow-band': colors.band,
+                    '--kida-glow-fringe': colors.fringe,
+                  } as CSSProperties)
+                : undefined
             }
           >
             {text}
@@ -216,15 +218,14 @@ export function GlowHighlightSection() {
         <div className="glow-highlight-colors">
           <Segmented
             label="Palette"
-            value={palette}
-            options={PALETTES.map((option) => ({
-              value: option.name,
-              label: option.name,
-              swatches: [option.colors.core, option.colors.band, option.colors.fringe],
-            }))}
+            value={custom ? undefined : palette}
+            options={PALETTES.map((option) => {
+              const { core, band, fringe } = GLOW_PALETTES[option.value]
+              return { ...option, swatches: [core, band, fringe] }
+            })}
             onChange={(name) => {
-              const next = PALETTES.find((option) => option.name === name)
-              if (next) setColors(next.colors)
+              setPalette(name)
+              setColors(GLOW_PALETTES[name])
             }}
           />
           <div className="space-type-customizations glow-highlight-color-grid">

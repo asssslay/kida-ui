@@ -45,6 +45,31 @@
   overflow: hidden;
 }
 
+/* Named palettes, selected with `palette` (data-palette). Candy is the default above. Inline
+   --kida-glow-* values still override any palette. Mirrored by GLOW_PALETTES in the motion
+   package; a test keeps the two identical. */
+[data-kida-glow][data-palette="sorbet"] {
+  --kida-glow-core: #ffb07a;
+  --kida-glow-rim: #fff0e4;
+  --kida-glow-band: #ffd76a;
+  --kida-glow-fringe: #e94f86;
+}
+
+[data-kida-glow][data-palette="berry"] {
+  --kida-glow-core: #cdbdff;
+  --kida-glow-rim: #f6f1ff;
+  --kida-glow-band: #f9a8c9;
+  --kida-glow-fringe: #e94f86;
+}
+
+/* For dark surfaces: a deeper core keeps light text readable. */
+[data-kida-glow][data-palette="after-dark"] {
+  --kida-glow-core: #8f2350;
+  --kida-glow-rim: #c23a6e;
+  --kida-glow-band: #ffd76a;
+  --kida-glow-fringe: #ff8a3d;
+}
+
 /* System colours replace the palette; the decoration would only fight them. */
 @media (forced-colors: active) {
   [data-kida-glow] [data-kida-glow-layer] {

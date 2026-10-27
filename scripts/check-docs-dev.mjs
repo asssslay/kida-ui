@@ -72,6 +72,10 @@ try {
     if (path === '/docs/glow-highlight') {
       assert(html.includes('data-kida-glow'), 'React GlowHighlight did not render on the server')
       assert(html.includes('space-type-panel'), 'GlowHighlight customization controls are missing')
+      assert(
+        html.includes('data-demo="glow-highlight-finishes"'),
+        'GlowHighlight code customization example is missing',
+      )
       assert(html.includes('/r/glow-highlight.json'), 'GlowHighlight installation link is missing')
       assert(html.includes('React only'), 'GlowHighlight framework availability is missing')
       assert(

@@ -20,7 +20,7 @@ should be added.
 | ScribbleHighlight | Browser | Browser | Observer re-arm | Viewport options and variant | Shared browser gate | SVG decoration hidden |
 | StickerBurst | Browser | Browser | Listener cleanup via Strict Mode | Stable layout inputs | Shared browser gate | Native click path; decoration hidden |
 | SpaceType (React only) | Browser + geometry unit tests | Browser | Observer and animation cleanup | Text, rows, speed, pause, radius, longitude, colors | Browser | Authored phrase exposed once |
-| GlowHighlight (React only) | Browser + ring/timing unit tests | Browser, including mid-flight | Reversal, unmount, Strict Mode, frame loop stops | Finish, spread, duration, trigger, active, font size | Browser | Text exposed once; traced copy hidden and inert |
+| GlowHighlight (React only) | Browser + ring/timing unit tests | Browser, including mid-flight | Reversal, unmount, Strict Mode, frame loop stops | Finish, palette, spread, duration, trigger, active, font size | Browser | Text exposed once; traced copy hidden and inert; agent notes checked against the API and docs |
 
 Cross-component gates also verify:
 

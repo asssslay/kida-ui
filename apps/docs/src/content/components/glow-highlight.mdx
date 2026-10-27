@@ -12,6 +12,7 @@ import Demo from '../../components/Demo.astro'
 import Distribution from '../../components/Distribution.astro'
 import QuickStart from '../../components/QuickStart.astro'
 import GlowHighlightAfterDark from '../../demos/glow-highlight-after-dark.react.tsx'
+import GlowHighlightFinishes from '../../demos/glow-highlight-finishes.react.tsx'
 import { GlowHighlightSection } from '../../demos/glow-highlight-playground.react.tsx'
 
 <Demo name="glow-highlight-playground" title="One word that glows · Make it yours" hideSource>
@@ -28,13 +29,21 @@ GlowHighlight currently supports **React only**. Vue support is not available ye
 
 ## Customization
 
-Choose a finish, pick a palette or set each ring's color, and adjust spread and duration. **Glow**
-draws soft layered bands; **Sticker** cuts a crisp edge with a small paper shadow; **Halo** leaves
-the letters unfilled, so it suits running text. Rings grow outward from the core in a short
-stagger, and reversing mid-flight continues from the current frame instead of jumping.
+The playground above is for exploring only. The installed component has no controls: choose
+everything in code with props and CSS custom properties. **Glow** draws soft layered bands;
+**Sticker** cuts a crisp edge with a small paper shadow; **Halo** leaves the letters unfilled, so
+it suits running text. `spread` scales the rings and `duration` sets how long they take to grow.
+Rings grow outward from the core in a short stagger, and reversing mid-flight continues from the
+current frame instead of jumping.
 
-The rings are traced from the text itself, so any font, size, or wrapped phrase works. Every
-color is a CSS custom property; this example sets them on an ink surface.
+<Demo name="glow-highlight-finishes" title="Finishes in code">
+  <GlowHighlightFinishes client:visible />
+</Demo>
+
+Pick a named `palette`: **Candy** (the default), **Sorbet**, **Berry**, or **After dark**, which
+has a deeper core so light text stays readable on dark surfaces. The rings are traced from the
+text itself, so any font, size, or wrapped phrase works. For colors beyond the palettes, set the
+CSS custom properties below in `style` on the component; they override the palette.
 
 <Demo name="glow-highlight-after-dark" title="After dark">
   <GlowHighlightAfterDark client:visible />
@@ -47,6 +56,7 @@ color is a CSS custom property; this example sets them on an ink surface.
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `finish` | `'glow' \| 'sticker' \| 'halo'` | `'glow'` | Ring treatment. Changes rebuild the rings without restarting. |
+| `palette` | `'candy' \| 'sorbet' \| 'berry' \| 'after-dark'` | `'candy'` | Named color set. Inline custom properties override it. |
 | `spread` | `number` | `1` | Multiplier on ring size, clamped to 0–3. |
 | `duration` | `number` | `600` | Milliseconds to fully grow or fold away. |
 | `trigger` | `'view' \| 'hover' \| 'manual'` | `'view'` | What turns the glow on. |
@@ -60,6 +70,8 @@ so keyboard focus lights the glow as well as the pointer. Native span attributes
 `once`, or `amount` recreates the controller; the other options update in place.
 
 ### CSS custom properties
+
+Defaults below are the Candy palette.
 
 | Property | Default | Description |
 | --- | --- | --- |

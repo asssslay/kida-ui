@@ -23,7 +23,12 @@ import {
 } from './glow-highlight-math.js'
 import { prefersReducedMotion, watchReducedMotion } from './reduced-motion.js'
 
-export type { GlowHighlightFinish } from './glow-highlight-math.js'
+export {
+  GLOW_PALETTES,
+  type GlowHighlightFinish,
+  type GlowHighlightPalette,
+  type GlowPaletteColors,
+} from './glow-highlight-math.js'
 
 export type GlowHighlightTrigger = 'view' | 'hover' | 'manual'
 

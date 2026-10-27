@@ -8,6 +8,27 @@
 
 export type GlowHighlightFinish = 'glow' | 'sticker' | 'halo'
 
+export type GlowHighlightPalette = 'candy' | 'sorbet' | 'berry' | 'after-dark'
+
+export interface GlowPaletteColors {
+  core: string
+  rim: string
+  band: string
+  fringe: string
+}
+
+/**
+ * Named colour sets. The stylesheet applies them through `data-palette`; these values mirror
+ * it for tooling and docs, and a test keeps the two identical. Candy is the default.
+ */
+export const GLOW_PALETTES: Record<GlowHighlightPalette, GlowPaletteColors> = {
+  candy: { core: '#e94f86', rim: '#ffe1ec', band: '#ffd76a', fringe: '#ff8a3d' },
+  sorbet: { core: '#ffb07a', rim: '#fff0e4', band: '#ffd76a', fringe: '#e94f86' },
+  berry: { core: '#cdbdff', rim: '#f6f1ff', band: '#f9a8c9', fringe: '#e94f86' },
+  // Deeper core so light text keeps its contrast on dark surfaces.
+  'after-dark': { core: '#8f2350', rim: '#c23a6e', band: '#ffd76a', fringe: '#ff8a3d' },
+}
+
 export interface GlowRing {
   /** Custom property that supplies the ring colour. */
   color: string
