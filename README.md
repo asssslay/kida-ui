@@ -4,8 +4,8 @@ Animation-first UI components, built to reach every stack.
 
 **Status: pre-alpha.** The `@kida-ui` npm scope is claimed, and the first vertical slice includes
 `Reveal`, `Collapse`, five signature motion components, a browser-tested React adapter,
-Vue 3.5 adapters for the seven shared components, React-only `SpaceType`, `GlowHighlight`,
-`ImageText`, and `DualWave`, and an Astro documentation site. The
+Vue 3.5 adapters for every component, including `SpaceType`, `GlowHighlight`, `ImageText`, and
+`DualWave`, and an Astro documentation site. The
 packages are not published yet.
 Project decisions live in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). New components follow the
 [`component standard`](docs/COMPONENT_STANDARD.md) and the first collection's
@@ -19,7 +19,7 @@ documented in [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md).
 | `@kida-ui/motion` | Animation engine, framework-agnostic | **none — CI-enforced** |
 | `@kida-ui/styles` | CSS custom properties, keyframes, `data-*` contract | none (plain CSS, no build) |
 | `@kida-ui/react` | React adapter + components | `react` (peer) |
-| `@kida-ui/vue` | Vue adapter + the seven shared components | `vue` (peer) |
+| `@kida-ui/vue` | Vue adapter + components | `vue` (peer) |
 
 The layering is the point: `motion` and `styles` are shared by every future framework, and an
 adapter is the only per-framework cost. `scripts/check-framework-deps.mjs` fails CI if a

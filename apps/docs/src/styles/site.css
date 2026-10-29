@@ -17,7 +17,11 @@
   --accent: #5b3df5;
 
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, monospace;
+  /* Linux has none of the first four; name its usual faces so the generic fallback, which
+     Chromium can resolve to different fonts within one page, is never reached. */
+  --font-mono:
+    ui-monospace, "SF Mono", "Cascadia Code", Menlo, "DejaVu Sans Mono", "Liberation Mono",
+    monospace;
 
   --sidebar: 15rem;
   --toc: 13rem;

@@ -14,14 +14,14 @@ should be added.
 | Reveal | Browser | Browser | Unit + browser | Browser | Shared browser gate | Content remains visible |
 | Collapse | Browser | Browser | Rapid reversal + unmount | Controlled `open` | Shared browser gate | Content remains available |
 | TextBloom | Browser | Browser | Mid-animation replacement | Text, segmentation, options | Shared browser gate | Authored text exposed once |
-| ImageText (React only) | Browser + crop unit tests | Initial and live browser emulation | Image replacement, observers, CSS animation, Strict Mode | Text, image, crop, duration, zoom, paused, root tag | Deterministic SSR + browser hydration | One selectable text node; no generated spans/buttons |
+| ImageText | Browser + crop unit tests | Initial and live browser emulation | Image replacement, observers, CSS animation, Strict Mode | Text, image, crop, duration, zoom, paused, root tag | Deterministic SSR + browser hydration | One selectable text node; no generated spans/buttons |
 | Magnetic | Browser | Browser | Settle + controller replacement | Strength and distance | Shared browser gate | Touch ignored; child remains usable |
 | PhotoPile | Browser | Browser | Drag settle + collection replacement | Photos and drag options | Shared browser gate | Focus and pointer paths |
 | ScribbleHighlight | Browser | Browser | Observer re-arm | Viewport options and variant | Shared browser gate | SVG decoration hidden |
 | StickerBurst | Browser | Browser | Listener cleanup via Strict Mode | Stable layout inputs | Shared browser gate | Native click path; decoration hidden |
-| DualWave (React only) | Browser + math unit tests | Browser | Observer, listener, and frame cleanup via Strict Mode | Items, layout, grid, options in place, `index` | Browser | Keyboard, click, wheel; live region announces each item |
-| SpaceType (React only) | Browser + geometry unit tests | Browser | Observer and animation cleanup | Text, rows, speed, pause, radius, longitude, colors | Browser | Authored phrase exposed once |
-| GlowHighlight (React only) | Browser + ring/timing unit tests | Browser, including mid-flight | Reversal, unmount, Strict Mode, frame loop stops | Finish, palette, spread, duration, trigger, active, font size | Browser | Text exposed once; traced copy hidden and inert; agent notes checked against the API and docs |
+| DualWave | Browser + math unit tests | Browser | Observer, listener, and frame cleanup via Strict Mode | Items, layout, grid, options in place, `index` | Browser | Keyboard, click, wheel; live region announces each item |
+| SpaceType | Browser + geometry unit tests | Browser | Observer and animation cleanup | Text, rows, speed, pause, radius, longitude, colors | Browser | Authored phrase exposed once |
+| GlowHighlight | Browser + ring/timing unit tests | Browser, including mid-flight | Reversal, unmount, Strict Mode, frame loop stops | Finish, palette, spread, duration, trigger, active, font size | Browser | Text exposed once; traced copy hidden and inert; agent notes checked against the API and docs |
 
 Cross-component gates also verify:
 
@@ -69,12 +69,13 @@ reference images and does not replace the existing authoritative Linux React bas
 Copied-source conformance installs every Vue registry item through the pinned shadcn-vue CLI,
 then tests a combined installation with a custom UI alias. The displayed quick starts typecheck,
 bundle, and render deterministically in Node without Kida packages or workspace aliases.
-Both framework catalogs and all 18 items must match the built documentation endpoints.
+Both framework catalogs and all 22 items must match the built documentation endpoints.
 
 The packed-consumer check in `DISTRIBUTION.md` verifies the displayed demos, production bundle,
 declaration resolution, and server imports. `/docs/<name>` supplies the live preview and framework-specific examples and API notes.
-SpaceType, GlowHighlight, ImageText, and DualWave currently have only React adapters; their pages
-hide the Vue choice. The seven shared Vue components are supported to the same standard as React.
+All eleven Vue components are supported to the same standard as React. Their Vue suites cover
+reactive updates without restarting, emitted events, cleanup, reduced motion, SSR/hydration, and
+settled React/Vue pixel parity at mobile and desktop widths.
 CI defines Firefox/WebKit behavior gates for both adapters, in addition to Chromium, with
 Chromium/WebKit touch emulation. Manual real touch-device and screen-reader checks are
 recommended. See [the release checklist](RELEASE_CHECKLIST.md) for commands and the manual review

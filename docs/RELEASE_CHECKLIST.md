@@ -1,6 +1,6 @@
 # Release conformance checklist
 
-The seven shared components have React and Vue package and copied-source distribution. The
+All eleven components have React and Vue package and copied-source distribution. The
 automated gates are required for a release. The manual checks are recommended: automation does not
 establish real-device or screen-reader support, so run them when you can, especially after changing
 interaction, touch handling, or announced text. Record only checks that were actually performed.
@@ -59,11 +59,12 @@ The React/Vue buttons change only the code examples and API notes, never the run
 
 - **Vue:** type each `/docs/vue/<name>` address into the address bar: `/docs/vue/reveal`,
   `/docs/vue/collapse`, `/docs/vue/text-bloom`, `/docs/vue/magnetic`, `/docs/vue/photo-pile`,
-  `/docs/vue/scribble-highlight`, and `/docs/vue/sticker-burst`. The address then shows
+  `/docs/vue/scribble-highlight`, `/docs/vue/sticker-burst`, `/docs/vue/image-text`,
+  `/docs/vue/space-type`, `/docs/vue/glow-highlight`, and `/docs/vue/dual-wave`. The address then shows
   `/docs/<name>`, so do not use Reload to restart a check: a reload loads React previews.
   Open the `/docs/vue/<name>` address again instead.
-- **React:** select React on any component page, then type each `/docs/<name>` address. The same
-  seven components apply; SpaceType, ImageText, and DualWave have React previews only.
+- **React:** select React on any component page, then type each `/docs/<name>` address for the
+  same eleven components.
 - **Sidebar:** after a component page is open, sidebar links load previews for the selected
   framework.
 

@@ -18,7 +18,7 @@ tactile and playful motion in response to intent. `DESIGN_DIRECTION.md` owns the
 | # | Decision | Rationale |
 |---|---|---|
 | D1 | Layered architecture: core / styles / adapters / distribution | Zag + Ark's proven shape; framework #2 must cost ~300 LOC, not a rewrite |
-| D2 | React covers the catalog; Vue 3.5 covers seven shared components | SpaceType, GlowHighlight, ImageText, and DualWave currently ship for React only. Keep their behavior and CSS shared for future adapters, and document availability per component. Require package, SSR, lifecycle, and parity evidence before adding another adapter. |
+| D2 | React and Vue 3.5 cover the catalog | Keep behavior and CSS shared so each adapter stays thin, and document availability per component. Require package, SSR, lifecycle, and parity evidence before adding another adapter. |
 | D3 | Animation engine built on vanilla `motion`, NOT `framer-motion` | `motion` is framework-agnostic → identical motion in every framework later |
 | D3a | **`@kida-ui/motion` has zero framework code and zero framework peer deps** | The real boundary. CI-enforceable. React adapter lives in `@kida-ui/react`, not `@kida-ui/motion/react` — otherwise React has two entry points. |
 | D4 | Behavior from Zag.js | 60+ audited machines, already supports 6 frameworks |
@@ -72,7 +72,7 @@ packages/motion/          @kida-ui/motion — NO framework dependency, of any ki
 packages/react/           @kida-ui/react — the ONLY React surface
   src/motion/             useReveal, useStagger …  (~50 LOC each)
   src/components/         the components
-packages/vue/             @kida-ui/vue — SFC adapters for the seven shared components
+packages/vue/             @kida-ui/vue — SFC adapters for the catalog
 ```
 
 Note: `motion@13.1.0` ships `.` + `./react` in one package using
@@ -136,7 +136,7 @@ kida-ui/
 │  ├─ motion/          L1  animation engine — zero framework deps
 │  ├─ styles/          L2  plain CSS tokens + keyframes (+ optional tailwind.css)
 │  ├─ react/           L3  React adapter (motion hooks) + components
-│  ├─ vue/             L3  Vue 3.5 adapter + the seven shared components
+│  ├─ vue/             L3  Vue 3.5 adapter + components
 │  └─ cli/             (v2) `kida add <c> --framework svelte`
 ├─ registry/
 │  ├─ registry.json
@@ -191,7 +191,7 @@ Vitest + Playwright + axe · Biome · Astro (docs) · Shiki
 - **P3 — current:** TextBloom, Magnetic, ScribbleHighlight, PhotoPile, and StickerBurst are complete;
   next are CandyDock, one background, and one composed hero
 - **P4:** package metadata, visual regression and accessibility audit → **v0.1 alpha (React)**
-- **P5 — current:** Vue supports the seven shared components with package/SSR/browser evidence
+- **P5 — current:** Vue supports all eleven components with package/SSR/browser evidence
   and parity, generated copied-source distribution, and framework-specific documentation;
   manual screen-reader and real-device checks are recommended, not release gates
 
