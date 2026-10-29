@@ -1,0 +1,94 @@
+import Demo from '../../components/Demo.astro'
+import Distribution from '../../components/Distribution.astro'
+import QuickStart from '../../components/QuickStart.astro'
+import Playground from '../../demos/dual-wave-playground.vue'
+
+<Demo name="dual-wave-playground" framework="vue" title="Projects in motion · Scroll the stage" hideSource>
+  <Playground client:visible={{ rootMargin: '200px' }} />
+</Demo>
+
+Pass the photos and their labels through the `items` array. Native attributes use Vue spelling, and component refs expose `element`.
+
+## Quick start
+
+<Distribution name="dual-wave" framework="vue" />
+
+<QuickStart name="dual-wave" framework="vue" />
+
+## Customization
+
+Choose how the photo changes with `layout`. **Mosaic**, the default, splits the photo into a grid:
+the next photo cascades in tile by tile from the bottom row with a curved front, the tiles part
+as you scroll faster, and they close into one seamless image at rest. Set `columns` from 2 to 5
+for a bolder or finer grid; rows follow the 3:4 frame. **Frame** shows one full photo and cuts
+straight to the next one while the text keeps its wave.
+
+`strength` controls how far the columns travel and how widely the tiles part, `response` controls
+how quickly the motion settles, and `headings` relabels the two columns, for example
+`Projects` and `Clients`, or `Series` and `Photographers`. Restyle the stage with the
+`--kida-dual-wave-*` properties below; they cover dark surfaces as well as light ones.
+
+## API
+
+### Props
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | `readonly DualWaveItem[]` | required | Items in loop order. |
+| `headings` | `readonly [string, string]` | `['Projects', 'Clients']` | Labels for the title and subtitle columns. |
+| `layout` | `'mosaic' \| 'frame'` | `'mosaic'` | How the photo changes between items. |
+| `columns` | `number` | `3` | Mosaic columns, from 2 to 5. |
+| `strength` | `number` | `80` | Wave travel and tile parting, from 0 to 100. |
+| `response` | `number` | `1` | Settling speed multiplier, from 0.25 to 3. |
+| `captureScroll` | `boolean` | `true` | Whether wheel and swipe gestures over the stage move between items. |
+| `defaultIndex` | `number` | `0` | Item shown first. |
+| `index` | `number` | — | Travels to this item whenever the value changes. Supports `v-model:index`. |
+
+### Events
+
+| Event | Payload | Description |
+| --- | --- | --- |
+| `update:index` | `number` | The item nearest the center changed; keeps `v-model:index` in sync. |
+| `index-change` | `number` | The item nearest the center changed. |
+
+Each item requires `id`, `title`, `subtitle`, `src`, and `alt`, and accepts `imageProps` for
+ordinary image attributes such as `srcset` or `sizes`. The root is a `section` and also accepts
+native attributes, `class`, `style`, event listeners, and a component ref exposing `element`.
+
+### CSS custom properties
+
+| Property | Default | Description |
+| --- | --- | --- |
+| `--kida-dual-wave-surface` | `#fffafb` | Stage background. |
+| `--kida-dual-wave-ink` | `#211c24` | Text color. |
+| `--kida-dual-wave-muted` | `#71666b` | Column headings. |
+| `--kida-dual-wave-accent` | `#e94f86` | Current item and hover underline. |
+| `--kida-dual-wave-line` | `#e9dfda` | Stage border. |
+| `--kida-dual-wave-placeholder` | `#f8dbe5` | Shown while a photo loads. |
+| `--kida-dual-wave-focus` | accent | Keyboard focus outline. |
+| `--kida-dual-wave-height` | `clamp(26rem, 78svh, 44rem)` | Stage height. |
+| `--kida-dual-wave-radius` | `1.5rem` | Stage corner radius. |
+| `--kida-dual-wave-image-width` | `clamp(7rem, 22cqw, 18.75rem)` | Photo width; short stages shrink it to fit their height. |
+| `--kida-dual-wave-image-radius` | `0.625rem` | Photo corner radius in the frame layout. |
+| `--kida-dual-wave-gutter` | `2px` | Gap around each mosaic tile. |
+| `--kida-dual-wave-font-size` | fluid | Column text size. |
+| `--kida-dual-wave-row-height` | fluid | Height of and spacing between rows; smaller values show more items. |
+
+## Accessibility and input behavior
+
+The stage is a labeled carousel. Focus it to use the arrow keys, Page Up and Page Down, or Home
+and End; the current title is also in the tab order, and clicking any title or subtitle travels to
+that item. Wheel and swipe gestures move between items and snap to the nearest one. Hold Shift to
+scroll the page past the stage, or bind `:capture-scroll="false"` when the stage sits inside a
+long page. A polite live region announces the current item once it changes, and the photo's `alt`
+text is exposed as the stage's image.
+
+Reduced motion keeps every input working but moves immediately between items, without the wave,
+tile cascade, or parting. Motion stops while the stage is off-screen or the document is hidden.
+
+## Troubleshooting
+
+> Give the stage a definite height through `--kida-dual-wave-height` when it sits in a flexible
+> layout. Photos are cropped to a 3:4 frame; adjust their source composition when an important
+> detail falls outside it. Each photo is shown only after it has been decoded, so very large
+> sources can delay the first change; serve images close to their displayed size.

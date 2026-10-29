@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict'
 import { execFile } from 'node:child_process'
+import { existsSync } from 'node:fs'
 import { mkdir, mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { createServer } from 'node:http'
 import { tmpdir } from 'node:os'
@@ -179,6 +180,10 @@ async function consumer(selected, uiPath) {
       { cause: error },
     )
   }
+  // The CLI installs packages only when an item adds dependencies; items with none (for
+  // example ImageText) still need the project's own Vue installation to typecheck and build.
+  if (!existsSync(join(directory, 'node_modules/vue')))
+    await run('pnpm', ['install', '--prefer-offline'], { cwd: directory, timeout: 120_000 })
   const manifest = JSON.parse(await readFile(join(directory, 'package.json'), 'utf8'))
   assert(!Object.keys(manifest.dependencies).some((name) => name.startsWith('@kida-ui/')))
   const expected = new Map()
@@ -268,7 +273,7 @@ void voice
   await write(
     directory,
     'check-server.mjs',
-    `import assert from 'node:assert/strict'\nimport * as server from './server/entry.mjs'\nconst { render } = server\nassert.equal(typeof window, 'undefined')\nconst first = await render()\nassert.equal(first, await render())\nfor(const marker of ${JSON.stringify(selected.filter((item) => item.name !== 'collapse').map((item) => ({ 'scribble-highlight': 'scribble' })[item.name] ?? item.name))}) assert(first.includes('data-kida-' + marker), marker)\n${hasCollapse ? `assert(first.includes('aria-expanded="false"'))\nassert(!first.includes('data-kida-collapse'))\nconst opened = await server.renderOpenCollapse()\nassert.equal(opened, await server.renderOpenCollapse())\nassert(opened.includes('data-kida-collapse'))\nassert(opened.includes('Copied Collapse content'))\n` : ''}`,
+    `import assert from 'node:assert/strict'\nimport * as server from './server/entry.mjs'\nconst { render } = server\nassert.equal(typeof window, 'undefined')\nconst first = await render()\nassert.equal(first, await render())\nfor(const marker of ${JSON.stringify(selected.filter((item) => item.name !== 'collapse').map((item) => ({ 'scribble-highlight': 'scribble', 'glow-highlight': 'glow' })[item.name] ?? item.name))}) assert(first.includes('data-kida-' + marker), marker)\n${hasCollapse ? `assert(first.includes('aria-expanded="false"'))\nassert(!first.includes('data-kida-collapse'))\nconst opened = await server.renderOpenCollapse()\nassert.equal(opened, await server.renderOpenCollapse())\nassert(opened.includes('data-kida-collapse'))\nassert(opened.includes('Copied Collapse content'))\n` : ''}`,
   )
   await run(process.execPath, [join(directory, 'check-server.mjs')], { cwd: directory })
   console.log(

@@ -6,7 +6,7 @@ import { join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const root = fileURLToPath(new URL('..', import.meta.url))
-const vueComponents = [
+const components = [
   'reveal',
   'collapse',
   'text-bloom',
@@ -14,9 +14,18 @@ const vueComponents = [
   'photo-pile',
   'scribble-highlight',
   'sticker-burst',
+  'space-type',
+  'glow-highlight',
+  'image-text',
+  'dual-wave',
 ]
-const reactOnlyComponents = ['space-type', 'glow-highlight', 'image-text', 'dual-wave']
-const components = [...vueComponents, ...reactOnlyComponents]
+// The Vue demo whose client module must compile without React Refresh.
+const vueClientDemos = {
+  'space-type': 'space-type-playground',
+  'glow-highlight': 'glow-highlight-playground',
+  'dual-wave': 'dual-wave-playground',
+}
+const markers = { 'scribble-highlight': 'scribble', 'glow-highlight': 'glow' }
 const docs = join(root, 'apps/docs')
 const require = createRequire(join(docs, 'package.json'))
 const { dev } = await import(pathToFileURL(require.resolve('astro')).href)
@@ -41,14 +50,14 @@ try {
     '/docs/installation',
     '/docs/vue/installation',
     ...components.map((name) => `/docs/${name}`),
-    ...vueComponents.map((name) => `/docs/vue/${name}`),
+    ...components.map((name) => `/docs/vue/${name}`),
     '/',
   ]) {
     const response = await fetch(`${origin}${path}`)
     const html = await response.text()
     assert.equal(response.status, 200, `${path}: development SSR failed`)
     if (path === '/' || path === '/docs') {
-      for (const name of reactOnlyComponents) {
+      for (const name of components) {
         assert(html.includes(`href="/docs/${name}"`), `${path}: ${name} catalog link is missing`)
         assert(html.includes(`data-component="${name}"`), `${path}: ${name} preview is missing`)
       }
@@ -63,11 +72,6 @@ try {
       assert(html.includes('data-kida-space-type'), 'React SpaceType did not render on the server')
       assert(html.includes('space-type-panel'), 'SpaceType customization controls are missing')
       assert(html.includes('/r/space-type.json'), 'SpaceType installation link is missing')
-      assert(html.includes('React only'), 'SpaceType framework availability is missing')
-      assert(
-        !html.includes('href="/docs/vue/space-type"'),
-        'SpaceType links to an unavailable adapter',
-      )
     }
     if (path === '/docs/glow-highlight') {
       assert(html.includes('data-kida-glow'), 'React GlowHighlight did not render on the server')
@@ -77,30 +81,15 @@ try {
         'GlowHighlight code customization example is missing',
       )
       assert(html.includes('/r/glow-highlight.json'), 'GlowHighlight installation link is missing')
-      assert(html.includes('React only'), 'GlowHighlight framework availability is missing')
-      assert(
-        !html.includes('href="/docs/vue/glow-highlight"'),
-        'GlowHighlight links to an unavailable adapter',
-      )
     }
     if (path === '/docs/dual-wave') {
       assert(html.includes('data-kida-dual-wave'), 'React DualWave did not render on the server')
       assert(html.includes('dual-wave-settings'), 'DualWave customization controls are missing')
       assert(html.includes('/r/dual-wave.json'), 'DualWave installation link is missing')
-      assert(html.includes('React only'), 'DualWave framework availability is missing')
-      assert(
-        !html.includes('href="/docs/vue/dual-wave"'),
-        'DualWave links to an unavailable adapter',
-      )
     }
     if (path === '/docs/image-text') {
       assert(html.includes('data-kida-image-text'), 'React ImageText did not render on the server')
       assert(html.includes('/r/image-text.json'), 'ImageText installation link is missing')
-      assert(html.includes('React only'), 'ImageText framework availability is missing')
-      assert(
-        !html.includes('href="/docs/vue/image-text"'),
-        'ImageText links to an unavailable adapter',
-      )
       const stage = html.match(/<figure[^>]*data-demo="image-text-basic"[\s\S]*?<\/figure>/)?.[0]
       assert(stage, 'ImageText preview is missing')
       assert(
@@ -108,19 +97,12 @@ try {
         'ImageText preview must contain only the white text variant',
       )
     }
-    if (path.startsWith('/docs/vue/')) {
-      for (const name of reactOnlyComponents) {
-        assert(
-          !html.includes(`href="/docs/vue/${name}"`),
-          `${path}: unavailable Vue component in navigation`,
-        )
-      }
-    }
+    assert(!html.includes('React only'), `${path}: a component is still marked React only`)
     if (path.startsWith('/docs/vue/') && path !== '/docs/vue/installation') {
       const name = path.split('/').at(-1)
       assert(html.includes(`data-framework="vue"`), `${path}: Vue distribution is missing`)
       assert(html.includes(`/r/vue/${name}.json`), `${path}: incorrect registry command`)
-      const marker = name === 'scribble-highlight' ? 'scribble' : name
+      const marker = markers[name] ?? name
       if (name === 'collapse') {
         assert(html.includes('aria-expanded="false"'), `${path}: Collapse must start closed`)
       } else {
@@ -140,7 +122,7 @@ try {
     }
     assert(!html.includes('Vue (experimental)'), `${path}: the removed overview is still linked`)
   }
-  for (const name of ['registry', ...vueComponents]) {
+  for (const name of ['registry', ...components]) {
     const response = await fetch(`${origin}/r/vue/${name}.json`)
     assert.equal(response.status, 200, `Vue ${name} registry is missing`)
     assert(response.headers.get('content-type')?.includes('application/json'))
@@ -151,8 +133,10 @@ try {
         `${name}: Vue entry is missing`,
       )
   }
-  for (const name of vueComponents) {
-    const response = await fetch(`${origin}/src/demos/${name}-basic.vue`)
+  for (const name of components) {
+    const response = await fetch(
+      `${origin}/src/demos/${vueClientDemos[name] ?? `${name}-basic`}.vue`,
+    )
     const source = await response.text()
     assert.equal(response.status, 200, `Vue ${name} client module failed to compile`)
     assert(

@@ -57,11 +57,9 @@ export const registryDefinitions = [
         target: '@ui/kida/tokens.css',
       },
     ],
-    frameworks: ['react'],
   },
   {
     name: 'space-type',
-    frameworks: ['react'],
     title: 'SpaceType',
     description: 'Wraps a phrase around rotating rings with a soft radial wave.',
     category: 'text',
@@ -360,7 +358,6 @@ export const registryDefinitions = [
   },
   {
     name: 'glow-highlight',
-    frameworks: ['react'],
     title: 'GlowHighlight',
     description: 'Traces soft, layered candy-colored rings around the words that matter.',
     category: 'decorative',
@@ -458,7 +455,6 @@ export const registryDefinitions = [
   },
   {
     name: 'dual-wave',
-    frameworks: ['react'],
     title: 'DualWave',
     description:
       'Waves two text columns past a photo that changes as a tile mosaic or a clean cut.',

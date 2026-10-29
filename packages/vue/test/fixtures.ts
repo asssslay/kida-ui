@@ -1,4 +1,4 @@
-import type { PhotoPilePhoto } from '@kida-ui/vue'
+import type { DualWaveItem, PhotoPilePhoto } from '@kida-ui/vue'
 
 export const photos = [
   { id: 'flower', alt: 'Pink flower', color: '#ed719e' },
@@ -9,6 +9,14 @@ export const photos = [
   alt,
   src: `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="80" height="100"><rect width="80" height="100" fill="${color}"/></svg>`)}`,
 })) satisfies readonly PhotoPilePhoto[]
+
+export const waveItems = photos.map(({ id, alt, src }, index) => ({
+  id,
+  alt,
+  src,
+  title: `Project ${index + 1}`,
+  subtitle: `Studio ${index + 1}`,
+})) satisfies readonly DualWaveItem[]
 
 export function node<T extends HTMLElement = HTMLElement>(selector: string): T {
   const element = document.querySelector<T>(selector)

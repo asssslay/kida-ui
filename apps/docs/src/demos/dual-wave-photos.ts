@@ -1,5 +1,3 @@
-import type { DualWaveItem } from '@kida-ui/react'
-
 // Photos from Unsplash under the Unsplash License; credits are in public/demo/dual-wave/README.md.
 // Places, cats, and flowers alternate so neighbouring items always contrast.
 const photos = [
@@ -84,7 +82,16 @@ const photos = [
   ['apricot-petals', 'Apricot Petals', 'Tavga K.S', 'Peach and cream flowers on a dark background'],
 ] as const
 
-export const DUAL_WAVE_PHOTOS: readonly DualWaveItem[] = photos.map(
+/** Shared by the React and Vue demos: a plain item shape both adapters accept. */
+export interface DualWavePhoto {
+  id: string
+  title: string
+  subtitle: string
+  src: string
+  alt: string
+}
+
+export const DUAL_WAVE_PHOTOS: readonly DualWavePhoto[] = photos.map(
   ([id, title, subtitle, alt]) => ({
     id,
     title,

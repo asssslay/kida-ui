@@ -23,7 +23,18 @@ const components = [
   'photo-pile',
   'scribble-highlight',
   'sticker-burst',
+  'space-type',
+  'glow-highlight',
+  'image-text',
+  'dual-wave',
 ]
+// The first live demo on each page; playground pages have no basic demo.
+const primaryDemo = (name) =>
+  ({
+    'space-type': 'space-type-playground',
+    'glow-highlight': 'glow-highlight-playground',
+    'dual-wave': 'dual-wave-playground',
+  })[name] ?? `${name}-basic`
 const server = await preview({
   root: docs,
   logLevel: 'error',
@@ -183,7 +194,12 @@ try {
               ].map((name) => [name, node.getAttribute(name)]),
             ),
             style: Object.fromEntries(properties.map((name) => [name, style[name]])),
-            bounds: [rect.left - origin.left, rect.top - origin.top, rect.width, rect.height],
+            // Unrendered nodes such as SVG filter definitions report an all-zero rect; keep it
+            // zero rather than offsetting it by the stage's page position.
+            bounds:
+              rect.left || rect.top || rect.width || rect.height
+                ? [rect.left - origin.left, rect.top - origin.top, rect.width, rect.height]
+                : [0, 0, 0, 0],
             children: [...node.children].flatMap(describe),
           },
         ]
@@ -697,7 +713,7 @@ try {
     await page.setViewportSize({ width, height: 900 })
     for (const name of [...components, 'installation']) {
       await sidebar(name)
-      if (name !== 'installation') await hydrated(`${name}-basic`)
+      if (name !== 'installation') await hydrated(primaryDemo(name))
       else assert((await page.locator('[data-framework-article]').innerText()).includes('vue-ts'))
     }
   }
@@ -794,21 +810,14 @@ try {
     [],
     'Navigation removed or reparented persistent shell nodes',
   )
-  // SpaceType, ImageText, and DualWave ship only a React adapter. Their pages show React and
-  // hide the Vue choice, but keep the saved Vue preference for the others.
-  async function reactOnly(target) {
-    assert(await target.locator('[data-framework-choice="vue"]').isHidden())
-    assert(await target.locator('[data-framework-choice="react"]').isVisible())
+  // The newest Vue adapters keep the saved Vue choice through sidebar and direct loads.
+  async function savedVue(target) {
+    assert(await target.locator('[data-framework-choice="vue"]').isVisible())
     assert.equal(
-      await target.locator('[data-framework-choice="react"]').getAttribute('aria-pressed'),
+      await target.locator('[data-framework-choice="vue"]').getAttribute('aria-pressed'),
       'true',
     )
-    assert.equal(await target.locator('[data-framework-status]').textContent(), '')
-    assert.equal(
-      await target.evaluate(() => localStorage.getItem('kida-ui:framework')),
-      'vue',
-      'A React-only page replaced the saved framework preference',
-    )
+    assert.equal(await target.evaluate(() => localStorage.getItem('kida-ui:framework')), 'vue')
   }
   for (const [name, demo] of [
     ['image-text', 'image-text-basic'],
@@ -816,8 +825,8 @@ try {
     ['glow-highlight', 'glow-highlight-playground'],
     ['dual-wave', 'dual-wave-playground'],
   ]) {
-    await sidebar(name, 'react')
-    await reactOnly(page)
+    await sidebar(name)
+    await savedVue(page)
     await hydrated(demo)
   }
   const direct = await context.newPage()
@@ -830,10 +839,10 @@ try {
   )
   await direct.waitForFunction(
     () =>
-      !!document.querySelector('[data-framework-choice]:not(:disabled)') &&
-      !document.querySelector('[data-framework-content]')?.hasAttribute('aria-busy'),
+      document.querySelector('[data-framework-content]')?.getAttribute('data-framework') ===
+        'vue' && !document.documentElement.hasAttribute('data-framework-pending'),
   )
-  await reactOnly(direct)
+  await savedVue(direct)
   await direct.close()
 
   // With Vue saved, a direct load hides the server-rendered React text until the

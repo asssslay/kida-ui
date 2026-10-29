@@ -1,0 +1,101 @@
+import Demo from '../../components/Demo.astro'
+import Distribution from '../../components/Distribution.astro'
+import QuickStart from '../../components/QuickStart.astro'
+import AfterDark from '../../demos/glow-highlight-after-dark.vue'
+import Finishes from '../../demos/glow-highlight-finishes.vue'
+import Playground from '../../demos/glow-highlight-playground.vue'
+
+<Demo name="glow-highlight-playground" framework="vue" title="One word that glows · Make it yours" hideSource>
+  <Playground client:load />
+</Demo>
+
+Place the words in the default slot. Native attributes use Vue spelling, and component refs expose `element`.
+
+## Quick start
+
+<Distribution name="glow-highlight" framework="vue" />
+
+<QuickStart name="glow-highlight" framework="vue" />
+
+## Customization
+
+The playground above is for exploring only. The installed component has no controls: choose
+everything in code with props and CSS custom properties. **Glow** draws soft layered bands;
+**Sticker** cuts a crisp edge with a small paper shadow; **Halo** leaves the letters unfilled, so
+it suits running text. `spread` scales the rings and `duration` sets how long they take to grow.
+Rings grow outward from the core in a short stagger, and reversing mid-flight continues from the
+current frame instead of jumping.
+
+<Demo name="glow-highlight-finishes" framework="vue" title="Finishes in code">
+  <Finishes client:visible />
+</Demo>
+
+Pick a named `palette`: **Candy** (the default), **Sorbet**, **Berry**, or **After dark**, which
+has a deeper core so light text stays readable on dark surfaces. The rings are traced from the
+text itself, so any font, size, or wrapped phrase works. For colors beyond the palettes, bind the
+CSS custom properties below with `:style` on the component; they override the palette.
+
+<Demo name="glow-highlight-after-dark" framework="vue" title="After dark">
+  <AfterDark client:visible />
+</Demo>
+
+## API
+
+### Props
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `finish` | `'glow' \| 'sticker' \| 'halo'` | `'glow'` | Ring treatment. Changes rebuild the rings without restarting. |
+| `palette` | `'candy' \| 'sorbet' \| 'berry' \| 'after-dark'` | `'candy'` | Named color set. Inline custom properties override it. |
+| `spread` | `number` | `1` | Multiplier on ring size, clamped to 0–3. |
+| `duration` | `number` | `600` | Milliseconds to fully grow or fold away. |
+| `trigger` | `'view' \| 'hover' \| 'manual'` | `'view'` | What turns the glow on. |
+| `once` | `boolean` | `true` | For `view`: stay lit after the first entry. With `:once="false"`, the glow folds away on exit. |
+| `amount` | `number` | `0.6` | For `view`: visible fraction, from 0–1, required to start. |
+| `active` | `boolean` | `false` | For `manual`: whether the glow is on. The initial value applies without animating. |
+
+`hover` follows the nearest enclosing link, button, label, summary, or element with `tabindex`,
+so keyboard focus lights the glow as well as the pointer. Native span attributes, `class`,
+`style`, event listeners, and a component ref exposing `element` are passed to the root.
+Changing `trigger`, `once`, or `amount` recreates the controller; the other options update in
+place.
+
+### CSS custom properties
+
+Defaults below are the Candy palette.
+
+| Property | Default | Description |
+| --- | --- | --- |
+| `--kida-glow-core` | `#e94f86` | Fill closest to the letters. Keep enough contrast with the text color. |
+| `--kida-glow-rim` | `#ffe1ec` | Thin pale outline around the core. |
+| `--kida-glow-band` | `#ffd76a` | Middle band. |
+| `--kida-glow-fringe` | `#ff8a3d` | Outermost, softest band. |
+| `--kida-glow-shadow` | `rgb(33 28 36 / 0.2)` | Sticker paper shadow. |
+| `--kida-glow-gap` | `0.1em` | Inline margin that keeps the rings off neighboring words. |
+
+## Accessibility and input behavior
+
+The text is rendered once for reading, selection, and copying. The traced copy behind it is
+hidden from assistive technology and made inert, so links inside the highlight are focused once.
+The SVG filter is decorative. In forced-colors mode the decoration is removed and system colors
+apply. Color is never the only signal: the highlighted words remain ordinary text.
+
+Reduced motion switches the glow on and off without growing, including when the preference
+changes mid-animation. Each instance runs a short frame loop only while growing or folding, then
+stops; a settled or idle highlight does no work. Observers, listeners, frames, and the filter
+are released on unmount.
+
+Server markup is deterministic and shows the plain text; the glow appears after hydration.
+Filter IDs are created in the browser, so repeated instances never collide. The rings paint
+outside the text's box without enlarging it, so a highlight at the edge of a narrow screen does
+not cause horizontal scrolling. Modern browsers with SVG filters on HTML content are required
+for the effect; without them the text renders normally.
+
+## Troubleshooting
+
+> Use GlowHighlight for a word or short phrase. Every animating instance re-renders its filter
+> on each frame, so dozens growing at once can drop frames on modest GPUs; once settled they
+> cost nothing. If the outer band touches the next word, increase `--kida-glow-gap` or lower
+> `spread`. On dark surfaces, choose a deeper core so light text keeps its contrast. Keep the
+> slot content on one line with the tags, as in the examples: whitespace inside the tags becomes
+> part of the highlighted text.
