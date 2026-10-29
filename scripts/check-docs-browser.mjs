@@ -232,7 +232,11 @@ try {
     try {
       compareNodes(react.tree, vue.tree)
     } catch (error) {
-      const directory = join(docs, '.vitest-attachments/framework', `${engine}-${name}-${width}`)
+      const directory = join(
+        docs,
+        '.vitest-attachments/framework',
+        `${engine}-${name.replaceAll(' ', '-')}-${width}`,
+      )
       await mkdir(directory, { recursive: true })
       await writeFile(join(directory, 'react.png'), react.screenshot)
       await writeFile(join(directory, 'vue.png'), vue.screenshot)
@@ -289,7 +293,12 @@ try {
         ),
       )
       for (const demo of demoNames)
-        await compare(demo, width, reactDemos.get(demo), await capture(demo))
+        await compare(
+          `${demo} after selecting Vue`,
+          width,
+          reactDemos.get(demo),
+          await capture(demo),
+        )
       await switchTo('react')
       assert.equal(
         await page.evaluate(() => window.__docsHydrates),
@@ -315,7 +324,7 @@ try {
         demoNames,
       )
       for (const demo of demoNames)
-        await compare(demo, width, reactDemos.get(demo), await capture(demo))
+        await compare(`${demo} on the Vue entry`, width, reactDemos.get(demo), await capture(demo))
       if (name === 'reveal') {
         const states = []
         for (const prefix of ['/docs', '/docs/vue']) {
@@ -630,7 +639,15 @@ try {
     requestAnimationFrame(sample)
   })
   const navigationRequests = documentRequests
+  // WebKit rejects more than 100 history.replaceState() calls per 10 seconds. Astro's router makes
+  // about four per page here (navigation plus scroll ends while a demo is brought into view), so
+  // an unpaced walk of the whole catalog can exceed the limit on a fast runner and abort view
+  // transitions. Readers never navigate this quickly; 700 ms keeps a window near 60 calls.
+  let lastSidebarNavigation = 0
   async function sidebar(name, framework = 'vue') {
+    const wait = lastSidebarNavigation + 700 - Date.now()
+    if (wait > 0) await page.waitForTimeout(wait)
+    lastSidebarNavigation = Date.now()
     await page.locator(`.sidebar a[href="/docs/${name}"]`).click()
     await page.waitForURL(`${origin}/docs/${name}`)
     await page.waitForFunction(
