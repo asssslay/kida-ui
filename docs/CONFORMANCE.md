@@ -17,7 +17,7 @@ should be added.
 | ImageText (React only) | Browser + crop unit tests | Initial and live browser emulation | Image replacement, observers, CSS animation, Strict Mode | Text, image, crop, duration, zoom, paused, root tag | Deterministic SSR + browser hydration | One selectable text node; no generated spans/buttons |
 | Magnetic | Browser | Browser | Settle + controller replacement | Strength and distance | Shared browser gate | Touch ignored; child remains usable |
 | PhotoPile | Browser | Browser | Drag settle + collection replacement | Photos and drag options | Shared browser gate | Focus and pointer paths |
-| ScribbleHighlight | Browser | Browser | Observer re-arm | Viewport options and variant | Shared browser gate | SVG decoration hidden |
+| ScribbleHighlight | Browser, including wide strokes | Browser | Observer re-arm + measurement cleanup | Viewport options, variant, and resize | Shared browser gate | SVG decoration hidden |
 | StickerBurst | Browser | Browser | Listener cleanup via Strict Mode | Stable layout inputs | Shared browser gate | Native click path; decoration hidden |
 | DualWave (React only) | Browser + math unit tests | Browser | Observer, listener, and frame cleanup via Strict Mode | Items, layout, grid, options in place, `index` | Browser | Keyboard, click, wheel; live region announces each item |
 | SpaceType (React only) | Browser + geometry unit tests | Browser | Observer and animation cleanup | Text, rows, speed, pause, radius, longitude, colors | Browser | Authored phrase exposed once |
