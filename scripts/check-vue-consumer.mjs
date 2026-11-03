@@ -32,6 +32,13 @@ const demos = [
   'photo-pile-basic',
   'scribble-highlight-basic',
   'sticker-burst-basic',
+  'image-text-basic',
+  'space-type-basic',
+  'space-type-playground',
+  'glow-highlight-playground',
+  'glow-highlight-finishes',
+  'glow-highlight-after-dark',
+  'dual-wave-playground',
 ]
 
 async function write(relative, content) {
@@ -85,13 +92,26 @@ try {
   await write('package.json', JSON.stringify({ private: true, type: 'module' }))
   await write('env.d.ts', "declare module '*.css'\n")
 
-  // The exact files displayed as Vue documentation are compiled against packed declarations.
-  for (const name of demos) {
-    await write(
-      `${name}.vue`,
-      await readFile(join(root, 'apps/docs/src/demos', `${name}.vue`), 'utf8'),
-    )
+  // The exact files displayed as Vue documentation are compiled against packed declarations,
+  // with the local styles, data, and fonts they import.
+  const copied = new Set()
+  async function copyDemoFile(file) {
+    if (copied.has(file)) return
+    copied.add(file)
+    const source = await readFile(join(root, 'apps/docs/src/demos', file), 'utf8')
+    await write(file, source)
+    for (const [, specifier] of source.matchAll(/(?:from|import)\s+['"]([^'"]+)['"]/g)) {
+      if (specifier.startsWith('./'))
+        await copyDemoFile(
+          /\.\w+$/.test(specifier) ? specifier.slice(2) : `${specifier.slice(2)}.ts`,
+        )
+      else if (!/^(?:vue|@kida-ui\/)/.test(specifier) && !copied.has(specifier)) {
+        copied.add(specifier)
+        await linkDependency(specifier)
+      }
+    }
   }
+  for (const name of demos) await copyDemoFile(`${name}.vue`)
   for (const name of ['flower', 'sunset', 'pool']) {
     await write(
       `public/demo/photo-pile-${name}.svg`,
@@ -130,11 +150,22 @@ createApp({ render: () => h('main', [${demos.map((_, index) => `h(Demo${index})`
   // Also resolve emitted declarations with NodeNext; Vite-specific source aliases are absent.
   await write(
     'types.mts',
-    `import { Reveal, Collapse, TextBloom, Magnetic, PhotoPile, ScribbleHighlight, StickerBurst, type RevealProps, type TextBloomProps, type PhotoPilePhoto, type KidaElement } from '@kida-ui/vue'
+    `import { Reveal, Collapse, TextBloom, Magnetic, PhotoPile, ScribbleHighlight, StickerBurst, ImageText, SpaceType, GlowHighlight, DualWave, type RevealProps, type TextBloomProps, type PhotoPilePhoto, type KidaElement, type DualWaveItem, type GlowHighlightPalette, type SpaceTypeGeometry } from '@kida-ui/vue'
 const options: RevealProps = { once: false, x: 0 }
 const bloom: TextBloomProps = { text: 'Typed text', by: 'character', once: false }
 const photo: PhotoPilePhoto = { id: 'photo', src: '/photo.png', alt: 'Sample', imageProps: { loading: 'lazy', width: 80 } }
 const element: KidaElement = { element: null }
+const item: DualWaveItem = { id: 'item', title: 'Title', subtitle: 'Credit', src: '/photo.png', alt: 'Sample', imageProps: { loading: 'lazy' } }
+const palette: GlowHighlightPalette = 'after-dark'
+const geometry: SpaceTypeGeometry | null = null
+// @ts-expect-error ImageText requires plain text.
+const invalidImageText: InstanceType<typeof ImageText>['$props'] = { image: '/photo.png', text: 12 }
+// @ts-expect-error GlowHighlight palettes are named color sets.
+const invalidPalette: InstanceType<typeof GlowHighlight>['$props'] = { palette: 'neon' }
+// @ts-expect-error DualWave items require titles, credits, and alt text.
+const invalidItems: InstanceType<typeof DualWave>['$props'] = { items: [{ id: 'item', src: '/photo.png' }] }
+// @ts-expect-error SpaceType rows are numeric.
+const invalidRows: InstanceType<typeof SpaceType>['$props'] = { text: 'Orbit', rows: 'two' }
 // @ts-expect-error Published component declarations must reject invalid motion options.
 const invalid: InstanceType<typeof Reveal>['$props'] = { duration: 'slow' }
 // @ts-expect-error TextBloom requires plain text.
@@ -143,7 +174,7 @@ const invalidText: InstanceType<typeof TextBloom>['$props'] = { text: 12 }
 const invalidPhoto: InstanceType<typeof PhotoPile>['$props'] = { photos: [{ src: '/photo.png' }] }
 // @ts-expect-error StickerBurst seeds are numeric.
 const invalidSeed: InstanceType<typeof StickerBurst>['$props'] = { seed: 'random' }
-void [Reveal, Collapse, TextBloom, Magnetic, PhotoPile, ScribbleHighlight, StickerBurst, options, bloom, photo, element]
+void [Reveal, Collapse, TextBloom, Magnetic, PhotoPile, ScribbleHighlight, StickerBurst, ImageText, SpaceType, GlowHighlight, DualWave, options, bloom, photo, element, item, palette, geometry]
 `,
   )
   await write(
@@ -188,7 +219,7 @@ import * as Kida from '@kida-ui/vue'
 import { createSSRApp, h } from 'vue'
 import { renderToString } from '@vue/server-renderer'
 assert.equal(typeof window, 'undefined')
-assert.deepEqual(Object.keys(Kida).sort(), ['Reveal', 'Collapse', 'TextBloom', 'Magnetic', 'PhotoPile', 'ScribbleHighlight', 'StickerBurst'].sort())
+assert.deepEqual(Object.keys(Kida).sort(), ['Reveal', 'Collapse', 'TextBloom', 'Magnetic', 'PhotoPile', 'ScribbleHighlight', 'StickerBurst', 'ImageText', 'SpaceType', 'GlowHighlight', 'DualWave'].sort())
 const render = () => h('main', [
   h(Kida.Reveal, {}, () => 'Reveal content'),
   h(Kida.Collapse, { open: true }, () => 'Collapse content'),
@@ -197,12 +228,16 @@ const render = () => h('main', [
   h(Kida.PhotoPile, { photos: [{ id: 'photo', src: '/photo.png', alt: 'Sample' }] }),
   h(Kida.ScribbleHighlight, {}, () => 'Highlight content'),
   h(Kida.StickerBurst, {}, () => h('button', 'Celebrate')),
+  h(Kida.ImageText, { image: '/photo.png', text: 'Image content' }),
+  h(Kida.SpaceType, { text: 'Orbit content' }),
+  h(Kida.GlowHighlight, {}, () => 'Glow content'),
+  h(Kida.DualWave, { items: [{ id: 'item', title: 'Wave title', subtitle: 'Wave credit', src: '/photo.png', alt: 'Sample' }] }),
 ])
 const first = await renderToString(createSSRApp({ render }))
 assert.equal(await renderToString(createSSRApp({ render })), first)
 assert.ok(first.includes('translate3d(0px, 8px, 0) scale(1)'))
 assert.ok(first.includes('Collapse content'))
-for (const marker of ['text-bloom', 'magnetic', 'photo-pile', 'scribble', 'sticker-burst']) assert.ok(first.includes('data-kida-' + marker))
+for (const marker of ['text-bloom', 'magnetic', 'photo-pile', 'scribble', 'sticker-burst', 'image-text', 'space-type', 'glow', 'dual-wave']) assert.ok(first.includes('data-kida-' + marker))
 assert.ok(!first.includes('undefined'))
 `,
   )

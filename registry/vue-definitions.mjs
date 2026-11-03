@@ -15,7 +15,7 @@ export const vueRegistryDefinitions = registryDefinitions
       ...react,
       framework: 'vue',
       package: { ...react.package, name: '@kida-ui/vue' },
-      dependencies: name === 'collapse' ? ['@zag-js/presence', '@zag-js/vue'] : ['motion'],
+      dependencies: name === 'collapse' ? ['@zag-js/presence', '@zag-js/vue'] : react.dependencies,
       files: [
         {
           source: `packages/vue/src/Kida${component}.vue`,
@@ -36,6 +36,11 @@ export const vueRegistryDefinitions = registryDefinitions
             'KidaElement',
             ...(name === 'reveal' ? ['RevealEase'] : []),
             ...(name === 'text-bloom' ? ['TextBloomVoice'] : []),
+            ...(name === 'dual-wave' ? ['DualWaveItem', 'DualWaveLayout'] : []),
+            ...(name === 'glow-highlight'
+              ? ['GlowHighlightFinish', 'GlowHighlightPalette', 'GlowHighlightTrigger']
+              : []),
+            ...(name === 'space-type' ? ['SpaceTypeGeometry'] : []),
           ],
           importReplacements: { '@kida-ui/motion': `./${helper}.motion.js` },
         },
@@ -50,7 +55,10 @@ export const vueRegistryDefinitions = registryDefinitions
               : file.target,
             importReplacements: {
               './collapse-size.js': './collapse-size.motion.js',
+              './dual-wave-math.js': './dual-wave-math.motion.js',
+              './glow-highlight-math.js': './glow-highlight-math.motion.js',
               './reduced-motion.js': './reduced-motion.motion.js',
+              './space-type-geometry.js': './space-type-geometry.motion.js',
             },
           })),
       ],

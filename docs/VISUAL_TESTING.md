@@ -52,7 +52,7 @@ tests so one mismatch cannot hide the remaining comparisons and their artifacts.
 
 ## Scope
 
-The Vue adapter also compares all seven components against the built React adapter
+The Vue adapter also compares all eleven components against the built React adapter
 in the same browser session at both viewport widths. Chromium runs under `pnpm verify`;
 Firefox/WebKit run under `pnpm test:cross-browser` and their separate CI jobs. These settled
 reduced-motion captures use fixed, identical content and integer geometry; exact decoded pixel

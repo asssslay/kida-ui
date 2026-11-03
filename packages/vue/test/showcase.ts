@@ -1,14 +1,18 @@
 import {
   Collapse,
+  DualWave,
+  GlowHighlight,
+  ImageText,
   Magnetic,
   PhotoPile,
   Reveal,
   ScribbleHighlight,
+  SpaceType,
   StickerBurst,
   TextBloom,
 } from '@kida-ui/vue'
 import { h } from 'vue'
-import { photos } from './fixtures.js'
+import { photos, waveItems } from './fixtures.js'
 
 export const showcase = (open: boolean) =>
   h('main', { style: { color: '#241f22', background: '#fff', padding: '20px' } }, [
@@ -20,4 +24,8 @@ export const showcase = (open: boolean) =>
     h(PhotoPile, { photos, 'aria-label': 'Travel snapshots' }),
     h('p', [h(ScribbleHighlight, {}, () => 'Highlighted content')]),
     h(StickerBurst, {}, () => h('button', { type: 'button' }, 'Celebrate')),
+    h(ImageText, { image: photos[0]?.src ?? '', text: 'Image text content' }),
+    h(SpaceType, { text: 'Space type content', style: { height: '200px' } }),
+    h('p', ['Make it ', h(GlowHighlight, {}, () => 'glow')]),
+    h(DualWave, { items: waveItems, defaultIndex: 1, 'aria-label': 'Showcase projects' }),
   ])

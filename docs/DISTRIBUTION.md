@@ -2,11 +2,11 @@
 
 Status: **implemented for React and Vue components** (2026-10-12)
 
-React covers eleven components; Vue covers the seven shared components. SpaceType, GlowHighlight,
-ImageText, and DualWave currently support React only, so their pages hide the Vue choice. Component and installation pages
+React and Vue each cover all eleven components. Component and installation pages
 have a React/Vue selector on one canonical `/docs/<name>` page. It changes the checked source,
 installation instructions, and API notes without navigation or restarting the live preview. The
-framework preference is remembered locally and kept when a React-only page is opened; legacy
+framework preference is remembered locally across pages; a future single-framework page hides
+the other choice without replacing the saved preference. Legacy
 `/docs/vue/<name>` entries remain compatible. Native Vue SFC demos are independently verified
 against React.
 Sidebar navigation keeps the navigation controls mounted and prepares the selected framework's

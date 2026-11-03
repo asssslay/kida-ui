@@ -7,6 +7,18 @@ import { render } from 'vitest-browser-vue'
 import { createSSRApp, defineComponent, h, nextTick } from 'vue'
 import { showcase } from './showcase.js'
 
+// Nodes that must survive hydration unchanged, across every adapter in the showcase.
+const HYDRATED = [
+  '[data-kida-photo-item]',
+  '[data-kida-sticker-layer] > span',
+  '[data-kida-scribble]',
+  '[data-kida-image-text]',
+  '[data-kida-space-type-letter]',
+  '[data-kida-glow-layer]',
+  '[data-kida-dual-wave-item]',
+  '[data-kida-dual-wave-tile]',
+].join(', ')
+
 afterEach(async () => {
   await commands.setReducedMotion(false)
   await page.viewport(1280, 720)
@@ -32,11 +44,7 @@ test.each([false, true])(
     expect(getComputedStyle(bloom).transform).toBe(
       reduced ? 'none' : 'matrix(0.98, 0, 0, 0.98, 0, 10)',
     )
-    const existing = [
-      ...container.querySelectorAll(
-        '[data-kida-photo-item], [data-kida-sticker-layer] > span, [data-kida-scribble]',
-      ),
-    ]
+    const existing = [...container.querySelectorAll(HYDRATED)]
     const collapse = container.querySelector('[data-kida-collapse]')
     const warnings: string[] = []
     const errors = vi.spyOn(console, 'error')
@@ -50,13 +58,15 @@ test.each([false, true])(
       expect(warnings).toEqual([])
       expect(errors).not.toHaveBeenCalled()
       expect(collapse?.textContent).toBe('Collapse content')
-      expect([
-        ...container.querySelectorAll(
-          '[data-kida-photo-item], [data-kida-sticker-layer] > span, [data-kida-scribble]',
-        ),
-      ]).toEqual(existing)
+      expect([...container.querySelectorAll(HYDRATED)]).toEqual(existing)
       expect(container.querySelectorAll('[data-kida-photo-item]')).toHaveLength(3)
       expect(container.querySelectorAll('[data-kida-sticker-layer] > span')).toHaveLength(8)
+      expect(
+        container.querySelector('[data-kida-dual-wave-column="title"] [aria-current="true"]')
+          ?.textContent,
+      ).toBe('Project 2')
+      expect(container.querySelectorAll('[data-kida-glow-content]')).toHaveLength(1)
+      await expect.poll(() => container.querySelector('filter[id^="kida-glow-"]')).not.toBe(null)
       if (reduced) expect(getComputedStyle(reveal).willChange).toBe('auto')
     } finally {
       app.unmount()
@@ -123,6 +133,19 @@ test.each([390, 1280])(
     const button = document.querySelector('button')
     button?.focus()
     expect(document.activeElement).toBe(button)
-    expect((await axe.run(document.body)).violations).toEqual([])
+    // DualWave dims inactive rows by design, as in the React suite; every other rule still
+    // applies to them, and every rule applies to the rest of the page.
+    expect(
+      (await axe.run({ include: [document.body], exclude: [['[data-kida-dual-wave-column]']] }))
+        .violations,
+    ).toEqual([])
+    expect(
+      (
+        await axe.run(
+          { include: [['[data-kida-dual-wave-column]']] },
+          { rules: { 'color-contrast': { enabled: false } } },
+        )
+      ).violations,
+    ).toEqual([])
   },
 )

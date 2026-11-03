@@ -46,15 +46,17 @@ export default defineConfig({
           const options = { animations: 'disabled', caret: 'hide', scale: 'css' } as const
           const reactRoot = iframe.locator('[data-parity="react"]')
           const vueRoot = iframe.locator('[data-parity="vue"]')
+          // Hide the other adapter with opacity: engines write `visibility: visible` on nodes
+          // (DualWave rows, GlowHighlight layers), which would show through a hidden ancestor.
           await vueRoot.evaluate((node) => {
-            node.style.visibility = 'hidden'
+            node.style.opacity = '0'
           })
           const react = await reactRoot.screenshot(options)
           await vueRoot.evaluate((node) => {
-            node.style.visibility = 'visible'
+            node.style.opacity = ''
           })
           await reactRoot.evaluate((node) => {
-            node.style.visibility = 'hidden'
+            node.style.opacity = '0'
           })
           const vue = await vueRoot.screenshot(options)
           const reactPixels = PNG.sync.read(react)
