@@ -1,6 +1,7 @@
 # Release conformance checklist
 
-All eleven components have React and Vue package and copied-source distribution. The
+All eleven components have React and Vue copied-source distribution, which users can install
+today. The npm packages build and pass packed-consumer checks but are not published. The
 automated gates are required for a release. The manual checks are recommended: automation does not
 establish real-device or screen-reader support, so run them when you can, especially after changing
 interaction, touch handling, or announced text. Record only checks that were actually performed.
