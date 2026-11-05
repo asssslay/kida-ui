@@ -10,7 +10,7 @@
   "javascript": { "formatter": { "quoteStyle": "single", "semicolons": "asNeeded" } },
   "overrides": [
     {
-      "includes": ["**/*.astro", "**/*.vue"],
+      "includes": ["**/*.astro", "**/*.vue", "**/*.svelte"],
       "linter": {
         "rules": {
           "correctness": {

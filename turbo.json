@@ -47,6 +47,7 @@
       ]
     },
     "@kida-ui/vue#typecheck": { "dependsOn": ["build"] },
+    "@kida-ui/svelte#typecheck": { "dependsOn": ["build"] },
     "test": { "dependsOn": ["^build"] },
     "dev": { "cache": false, "persistent": true }
   }
