@@ -48,8 +48,8 @@ remains `pnpm verify` followed by `pnpm -r --filter './packages/*' exec publint`
 
 ## Vue adapter
 
-`@kida-ui/vue` exports Reveal, Collapse, TextBloom, Magnetic, PhotoPile, ScribbleHighlight, and
-StickerBurst. It uses the same motion options,
+`@kida-ui/vue` exports Reveal, Collapse, TextBloom, Magnetic, PhotoPile, ScribbleHighlight,
+StickerBurst, ImageText, SpaceType, GlowHighlight, and DualWave. It uses the same motion options,
 measurement helper, CSS variables, and data attributes as React, with Vue default slots, native
 attributes/events, `@exit-complete`, and component refs exposing `element`.
 

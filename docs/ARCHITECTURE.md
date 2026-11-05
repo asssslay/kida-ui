@@ -191,8 +191,9 @@ Vitest + Playwright + axe · Biome · Astro (docs) · Shiki
 - **P3 — current:** TextBloom, Magnetic, ScribbleHighlight, PhotoPile, and StickerBurst are complete;
   next are CandyDock, one background, and one composed hero
 - **P4:** package metadata, visual regression and accessibility audit → **v0.1 alpha (React)**
-- **P5 — current:** Vue supports all eleven components with package/SSR/browser evidence
+- **P5 — complete:** Vue supports all eleven components with package/SSR/browser evidence
   and parity, generated copied-source distribution, and framework-specific documentation;
+  copied source is the supported install path and npm publication is deferred;
   manual screen-reader and real-device checks are recommended, not release gates
 
 ## 10. Known risks

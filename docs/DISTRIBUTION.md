@@ -1,6 +1,10 @@
 # Kida UI Distribution
 
-Status: **implemented for React and Vue components** (2026-10-12)
+Status: **copied source is available for React and Vue; npm packages are not published** (2026-11-05)
+
+Copied source is the supported way to install Kida. npm publication is deferred until a release
+decision, so `@kida-ui/react`, `@kida-ui/vue`, `@kida-ui/motion`, and `@kida-ui/styles` cannot be
+installed from npm yet.
 
 React and Vue each cover all eleven components. Component and installation pages
 have a React/Vue selector on one canonical `/docs/<name>` page. It changes the checked source,
@@ -11,7 +15,7 @@ the other choice without replacing the saved preference. Legacy
 against React.
 Sidebar navigation keeps the navigation controls mounted and prepares the selected framework's
 new article before displaying it, without changing the canonical URL format.
-Vue 3.5+ and a TypeScript project are required. npm publication remains pending.
+Vue 3.5+ and a TypeScript project are required.
 
 React uses the existing `/r/<name>.json` registry through `shadcn`. Vue uses
 `/r/vue/<name>.json` through `shadcn-vue@2.8.2`, with its own catalog at `/r/vue/registry.json`.
@@ -43,11 +47,15 @@ styles, and Node SSR without DOM globals. Only declared third-party runtime depe
 Vue host are linked from the locked installation; no Kida source aliases or workspace package
 links are available. Run it after the package builds; it is also part of `pnpm verify` and CI.
 
-Kida supports two consumption models from one implementation. The npm package is the stable,
-upgradeable option. The registry gives users the framework-specific component source when they need to own and
-edit it. Kida does not maintain a second hand-written copy of a component.
+Kida generates two consumption models from one implementation. The registry gives users the
+framework-specific component source to own and edit, and it works today. Copied components do not
+update automatically. The npm package will be the upgradeable option once it is published. Kida
+does not maintain a second hand-written copy of a component.
 
-## Package install
+## Package install (not available yet)
+
+These packages are not on npm, so the commands below fail today. They describe the planned
+package path. `pnpm check:vue-consumer` tests that path with locally packed archives.
 
 Use the package when receiving fixes and new versions matters more than editing internals:
 

@@ -36,7 +36,8 @@ const structure = isVue
     <strong>Copy source, not a package.</strong>
     <p>
       Kida uses the {isVue ? 'shadcn-vue' : 'shadcn'} CLI to place readable component files directly in your
-      project. There is no unpublished Kida package to install or keep in sync.
+      project. This is the only way to install Kida today, because the npm packages are not
+      published. Copied files are yours to edit and do not update automatically.
     </p>
   </div>
 
@@ -49,8 +50,8 @@ const structure = isVue
   </ul>
   <p>
     Kida's registry installs public runtime dependencies automatically. You do not need
-    <code>@kida-ui/react</code>, <code>@kida-ui/motion</code>, or any other unpublished Kida
-    package.
+    <code>{isVue ? '@kida-ui/vue' : '@kida-ui/react'}</code>, <code>@kida-ui/motion</code>, or any
+    other unpublished Kida package.
   </p>
 
   <h2 id="prepare-your-project">Prepare your project</h2>
