@@ -25,7 +25,7 @@ watch(
   <span v-bind="$attrs" ref="element" data-kida-scribble="" :data-variant="props.variant ?? 'underline'" :data-state="element?.dataset.state ?? 'idle'">
     <span data-kida-scribble-content=""><slot /></span>
     <svg aria-hidden="true" viewBox="0 0 100 20" preserveAspectRatio="none">
-      <path :d="paths[props.variant ?? 'underline']" pathLength="1" />
+      <path :d="paths[props.variant ?? 'underline']" />
     </svg>
   </span>
 </template>

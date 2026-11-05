@@ -40,16 +40,29 @@
   stroke-linecap: round;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
 }
 
-[data-kida-scribble][data-state="active"] path,
-[data-kida-scribble][data-state="settled"] path {
+[data-kida-scribble][data-state="idle"] path {
+  visibility: hidden;
+}
+
+/*
+ * A non-scaling stroke is dashed in screen pixels, so `pathLength` cannot describe the whole
+ * stroke once the SVG stretches past about 100px. drawInView sets --kida-draw-length to the
+ * stroke's measured length. One dash covers it; the longer gap and the extra stroke width at the
+ * start keep the dash's round cap out of sight until drawing begins. Without a measured length
+ * these declarations are invalid, and the stroke appears complete.
+ */
+[data-kida-scribble][data-state="active"] path {
+  stroke-dasharray: var(--kida-draw-length) calc(var(--kida-draw-length) * 2);
   animation: kida-scribble-draw var(--kida-scribble-duration) var(--kida-ease-out) forwards;
 }
 
 @keyframes kida-scribble-draw {
+  from {
+    stroke-dashoffset: calc(var(--kida-draw-length) + var(--kida-scribble-width));
+  }
+
   to {
     stroke-dashoffset: 0;
   }
@@ -57,6 +70,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   [data-kida-scribble][data-state] path {
+    visibility: inherit;
     animation: none;
     stroke-dashoffset: 0;
   }

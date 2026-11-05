@@ -42,7 +42,7 @@ export const ScribbleHighlight = forwardRef<HTMLSpanElement, ScribbleHighlightPr
       >
         <span data-kida-scribble-content="">{children}</span>
         <svg aria-hidden="true" viewBox="0 0 100 20" preserveAspectRatio="none">
-          <path d={paths[variant]} pathLength="1" />
+          <path d={paths[variant]} />
         </svg>
       </span>
     )
