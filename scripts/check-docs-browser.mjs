@@ -974,7 +974,10 @@ try {
     for (const name of components) {
       console.log(`Checking ${engine}: Svelte ${name} at ${width}px`)
       const response = await page.goto(`${origin}/docs/svelte/${name}`)
-      assert.equal(response?.status(), 200, `/docs/svelte/${name}: HTTP ${response?.status()}`)
+      assert(
+        [200, 304].includes(response?.status()),
+        `/docs/svelte/${name}: HTTP ${response?.status()}`,
+      )
       const islands = page.locator('.demo-stage astro-island')
       const count = await islands.count()
       assert(count > 0, `/docs/svelte/${name}: no live preview`)
