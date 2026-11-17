@@ -1,18 +1,23 @@
 ---
-import { getRegistryItem } from '../lib/registry'
+import { getRegistryItem, type RegistryFramework } from '../lib/registry'
 import CodeBlock from './CodeBlock.astro'
 import type { CodeLang } from './code-lang'
 
 interface Props {
   name: string
-  framework?: 'react' | 'vue'
+  framework?: RegistryFramework
 }
 
 const { name, framework = 'react' } = Astro.props
 const item = getRegistryItem(name, framework)
-const registryPath = `/r/${framework === 'vue' ? 'vue/' : ''}${item.name}.json`
+const cli = {
+  react: { command: 'shadcn@latest', name: 'shadcn', project: 'React' },
+  vue: { command: 'shadcn-vue@2.8.2', name: 'shadcn-vue', project: 'Vue 3.5+' },
+  svelte: { command: 'shadcn-svelte@1.8.0', name: 'shadcn-svelte', project: 'Svelte 5' },
+}[framework]
+const registryPath = `/r/${framework === 'react' ? '' : `${framework}/`}${item.name}.json`
 const registryUrl = new URL(registryPath, Astro.site).href
-const registryCommand = `npx ${framework === 'vue' ? 'shadcn-vue@2.8.2' : 'shadcn@latest'} add ${registryUrl}`
+const registryCommand = `npx ${cli.command} add ${registryUrl}`
 const dependencyCommand = `npm install ${item.dependencies.join(' ')}`
 
 function displayTarget(target: string): string {
@@ -29,8 +34,16 @@ function displayTarget(target: string): string {
   return target
 }
 
+function filePath(file: { path?: string; target?: string }): string {
+  if (framework === 'svelte') return `src/lib/components/ui/${file.target}`
+  return displayTarget(
+    file.target ?? file.path?.replace('registry/vue/', 'src/components/ui/') ?? '',
+  )
+}
+
 function codeLanguage(path: string): CodeLang {
   if (path.endsWith('.vue')) return 'vue'
+  if (path.endsWith('.svelte')) return 'svelte'
   if (path.endsWith('.css')) return 'css'
   if (path.endsWith('.ts')) return 'ts'
   return 'tsx'
@@ -41,14 +54,14 @@ function codeLanguage(path: string): CodeLang {
   <div class="distribution-head">
     <div>
       <strong id={`copy-${item.name}`}>Add to your project</strong>
-      <p>Copy the component and everything it needs into your {framework === 'vue' ? 'Vue 3.5+' : 'React'} project.</p>
+      <p>Copy the component and everything it needs into your {cli.project} project.</p>
     </div>
   </div>
 
   <div class="distribution-source">
     <div class="distribution-label">
       <span class="distribution-badge">Recommended</span>
-      <strong>Use the {framework === 'vue' ? 'shadcn-vue' : 'shadcn'} CLI</strong>
+      <strong>Use the {cli.name} CLI</strong>
     </div>
     <CodeBlock code={registryCommand} lang="bash" />
     <p class="distribution-note">
@@ -56,6 +69,15 @@ function codeLanguage(path: string): CodeLang {
       and installs the declared runtime dependencies. New to shadcn? Follow the
       <a href="/docs/installation">installation guide</a> first.
     </p>
+    {
+      framework === 'svelte' && (
+        <p class="distribution-note">
+          Files land in <code>src/lib/components/ui/kida</code> by default. SvelteKit 3 projects
+          import them through <code>#lib</code>; SvelteKit 2 and Vite projects use{' '}
+          <code>$lib</code>, as in the examples here.
+        </p>
+      )
+    }
     <a class="registry-link" href={registryPath}>View registry JSON <span aria-hidden="true">↗</span></a>
 
     <details class="manual-source">
@@ -79,8 +101,8 @@ function codeLanguage(path: string): CodeLang {
             {
               item.files.map((file) => (
                 <details>
-                  <summary>{displayTarget(file.target ?? file.path.replace('registry/vue/', 'src/components/ui/'))}</summary>
-                  <CodeBlock code={file.content} lang={codeLanguage(file.path)} />
+                  <summary>{filePath(file)}</summary>
+                  <CodeBlock code={file.content} lang={codeLanguage(filePath(file))} />
                 </details>
               ))
             }

@@ -10,7 +10,7 @@ interface Props {
   description: string
   currentPath: string
   headings: MarkdownHeading[]
-  framework?: 'react' | 'vue'
+  framework?: 'react' | 'vue' | 'svelte'
   frameworkPage?: string
 }
 
@@ -25,7 +25,8 @@ const {
 const docsPrefix = '/docs'
 
 const catalog = await getCollection('components')
-const availableFrameworks = catalog.find((entry) => entry.id === frameworkPage)?.data.frameworks
+const availableFrameworks = catalog.find((entry) => entry.id === frameworkPage)?.data
+  .frameworks ?? ['react', 'vue', 'svelte']
 // The sidebar stays mounted across client navigation, so every framework's
 // document lists the same components; each link names the adapters it ships.
 const entries = [...catalog].sort(
@@ -51,7 +52,7 @@ const toc = headings.filter((heading) => heading.depth === 2 || heading.depth ==
   bodyClass="soft-orbit-page docs-reference-page"
   canonicalPath={currentPath}
   clientNavigation
-  frameworks={frameworkPage ? (availableFrameworks ?? ['react', 'vue']) : []}
+  frameworks={frameworkPage && framework !== 'svelte' ? availableFrameworks : []}
 >
   <div class="docs">
     <aside class="sidebar">

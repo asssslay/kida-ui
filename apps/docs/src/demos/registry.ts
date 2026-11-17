@@ -1,11 +1,11 @@
 import type { CodeLang } from '../components/code-lang'
 
 /**
- * Available demo frameworks. Both cover every component.
+ * Available demo frameworks. All three cover every component.
  */
-export type Framework = 'react' | 'vue'
+export type Framework = 'react' | 'vue' | 'svelte'
 
-export const FRAMEWORKS: readonly Framework[] = ['react', 'vue']
+export const FRAMEWORKS: readonly Framework[] = ['react', 'vue', 'svelte']
 
 export interface DemoVariant {
   /** The demo file's own text, verbatim, for the code block beside it. */
@@ -56,6 +56,16 @@ const vueSources = import.meta.glob<string>('./*.vue', {
 for (const [path, source] of Object.entries(vueSources)) {
   const name = path.slice(2, -'.vue'.length)
   demos.set(name, { ...demos.get(name), vue: { source, lang: 'vue' } })
+}
+
+const svelteSources = import.meta.glob<string>('./*.svelte', {
+  eager: true,
+  query: '?raw',
+  import: 'default',
+})
+for (const [path, source] of Object.entries(svelteSources)) {
+  const name = path.slice(2, -'.svelte'.length)
+  demos.set(name, { ...demos.get(name), svelte: { source, lang: 'svelte' } })
 }
 
 /**

@@ -3,39 +3,87 @@ import CodeBlock from './CodeBlock.astro'
 import QuickStart from './QuickStart.astro'
 
 interface Props {
-  framework?: 'react' | 'vue'
+  framework?: 'react' | 'vue' | 'svelte'
 }
 const { framework = 'react' } = Astro.props
-const isVue = framework === 'vue'
-const cli = isVue ? 'shadcn-vue@2.8.2' : 'shadcn@latest'
-const registryUrl = new URL(isVue ? '/r/vue/text-bloom.json' : '/r/text-bloom.json', Astro.site)
-  .href
-const installCommand = `npx ${cli} add ${registryUrl}`
-const createCommand = isVue
-  ? 'pnpm create vite my-app --template vue-ts'
-  : 'npx shadcn@latest init --template vite --name my-app --no-monorepo'
-const initCommand = `npx ${cli} init`
-const structure = isVue
-  ? `src/components/ui/kida/
-├── text-bloom.vue
-├── text-bloom.types.ts
-├── text-bloom.css
-├── text-bloom.motion.ts
-└── reduced-motion.motion.ts`
-  : `src/components/ui/kida/
+const guide = {
+  react: {
+    cli: 'shadcn@latest',
+    cliName: 'shadcn',
+    project: 'React',
+    compatible: 'shadcn-compatible React',
+    registryPath: '/r/text-bloom.json',
+    createCommand: 'npx shadcn@latest init --template vite --name my-app --no-monorepo',
+    createNote:
+      'Choose a component library and preset when prompted, enter the generated directory, then continue with the installation command below.',
+    setupUrl: 'https://ui.shadcn.com/docs/installation',
+    setupName: 'shadcn framework setup',
+    packageName: '@kida-ui/react',
+    directory: 'src/components/ui/kida',
+    importPath: '@/components/ui/kida/text-bloom',
+  },
+  vue: {
+    cli: 'shadcn-vue@2.8.2',
+    cliName: 'shadcn-vue',
+    project: 'Vue 3.5+ TypeScript',
+    compatible: 'shadcn-vue-compatible Vue',
+    registryPath: '/r/vue/text-bloom.json',
+    createCommand: 'pnpm create vite my-app --template vue-ts',
+    createNote:
+      'Enter the new project, install dependencies, and complete the Vue Vite setup linked below (including the @ alias) before initializing shadcn-vue.',
+    setupUrl: 'https://www.shadcn-vue.com/docs/installation/vite',
+    setupName: 'shadcn-vue Vite setup',
+    packageName: '@kida-ui/vue',
+    directory: 'src/components/ui/kida',
+    importPath: '@/components/ui/kida/text-bloom.vue',
+  },
+  svelte: {
+    cli: 'shadcn-svelte@1.8.0',
+    cliName: 'shadcn-svelte',
+    project: 'Svelte 5 TypeScript (SvelteKit or Vite)',
+    compatible: 'shadcn-svelte-compatible Svelte',
+    registryPath: '/r/svelte/text-bloom.json',
+    createCommand: 'npx sv create my-app --template minimal --types ts --add tailwindcss',
+    createNote:
+      'Enter the new project and install dependencies. shadcn-svelte requires Tailwind CSS in the project, so the command above adds it; Kida components do not depend on it.',
+    setupUrl: 'https://shadcn-svelte.com/docs/installation',
+    setupName: 'shadcn-svelte setup',
+    packageName: '@kida-ui/svelte',
+    directory: 'src/lib/components/ui/kida',
+    importPath: '$lib/components/ui/kida/text-bloom.svelte',
+  },
+}[framework]
+const registryUrl = new URL(guide.registryPath, Astro.site).href
+const installCommand = `npx ${guide.cli} add ${registryUrl}`
+const initCommand = `npx ${guide.cli} init`
+const structure = {
+  react: `src/components/ui/kida/
 ├── text-bloom.tsx
 ├── text-bloom.css
 ├── compose-refs.ts
 ├── use-isomorphic-layout-effect.ts
 └── motion/
     ├── text-bloom.ts
-    └── reduced-motion.ts`
+    └── reduced-motion.ts`,
+  vue: `src/components/ui/kida/
+├── text-bloom.vue
+├── text-bloom.types.ts
+├── text-bloom.css
+├── text-bloom.motion.ts
+└── reduced-motion.motion.ts`,
+  svelte: `src/lib/components/ui/kida/
+├── text-bloom.svelte
+├── text-bloom.types.ts
+├── text-bloom.css
+├── text-bloom.motion.ts
+└── reduced-motion.motion.ts`,
+}[framework]
 ---
 
   <div class="guide-callout">
     <strong>Copy source, not a package.</strong>
     <p>
-      Kida uses the {isVue ? 'shadcn-vue' : 'shadcn'} CLI to place readable component files directly in your
+      Kida uses the {guide.cliName} CLI to place readable component files directly in your
       project. This is the only way to install Kida today, because the npm packages are not
       published. Copied files are yours to edit and do not update automatically.
     </p>
@@ -44,13 +92,13 @@ const structure = isVue
   <h2 id="before-you-start">Before you start</h2>
   <p>You need:</p>
   <ul>
-    <li>a {isVue ? 'Vue 3.5+ TypeScript' : 'React'} project;</li>
+    <li>a {guide.project} project;</li>
     <li>Node.js and npm, pnpm, yarn, or Bun;</li>
-    <li>a {isVue ? 'shadcn-vue' : 'shadcn'} <code>components.json</code> file.</li>
+    <li>a {guide.cliName} <code>components.json</code> file.</li>
   </ul>
   <p>
     Kida's registry installs public runtime dependencies automatically. You do not need
-    <code>{isVue ? '@kida-ui/vue' : '@kida-ui/react'}</code>, <code>@kida-ui/motion</code>, or any
+    <code>{guide.packageName}</code>, <code>@kida-ui/motion</code>, or any
     other unpublished Kida package.
   </p>
 
@@ -58,18 +106,18 @@ const structure = isVue
 
   <h3 id="start-a-new-project">Start a new project</h3>
   <p>Start a new project:</p>
-  <CodeBlock code={createCommand} lang="bash" />
+  <CodeBlock code={guide.createCommand} lang="bash" />
   <p>
-    {isVue ? 'Enter the new project, install dependencies, and complete the Vue Vite setup linked below (including the @ alias) before initializing shadcn-vue.' : 'Choose a component library and preset when prompted, enter the generated directory, then continue with the installation command below.'}
+    {guide.createNote}
   </p>
 
   <h3 id="use-an-existing-project">Use an existing project</h3>
-  <p>From the root of a {isVue ? 'shadcn-vue-compatible Vue' : 'shadcn-compatible React'} project, initialize its configuration once:</p>
+  <p>From the root of a {guide.compatible} project, initialize its configuration once:</p>
   <CodeBlock code={initCommand} lang="bash" />
   <p>
     If the CLI reports missing Tailwind configuration or an import alias, complete the
-    <a href={isVue ? 'https://www.shadcn-vue.com/docs/installation/vite' : 'https://ui.shadcn.com/docs/installation'} target="_blank" rel="noreferrer">
-      {isVue ? 'shadcn-vue Vite setup' : 'shadcn framework setup'}
+    <a href={guide.setupUrl} target="_blank" rel="noreferrer">
+      {guide.setupName}
     </a>
     before continuing.
   </p>
@@ -105,10 +153,19 @@ const structure = isVue
     <code>components/ui</code> directory. Keep the relative structure intact so internal imports
     continue to resolve.
   </p>
+  {
+    framework === 'svelte' && (
+      <p>
+        SvelteKit 3 projects import the same files through <code>#lib</code> instead of
+        <code>$lib</code>, for example <code>#lib/components/ui/kida/text-bloom.svelte</code>.
+        SvelteKit 2 and Vite projects use <code>$lib</code>, as in the examples on this site.
+      </p>
+    )
+  }
 
   <h2 id="copy-manually">Copy manually</h2>
   <p>
-    If you do not want to use the {isVue ? 'shadcn-vue' : 'shadcn'} CLI, open a component page and expand
+    If you do not want to use the {guide.cliName} CLI, open a component page and expand
     <strong>Copy manually</strong>. Install the listed dependencies, create every file at its shown
     target path, and preserve the directory structure.
   </p>
@@ -131,7 +188,7 @@ const structure = isVue
   <h3>The import cannot be resolved</h3>
   <p>
     Check the path created by the CLI. With the default alias, TextBloom is imported from
-    <code>{isVue ? '@/components/ui/kida/text-bloom.vue' : '@/components/ui/kida/text-bloom'}</code>. Do not import it from an unpublished
+    <code>{guide.importPath}</code>. Do not import it from an unpublished
     <code>@kida-ui/*</code> package.
   </p>
 
@@ -150,7 +207,7 @@ const structure = isVue
 
   <h2 id="verify-your-installation">Verify your installation</h2>
   <ol class="verification-list">
-    <li>Confirm the expected files exist under <code>src/components/ui/kida</code>.</li>
+    <li>Confirm the expected files exist under <code>{guide.directory}</code>.</li>
     <li>Render the component and check the browser console for errors.</li>
     <li>Try its documented variants or options.</li>
     <li>Run your production build, such as <code>pnpm build</code>.</li>

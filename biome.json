@@ -21,7 +21,7 @@
       }
     },
     {
-      "includes": ["**/*.vue"],
+      "includes": ["**/*.vue", "**/*.svelte"],
       "linter": { "rules": { "correctness": { "useHookAtTopLevel": "off" } } }
     }
   ]

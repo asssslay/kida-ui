@@ -7,26 +7,30 @@
     "dev": "astro dev",
     "build": "astro build && node ../../scripts/check-built-registry.mjs",
     "preview": "astro preview",
-    "typecheck": "astro check && vue-tsc --noEmit -p tsconfig.vue.json"
+    "typecheck": "astro check && vue-tsc --noEmit -p tsconfig.vue.json && svelte-check --tsconfig tsconfig.svelte.json --fail-on-warnings"
   },
   "dependencies": {
     "@fontsource-variable/instrument-sans": "^5.3.0",
     "@kida-ui/motion": "workspace:*",
     "@kida-ui/react": "workspace:*",
     "@kida-ui/styles": "workspace:*",
+    "@kida-ui/svelte": "workspace:*",
     "@kida-ui/vue": "workspace:*",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "svelte": "5.57.3",
     "vue": "3.5.43"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@astrojs/mdx": "^7.0.8",
     "@astrojs/react": "^6.0.4",
+    "@astrojs/svelte": "9.0.1",
     "@astrojs/vue": "7.0.3",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "astro": "^7.2.9",
+    "svelte-check": "4.7.8",
     "typescript": "6.0.3",
     "vue-tsc": "3.3.12"
   }

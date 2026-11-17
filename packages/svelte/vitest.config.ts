@@ -13,7 +13,7 @@ export default defineConfig({
   plugins: [svelte({ configFile: false })],
   optimizeDeps: {
     include: ['@kida-ui/motion > motion', 'react-dom/client', 'axe-core'],
-    exclude: ['@kida-ui/svelte'],
+    exclude: ['@kida-ui/svelte', '@zag-js/svelte'],
   },
   test: {
     include: ['test/**/*.browser.test.ts'],
@@ -28,10 +28,13 @@ export default defineConfig({
       }),
       instances: [{ browser: 'chromium' }],
       commands: {
+        touchTap: async ({ iframe }, selector: string) => {
+          await iframe.locator(selector).tap()
+        },
         setReducedMotion: async ({ page }, reduced: boolean) => {
           await page.emulateMedia({ reducedMotion: reduced ? 'reduce' : 'no-preference' })
         },
-        serverMarkup: async () => serverMarkup(),
+        serverMarkup: async (_context, open: boolean = true) => serverMarkup(open),
         compareAdapters: async ({ iframe, project }) => {
           const options = { animations: 'disabled', caret: 'hide', scale: 'css' } as const
           const reactRoot = iframe.locator('[data-parity="react"]')

@@ -23,10 +23,13 @@
   "scripts": {
     "build": "svelte-package -i src -o dist",
     "typecheck": "svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
-    "test": "pnpm build && vitest run --config vitest.ssr.config.ts && vitest run"
+    "test": "pnpm build && vitest run --config vitest.ssr.config.ts && vitest run && pnpm test:touch",
+    "test:touch": "vitest run --config vitest.touch.config.ts"
   },
   "dependencies": {
-    "@kida-ui/motion": "workspace:*"
+    "@kida-ui/motion": "workspace:*",
+    "@zag-js/presence": "1.43.3",
+    "@zag-js/svelte": "1.43.3"
   },
   "peerDependencies": {
     "svelte": "^5.46.4"

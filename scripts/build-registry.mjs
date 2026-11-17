@@ -4,8 +4,13 @@ import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { registryItemSchema, registrySchema } from 'shadcn/schema'
+import {
+  registryItemSchema as svelteItemSchema,
+  registrySchema as svelteSchema,
+} from 'shadcn-svelte/schema'
 import { registryItemSchema as vueItemSchema, registrySchema as vueSchema } from 'shadcn-vue/schema'
 import { registryDefinitions } from '../registry/definitions.mjs'
+import { svelteRegistryDefinitions } from '../registry/svelte-definitions.mjs'
 import { vueRegistryDefinitions } from '../registry/vue-definitions.mjs'
 import { selectDeclarations } from './registry-types.mjs'
 
@@ -13,17 +18,19 @@ const root = fileURLToPath(new URL('..', import.meta.url))
 const outputDir = join(root, 'registry/r')
 const checkOnly = process.argv.includes('--check')
 
+const frameworks = ['react', 'vue', 'svelte']
 const packageManifests = await Promise.all(
-  ['packages/react/package.json', 'packages/vue/package.json', 'packages/motion/package.json'].map(
-    async (path) => JSON.parse(await readFile(join(root, path), 'utf8')),
+  [...frameworks, 'motion'].map(async (name) =>
+    JSON.parse(await readFile(join(root, `packages/${name}/package.json`), 'utf8')),
   ),
 )
+const motionManifest = packageManifests[frameworks.length]
 const declaredDependencies = Object.fromEntries(
-  ['react', 'vue'].map((framework, index) => [
+  frameworks.map((framework, index) => [
     framework,
     Object.assign(
       {},
-      ...[packageManifests[index], packageManifests[2]].map((manifest) => ({
+      ...[packageManifests[index], motionManifest].map((manifest) => ({
         ...manifest.dependencies,
         ...manifest.peerDependencies,
       })),
@@ -58,8 +65,8 @@ function assertInsideRoot(path) {
 function addStyleImport(source, styleImport) {
   if (!styleImport) return source
 
-  if (source.startsWith('<script setup')) {
-    return source.replace(/(<script setup[^>]*>)/, `$1\nimport '${styleImport}'`)
+  if (source.startsWith('<script')) {
+    return source.replace(/(<script[^>]*>)/, `$1\nimport '${styleImport}'`)
   }
 
   const directive = /^(['"]use client['"])\s*\n+/
@@ -85,7 +92,37 @@ function replaceImports(source, replacements = {}) {
   return source
 }
 
+const schemas = {
+  react: {
+    item: registryItemSchema,
+    registry: registrySchema,
+    url: 'https://ui.shadcn.com/schema',
+    name: 'kida-ui',
+  },
+  vue: {
+    item: vueItemSchema,
+    registry: vueSchema,
+    url: 'https://shadcn-vue.com/schema',
+    name: 'kida-ui-vue',
+  },
+  svelte: {
+    item: svelteItemSchema,
+    registry: svelteSchema,
+    url: 'https://shadcn-svelte.com/schema',
+    name: 'kida-ui-svelte',
+  },
+}
+
+function itemFile(framework, file, content) {
+  if (framework === 'vue')
+    return { path: file.target.replace('@ui/', 'registry/vue/'), type: 'registry:ui', content }
+  if (framework === 'svelte')
+    return { type: 'registry:ui', target: file.target.replace('@ui/', ''), content }
+  return { path: file.source, type: file.type, target: file.target, content }
+}
+
 async function createItem(definition) {
+  const framework = definition.framework ?? 'react'
   const files = await Promise.all(
     definition.files.map(async (file) => {
       const sourcePath = resolve(root, file.source)
@@ -97,46 +134,35 @@ async function createItem(definition) {
       content = addStyleImport(content, file.styleImport)
       content = addCssImports(content, file.imports)
 
-      return {
-        // shadcn-vue resolves paths under aliases.ui; it does not support React's @ui targets.
-        path:
-          definition.framework === 'vue'
-            ? file.target.replace('@ui/', 'registry/vue/')
-            : file.source,
-        type: definition.framework === 'vue' ? 'registry:ui' : file.type,
-        ...(definition.framework === 'vue' ? {} : { target: file.target }),
-        content,
-      }
+      return itemFile(framework, file, content)
     }),
   )
 
-  return (definition.framework === 'vue' ? vueItemSchema : registryItemSchema).parse({
-    $schema:
-      definition.framework === 'vue'
-        ? 'https://shadcn-vue.com/schema/registry-item.json'
-        : 'https://ui.shadcn.com/schema/registry-item.json',
+  return schemas[framework].item.parse({
+    $schema: `${schemas[framework].url}/registry-item.json`,
     name: definition.name,
     type: 'registry:ui',
     title: definition.title,
     description: definition.description,
-    dependencies: definition.dependencies.map((name) =>
-      dependencySpecifier(name, definition.framework ?? 'react'),
-    ),
+    dependencies: definition.dependencies.map((name) => dependencySpecifier(name, framework)),
     files,
     categories: [definition.category],
     meta: {
       kida: {
         package: definition.package,
-        ...(definition.framework === 'vue' ? { framework: 'vue' } : {}),
+        ...(framework === 'react' ? {} : { framework }),
       },
     },
   })
 }
 
 export async function buildRegistry(framework = 'react') {
-  if (!['react', 'vue'].includes(framework))
-    throw new Error(`Unknown registry framework: ${framework}`)
-  const definitions = framework === 'vue' ? vueRegistryDefinitions : registryDefinitions
+  if (!frameworks.includes(framework)) throw new Error(`Unknown registry framework: ${framework}`)
+  const definitions = {
+    react: registryDefinitions,
+    vue: vueRegistryDefinitions,
+    svelte: svelteRegistryDefinitions,
+  }[framework]
   const names = new Set()
   for (const definition of definitions) {
     if (names.has(definition.name)) throw new Error(`Duplicate registry item: ${definition.name}`)
@@ -144,14 +170,19 @@ export async function buildRegistry(framework = 'react') {
   }
 
   const items = await Promise.all(definitions.map(createItem))
-  const registry = (framework === 'vue' ? vueSchema : registrySchema).parse({
-    $schema:
-      framework === 'vue'
-        ? 'https://shadcn-vue.com/schema/registry.json'
-        : 'https://ui.shadcn.com/schema/registry.json',
-    name: framework === 'vue' ? 'kida-ui-vue' : 'kida-ui',
+  const registry = schemas[framework].registry.parse({
+    $schema: `${schemas[framework].url}/registry.json`,
+    name: schemas[framework].name,
     homepage: 'https://kida-ui.onrender.com',
-    items: items.map(({ $schema: _schema, ...item }) => item),
+    items: items.map(({ $schema: _schema, ...item }) =>
+      framework === 'svelte'
+        ? {
+            ...item,
+            registryDependencies: [],
+            files: item.files.map((file) => ({ ...file, path: file.target })),
+          }
+        : item,
+    ),
   })
 
   return { items, registry }
@@ -166,10 +197,18 @@ async function expectedFiles() {
       `${JSON.stringify(item, null, 2)}\n`,
     ]),
   ])
-  const vue = await buildRegistry('vue')
-  files.set(join(outputDir, 'vue/registry.json'), `${JSON.stringify(vue.registry, null, 2)}\n`)
-  for (const item of vue.items)
-    files.set(join(outputDir, 'vue', `${item.name}.json`), `${JSON.stringify(item, null, 2)}\n`)
+  for (const framework of ['vue', 'svelte']) {
+    const built = await buildRegistry(framework)
+    files.set(
+      join(outputDir, framework, 'registry.json'),
+      `${JSON.stringify(built.registry, null, 2)}\n`,
+    )
+    for (const item of built.items)
+      files.set(
+        join(outputDir, framework, `${item.name}.json`),
+        `${JSON.stringify(item, null, 2)}\n`,
+      )
+  }
   return files
 }
 
@@ -225,10 +264,12 @@ async function main() {
   const files = await expectedFiles()
   if (checkOnly) {
     await check(files)
-    console.log(`✓ ${files.size - 2} React and Vue registry items are current and schema-valid`)
+    console.log(
+      `✓ ${files.size - 3} React, Vue, and Svelte registry items are current and schema-valid`,
+    )
   } else {
     await write(files)
-    console.log(`✓ wrote ${files.size - 2} React and Vue registry items to registry/r`)
+    console.log(`✓ wrote ${files.size - 3} React, Vue, and Svelte registry items to registry/r`)
   }
 }
 

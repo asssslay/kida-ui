@@ -221,6 +221,16 @@ function initializeFrameworkDocs() {
 // Module scripts run once with ClientRouter. Delegation and a fresh controller
 // after each swap avoid stale article references or duplicate click handlers.
 document.addEventListener('click', (event) => {
+  const exit =
+    event.target instanceof Element
+      ? event.target.closest<HTMLElement>('[data-framework-preference]')
+      : null
+  if (exit?.dataset.frameworkPreference) {
+    try {
+      localStorage.setItem(preferenceKey, exit.dataset.frameworkPreference)
+    } catch {}
+    return
+  }
   const button =
     event.target instanceof Element
       ? event.target.closest<HTMLElement>('[data-framework-choice]')
@@ -239,8 +249,19 @@ document.addEventListener(
         ? event.target.closest<HTMLAnchorElement>('.sidebar [data-framework-link]')
         : null
     // A section anchor (#api) still means the same page: keep the live preview.
-    if (link && link.pathname + link.search === location.pathname + location.search)
+    if (link && link.pathname + link.search === location.pathname + location.search) {
       event.preventDefault()
+      return
+    }
+    const onSvelte =
+      document.querySelector<HTMLElement>('.framework-switcher')?.dataset.frameworkCurrent ===
+      'svelte'
+    const listed = link?.dataset.frameworks?.split(' ')
+    if (link && onSvelte && (!listed || listed.includes('svelte'))) {
+      event.preventDefault()
+      event.stopPropagation()
+      location.assign(`/docs/svelte${link.pathname.replace(/^\/docs/, '')}${link.hash}`)
+    }
   },
   { capture: true },
 )

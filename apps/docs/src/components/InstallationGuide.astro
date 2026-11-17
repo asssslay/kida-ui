@@ -5,7 +5,7 @@ import FrameworkContent from './FrameworkContent.astro'
 import InstallationContent from './InstallationContent.astro'
 
 interface Props {
-  framework?: 'react' | 'vue'
+  framework?: 'react' | 'vue' | 'svelte'
 }
 const { framework = 'react' } = Astro.props
 const headings = [
@@ -30,7 +30,11 @@ const headings = [
   frameworkPage="installation"
   headings={headings}
 >
-  <FrameworkContent framework={framework}>
-    <InstallationContent framework={framework} />
-  </FrameworkContent>
+  {framework === 'svelte' ? (
+    <div id="framework-article"><InstallationContent framework="svelte" /></div>
+  ) : (
+    <FrameworkContent framework={framework}>
+      <InstallationContent framework={framework} />
+    </FrameworkContent>
+  )}
 </DocsLayout>

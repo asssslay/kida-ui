@@ -1,0 +1,5 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": { "types": ["astro/client", "svelte"], "declaration": false },
+  "include": ["src/demos/*.svelte"]
+}

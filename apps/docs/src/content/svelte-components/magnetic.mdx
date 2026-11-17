@@ -1,0 +1,56 @@
+import Demo from '../../components/Demo.astro'
+import Distribution from '../../components/Distribution.astro'
+import QuickStart from '../../components/QuickStart.astro'
+import Basic from '../../demos/magnetic-basic.svelte'
+
+<Demo name="magnetic-basic" framework="svelte" title="Restrained pull" hideSource>
+  <Basic client:visible={{ rootMargin: '200px' }} />
+</Demo>
+
+Place content inside the component. Native attributes and events use Svelte spelling, such as
+`onclick`, and `bind:element` gives you the root DOM element.
+
+## Quick start
+
+<Distribution name="magnetic" framework="svelte" />
+
+<QuickStart name="magnetic" framework="svelte" />
+
+## API
+
+### Props
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `strength` | `number` | `0.22` | Portion of pointer distance followed. |
+| `maxDistance` | `number` | `18` | Maximum travel in CSS pixels. |
+| `targetClass` | `string` | — | Class applied to the isolated moving layer. |
+| `element` | `HTMLSpanElement \| null` | `null` | Use `bind:element` to read the root DOM element. |
+
+The root also accepts span attributes, `class`, `style`, and event handlers.
+
+### CSS custom properties
+
+| Property | Default | Description |
+| --- | --- | --- |
+| `--kida-magnetic-activation-distance` | `2rem` | Stable pointer area around the stationary root. |
+
+## Customization
+
+Use `strength` to tune how closely the child follows the pointer and `maxDistance` to cap its
+travel. `--kida-magnetic-activation-distance` controls the stationary hover area; keep it large
+enough that the moving child cannot escape the pointer too easily.
+
+## Accessibility and input behavior
+
+Only mouse and pen movement activate the effect. Touch input is ignored, and the wrapped control
+continues to own its click, focus, and keyboard behavior. Magnetic does not reveal information, so
+no keyboard-only motion is required.
+
+When reduced motion is requested, pointer tracking is disabled and the child stays in its natural
+position. The stationary root keeps the hit area predictable while the visible child moves.
+
+## Troubleshooting
+
+> Magnetic intentionally ignores touch input and does not move under reduced motion. Test with a
+> mouse or pen, and avoid applying another `transform` directly to the generated target layer.

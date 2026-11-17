@@ -19,8 +19,7 @@ const components = [
   'image-text',
   'dual-wave',
 ]
-// The Vue demo whose client module must compile without React Refresh.
-const vueClientDemos = {
+const clientDemos = {
   'space-type': 'space-type-playground',
   'glow-highlight': 'glow-highlight-playground',
   'dual-wave': 'dual-wave-playground',
@@ -49,12 +48,15 @@ try {
     '/docs',
     '/docs/installation',
     '/docs/vue/installation',
+    '/docs/svelte/installation',
     ...components.map((name) => `/docs/${name}`),
     ...components.map((name) => `/docs/vue/${name}`),
+    ...components.map((name) => `/docs/svelte/${name}`),
     '/',
   ]) {
     const response = await fetch(`${origin}${path}`)
     const html = await response.text()
+    const text = html.replace(/<[^>]+>/g, '')
     assert.equal(response.status, 200, `${path}: development SSR failed`)
     if (path === '/' || path === '/docs') {
       for (const name of components) {
@@ -116,8 +118,35 @@ try {
         `${path}: framework switch is missing`,
       )
       assert(
-        !html.includes('npx shadcn@latest add'),
+        text.includes('npx shadcn-vue@2.8.2 add') && !text.includes('npx shadcn@latest add'),
         `${path}: React installation leaked into Vue documentation`,
+      )
+    }
+    if (path === '/docs/svelte/installation') {
+      assert(
+        text.includes('npx shadcn-svelte@1.8.0 add') && html.includes('/r/svelte/text-bloom.json'),
+        `${path}: Svelte installation command is missing`,
+      )
+    }
+    if (path.startsWith('/docs/svelte/') && path !== '/docs/svelte/installation') {
+      const name = path.split('/').at(-1)
+      assert(html.includes(`data-framework="svelte"`), `${path}: Svelte distribution is missing`)
+      assert(
+        text.includes(`npx shadcn-svelte@1.8.0 add`) && html.includes(`/r/svelte/${name}.json`),
+        `${path}: incorrect registry command`,
+      )
+      const marker = markers[name] ?? name
+      if (name === 'collapse') {
+        assert(html.includes('aria-expanded="false"'), `${path}: Collapse must start closed`)
+      } else {
+        assert(
+          html.includes(`data-kida-${marker}`),
+          `${path}: Svelte demo did not render on the server`,
+        )
+      }
+      assert(
+        !text.includes('npx shadcn@latest add') && !text.includes('npx shadcn-vue'),
+        `${path}: another framework's installation leaked into Svelte documentation`,
       )
     }
     assert(!html.includes('Vue (experimental)'), `${path}: the removed overview is still linked`)
@@ -133,19 +162,32 @@ try {
         `${name}: Vue entry is missing`,
       )
   }
+  for (const name of ['registry', ...components]) {
+    const response = await fetch(`${origin}/r/svelte/${name}.json`)
+    assert.equal(response.status, 200, `Svelte ${name} registry is missing`)
+    assert(response.headers.get('content-type')?.includes('application/json'))
+    const payload = await response.json()
+    if (name !== 'registry')
+      assert(
+        payload.files.some((file) => file.target === `kida/${name}.svelte`),
+        `${name}: Svelte entry is missing`,
+      )
+  }
   for (const name of components) {
-    const response = await fetch(
-      `${origin}/src/demos/${vueClientDemos[name] ?? `${name}-basic`}.vue`,
-    )
-    const source = await response.text()
-    assert.equal(response.status, 200, `Vue ${name} client module failed to compile`)
-    assert(
-      !source.includes('$RefreshSig$'),
-      `React Refresh leaked into the Vue ${name} client module`,
-    )
+    for (const extension of ['vue', 'svelte']) {
+      const response = await fetch(
+        `${origin}/src/demos/${clientDemos[name] ?? `${name}-basic`}.${extension}`,
+      )
+      const source = await response.text()
+      assert.equal(response.status, 200, `${extension} ${name} client module failed to compile`)
+      assert(
+        !source.includes('$RefreshSig$'),
+        `React Refresh leaked into the ${extension} ${name} client module`,
+      )
+    }
   }
   console.log(
-    '✓ development SSR renders Vue and React docs and the home page; Vue client modules compile without React Refresh',
+    '✓ development SSR renders React, Vue, and Svelte docs and the home page; Vue and Svelte client modules compile without React Refresh',
   )
 } finally {
   await server.stop()

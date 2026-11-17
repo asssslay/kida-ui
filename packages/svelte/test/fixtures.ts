@@ -1,3 +1,23 @@
+import type { DualWaveItem, PhotoPilePhoto } from '@kida-ui/svelte'
+
+export const photos = [
+  { id: 'flower', alt: 'Pink flower', color: '#ed719e' },
+  { id: 'sunset', alt: 'Orange sky', color: '#f4a261' },
+  { id: 'pool', alt: 'Mint pool', color: '#75c9a6' },
+].map(({ id, alt, color }) => ({
+  id,
+  alt,
+  src: `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="80" height="100"><rect width="80" height="100" fill="${color}"/></svg>`)}`,
+})) satisfies readonly PhotoPilePhoto[]
+
+export const waveItems = photos.map(({ id, alt, src }, index) => ({
+  id,
+  alt,
+  src,
+  title: `Project ${index + 1}`,
+  subtitle: `Studio ${index + 1}`,
+})) satisfies readonly DualWaveItem[]
+
 export function node<T extends HTMLElement = HTMLElement>(selector: string): T {
   const element = document.querySelector<T>(selector)
   if (!element) throw new Error(`Missing ${selector}`)
@@ -9,3 +29,9 @@ export function pointer(target: EventTarget, type: string, init: PointerEventIni
     new PointerEvent(type, { bubbles: true, pointerType: 'mouse', pointerId: 4, ...init }),
   )
 }
+
+export const frames = (count = 2) =>
+  new Promise<void>((resolve) => {
+    const step = (left: number) => (left ? requestAnimationFrame(() => step(left - 1)) : resolve())
+    step(count)
+  })

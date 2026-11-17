@@ -4,8 +4,9 @@ import { createServer } from 'vite'
 
 const root = fileURLToPath(new URL('..', import.meta.url))
 
-/** Renders the real server build through Vite, as a SvelteKit or Vite SSR host would. */
-export async function serverMarkup() {
+type Entry = typeof import('./server-entry.js')
+
+export async function withServerEntry<T>(read: (entry: Entry) => T) {
   const server = await createServer({
     root,
     configFile: false,
@@ -16,9 +17,10 @@ export async function serverMarkup() {
     ssr: { noExternal: ['@kida-ui/svelte'] },
   })
   try {
-    const entry = await server.ssrLoadModule('/test/server-entry.ts')
-    return entry.serverMarkup() as string
+    return read((await server.ssrLoadModule('/test/server-entry.ts')) as Entry)
   } finally {
     await server.close()
   }
 }
+
+export const serverMarkup = (open = true) => withServerEntry((entry) => entry.serverMarkup(open))

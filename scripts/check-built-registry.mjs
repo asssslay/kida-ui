@@ -21,4 +21,6 @@ for (const file of files) {
   ])
   if (published !== generated) throw new Error(`Published /r/${file} does not match ${source}`)
 }
-console.log('✓ docs build publishes both generated registry catalogs and every React/Vue item')
+console.log(
+  '✓ docs build publishes every generated registry catalog and every React, Vue, and Svelte item',
+)

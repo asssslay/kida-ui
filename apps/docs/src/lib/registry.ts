@@ -1,5 +1,7 @@
+export type RegistryFramework = 'react' | 'vue' | 'svelte'
+
 interface RegistryFile {
-  path: string
+  path?: string
   content: string
   type: string
   target?: string
@@ -38,11 +40,22 @@ const vueItems = Object.values(vueModules)
   .filter((item) => Array.isArray(item.files))
   .sort((a, b) => a.name.localeCompare(b.name))
 
-export function getRegistryItems(framework: 'react' | 'vue' = 'react'): RegistryItem[] {
-  return framework === 'vue' ? vueItems : items
+const svelteModules = import.meta.glob<RegistryItem>('../../../../registry/r/svelte/*.json', {
+  eager: true,
+  import: 'default',
+})
+const svelteItems = Object.values(svelteModules)
+  .filter((item) => Array.isArray(item.files))
+  .sort((a, b) => a.name.localeCompare(b.name))
+
+export function getRegistryItems(framework: RegistryFramework = 'react'): RegistryItem[] {
+  return { react: items, vue: vueItems, svelte: svelteItems }[framework]
 }
 
-export function getRegistryItem(name: string, framework: 'react' | 'vue' = 'react'): RegistryItem {
+export function getRegistryItem(
+  name: string,
+  framework: RegistryFramework = 'react',
+): RegistryItem {
   const item = getRegistryItems(framework).find((candidate) => candidate.name === name)
   if (!item) {
     throw new Error(`Unknown registry item "${name}".`)

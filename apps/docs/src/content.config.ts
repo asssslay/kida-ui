@@ -21,9 +21,9 @@ const components = defineCollection({
     status: z.enum(['stable', 'beta', 'planned']).default('beta'),
     /** Framework adapters available for this component. */
     frameworks: z
-      .array(z.enum(['react', 'vue']))
+      .array(z.enum(['react', 'vue', 'svelte']))
       .min(1)
-      .default(['react', 'vue']),
+      .default(['react', 'vue', 'svelte']),
     /** Sidebar ordering; ties break alphabetically. */
     order: z.number().default(0),
   }),
@@ -34,4 +34,9 @@ const vueComponents = defineCollection({
   schema: z.object({}),
 })
 
-export const collections = { components, vueComponents }
+const svelteComponents = defineCollection({
+  loader: glob({ pattern: '**/*.mdx', base: './src/content/svelte-components' }),
+  schema: z.object({}),
+})
+
+export const collections = { components, vueComponents, svelteComponents }

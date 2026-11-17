@@ -69,13 +69,33 @@ reference images and does not replace the existing authoritative Linux React bas
 Copied-source conformance installs every Vue registry item through the pinned shadcn-vue CLI,
 then tests a combined installation with a custom UI alias. The displayed quick starts typecheck,
 bundle, and render deterministically in Node without Kida packages or workspace aliases.
-Both framework catalogs and all 22 items must match the built documentation endpoints.
+All three framework catalogs and all 33 items must match the built documentation endpoints.
 
 The packed-consumer check in `DISTRIBUTION.md` verifies the displayed demos, production bundle,
 declaration resolution, and server imports. `/docs/<name>` supplies the live preview and framework-specific examples and API notes.
 All eleven Vue components are supported to the same standard as React. Their Vue suites cover
 reactive updates without restarting, emitted events, cleanup, reduced motion, SSR/hydration, and
 settled React/Vue pixel parity at mobile and desktop widths.
+## Svelte adapter
+
+`@kida-ui/svelte` exports the same eleven components with Svelte 5 runes. It shares the motion
+options, measurement helpers, CSS variables, and data attributes with React and Vue. Content goes
+through `children` snippets, native attributes and events pass through as Svelte props, callbacks
+replace events (`onExitComplete`, `onIndexChange`, `onGeometryChange`), DualWave supports
+`bind:index`, and `bind:element` exposes the root DOM element.
+
+A parent's `{...spread}` makes Svelte re-read every prop when any one changes. Each adapter therefore
+restarts its controller only when a `$derived` key over its own options changes, and style directives
+write only changed values, so unrelated updates never restart motion or overwrite engine styles.
+
+`pnpm --filter @kida-ui/svelte test` builds the package, renders the showcase through a Vite SSR
+server in Node, then runs Chromium browser and touch suites ported from the Vue suites with the same
+test counts. They hydrate the Node-rendered markup in place for open and closed states, run axe with
+color contrast at mobile and desktop widths, and compare settled React/Svelte pixels at both widths.
+Copied-source conformance (`scripts/check-svelte-copy-source.mjs`) installs every item through the
+pinned shadcn-svelte CLI into SvelteKit 2/Vite (`$lib`) and SvelteKit 3 (`#lib`) style projects.
+Firefox and WebKit runs and a packed-package consumer check are not yet set up for Svelte.
+
 CI defines Firefox/WebKit behavior gates for both adapters, in addition to Chromium, with
 Chromium/WebKit touch emulation. Manual real touch-device and screen-reader checks are
 recommended. See [the release checklist](RELEASE_CHECKLIST.md) for commands and the manual review
