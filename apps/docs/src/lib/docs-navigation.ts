@@ -376,6 +376,16 @@ document.addEventListener('astro:before-preparation', (event: TransitionBeforePr
   }
 })
 
+addEventListener('unhandledrejection', (event) => {
+  const reason = event.reason
+  if (
+    reason instanceof DOMException &&
+    reason.name === 'AbortError' &&
+    /transition/i.test(reason.message)
+  )
+    event.preventDefault()
+})
+
 document.addEventListener('astro:before-swap', (event) => {
   // Skipping a transition rejects its ready promise even though the DOM swap
   // completes. Handle that cancellation on the promise itself; real failures
