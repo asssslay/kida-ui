@@ -10,6 +10,14 @@ export async function getStaticPaths() {
   const vueEntries = entries.filter((entry) => entry.data.frameworks.includes('vue'))
   if (vueEntries.some((entry) => !vueNames.has(entry.id)) || vue.length !== vueEntries.length)
     throw new Error('Vue component documentation must match the catalog')
+  const svelte = await getCollection('svelteComponents')
+  const svelteNames = new Set(svelte.map((entry) => entry.id))
+  const svelteEntries = entries.filter((entry) => entry.data.frameworks.includes('svelte'))
+  if (
+    svelteEntries.some((entry) => !svelteNames.has(entry.id)) ||
+    svelte.length !== svelteEntries.length
+  )
+    throw new Error('Svelte component documentation must match the catalog')
   return [
     ...entries.map((entry) => ({
       params: { slug: entry.id },
@@ -24,6 +32,18 @@ export async function getStaticPaths() {
           entry,
           content,
           framework: 'vue' as const,
+        },
+      }
+    }),
+    ...svelte.map((content) => {
+      const entry = entries.find((entry) => entry.id === content.id)
+      if (!entry) throw new Error(`Svelte documentation has no catalog entry: ${content.id}`)
+      return {
+        params: { slug: `svelte/${content.id}` },
+        props: {
+          entry,
+          content,
+          framework: 'svelte' as const,
         },
       }
     }),
@@ -42,7 +62,13 @@ const { Content, headings } = await render(content)
   framework={framework}
   frameworkPage={entry.id}
 >
-  <FrameworkContent framework={framework}>
-    <Content />
-  </FrameworkContent>
+  {framework === 'svelte' ? (
+    <div id="framework-article">
+      <Content />
+    </div>
+  ) : (
+    <FrameworkContent framework={framework}>
+      <Content />
+    </FrameworkContent>
+  )}
 </DocsLayout>

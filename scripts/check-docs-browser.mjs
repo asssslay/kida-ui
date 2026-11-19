@@ -924,9 +924,93 @@ try {
       document.querySelectorAll('.astro-route-announcer').length === 1 &&
       document.querySelector('.astro-route-announcer').textContent === document.title,
   )
+  await open('/docs/reveal')
+  await page.locator('[data-framework-svelte]').click()
+  await page.waitForURL(`${origin}/docs/svelte/reveal`)
+  await page.waitForFunction(() => {
+    const islands = [...document.querySelectorAll('.demo-stage astro-island')]
+    return (
+      islands.length === 2 &&
+      islands.every((island) => island.getAttribute('renderer-url')?.includes('svelte')) &&
+      !islands[0].hasAttribute('ssr')
+    )
+  })
+  assert.equal(
+    await page.locator('.framework-switcher a[aria-current="page"]').textContent(),
+    'Svelte',
+  )
+  assert.equal(
+    await page.evaluate(() => document.documentElement.hasAttribute('data-framework-pending')),
+    false,
+  )
+  await page.locator('[data-demo="reveal-basic"] [data-kida-reveal]').scrollIntoViewIfNeeded()
+  await page.waitForFunction(
+    () =>
+      document.querySelector('[data-demo="reveal-basic"] [data-kida-reveal]')?.style.willChange ===
+      'auto',
+  )
+  await page.locator('.sidebar a[href="/docs/collapse"]').click()
+  await page.waitForURL(`${origin}/docs/svelte/collapse`)
+  await page.waitForFunction(() => {
+    const island = document.querySelector('.demo-stage astro-island')
+    return island?.getAttribute('renderer-url')?.includes('svelte') && !island.hasAttribute('ssr')
+  })
+  await page.locator('[data-demo="collapse-basic"] button').click()
+  await page.waitForFunction(
+    () =>
+      document.querySelector('[data-demo="collapse-basic"] [data-kida-collapse]')?.dataset.state ===
+      'open',
+  )
+  await page.locator('.framework-switcher a[data-framework-preference="react"]').click()
+  await page.waitForURL(`${origin}/docs/collapse`)
+  await page.waitForFunction(
+    () =>
+      document.querySelector('[data-framework-choice="react"]')?.getAttribute('aria-pressed') ===
+        'true' && !document.querySelector('[data-framework-choice]:disabled'),
+  )
+  assert.equal(await page.locator('[data-framework-svelte]').count(), 1)
+  for (const width of [390, 1280]) {
+    await page.setViewportSize({ width, height: 900 })
+    for (const name of components) {
+      console.log(`Checking ${engine}: Svelte ${name} at ${width}px`)
+      const response = await page.goto(`${origin}/docs/svelte/${name}`)
+      assert(
+        [200, 304].includes(response?.status()),
+        `/docs/svelte/${name}: HTTP ${response?.status()}`,
+      )
+      const islands = page.locator('.demo-stage astro-island')
+      const count = await islands.count()
+      assert(count > 0, `/docs/svelte/${name}: no live preview`)
+      for (let index = 0; index < count; index++) {
+        const island = islands.nth(index)
+        await island.evaluate((node) =>
+          node.closest('.demo-stage')?.scrollIntoView({ block: 'center' }),
+        )
+        await island.evaluate(
+          (node) =>
+            new Promise((resolve) => {
+              const done = () => !node.hasAttribute('ssr') && resolve()
+              new MutationObserver(done).observe(node, { attributes: true })
+              done()
+            }),
+        )
+        assert(
+          (await island.getAttribute('renderer-url'))?.includes('svelte'),
+          `/docs/svelte/${name}: preview ${index + 1} is not rendered by Svelte`,
+        )
+      }
+      assert(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= document.documentElement.clientWidth,
+        ),
+        `/docs/svelte/${name}: horizontal overflow at ${width}px`,
+      )
+    }
+  }
+
   assert.deepEqual(errors, [], 'Documentation browser errors')
   console.log(
-    `✓ ${engine}: matching React/Vue demos; framework selection preserves previews; sidebar/history navigation retains the shell and selected framework without a reload or React flash`,
+    `✓ ${engine}: matching React/Vue demos; Svelte previews hydrate; framework selection preserves previews; sidebar/history navigation retains the shell and selected framework without a reload or React flash`,
   )
 } finally {
   await browser?.close()

@@ -1,6 +1,7 @@
 // @ts-check
 import mdx from '@astrojs/mdx'
 import react from '@astrojs/react'
+import svelte from '@astrojs/svelte'
 import vue from '@astrojs/vue'
 import { defineConfig } from 'astro/config'
 
@@ -18,8 +19,7 @@ export default defineConfig({
   site,
   redirects: { '/docs/vue': { status: 301, destination: '/docs/vue/installation' } },
 
-  // Keep React transforms and renderer detection out of Vue SFCs and their virtual modules.
-  integrations: [react({ exclude: [/\.vue(?:\?|$)/] }), vue(), mdx()],
+  integrations: [react({ exclude: [/\.(?:vue|svelte)(?:\?|$)/] }), vue(), svelte(), mdx()],
 
   // The docs consume built workspace packages, so their browser dependencies are one level
   // removed from the demo entrypoints. Keep development and production optimizer output separate:

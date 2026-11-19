@@ -4,15 +4,22 @@ Animation-first UI components, built to reach every stack.
 
 **Status: pre-alpha.** The `@kida-ui` npm scope is claimed, and the first vertical slice includes
 `Reveal`, `Collapse`, five signature motion components, a browser-tested React adapter,
-Vue 3.5 adapters for every component, including `SpaceType`, `GlowHighlight`, `ImageText`, and
-`DualWave`, and an Astro documentation site.
+Vue 3.5 and Svelte 5 adapters for every component, including `SpaceType`, `GlowHighlight`,
+`ImageText`, and `DualWave`, and an Astro documentation site.
 
-Install components today by copying their source with the `shadcn` or `shadcn-vue` CLI. The npm
+Install components today by copying their source with the `shadcn`, `shadcn-vue`, or
+`shadcn-svelte` CLI. The npm
 packages are not published, so `npm install @kida-ui/vue` and `npm install @kida-ui/react` fail.
 For example, this adds TextBloom to a Vue project:
 
 ```bash
 npx shadcn-vue@2.8.2 add https://kida-ui.onrender.com/r/vue/text-bloom.json
+```
+
+And this adds it to a Svelte project:
+
+```bash
+npx shadcn-svelte@1.8.0 add https://kida-ui.onrender.com/r/svelte/text-bloom.json
 ```
 
 See the [installation guide](https://kida-ui.onrender.com/docs/installation) for project setup.

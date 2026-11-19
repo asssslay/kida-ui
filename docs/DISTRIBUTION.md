@@ -1,12 +1,12 @@
 # Kida UI Distribution
 
-Status: **copied source is available for React and Vue; npm packages are not published** (2026-11-05)
+Status: **copied source is available for React, Vue, and Svelte; npm packages are not published** (2026-11-16)
 
 Copied source is the supported way to install Kida. npm publication is deferred until a release
 decision, so `@kida-ui/react`, `@kida-ui/vue`, `@kida-ui/motion`, and `@kida-ui/styles` cannot be
 installed from npm yet.
 
-React and Vue each cover all eleven components. Component and installation pages
+React, Vue, and Svelte each cover all eleven components. Component and installation pages
 have a React/Vue selector on one canonical `/docs/<name>` page. It changes the checked source,
 installation instructions, and API notes without navigation or restarting the live preview. The
 framework preference is remembered locally across pages; a future single-framework page hides
@@ -17,9 +17,17 @@ Sidebar navigation keeps the navigation controls mounted and prepares the select
 new article before displaying it, without changing the canonical URL format.
 Vue 3.5+ and a TypeScript project are required.
 
+Svelte 5 pages live at `/docs/svelte/<name>` and `/docs/svelte/installation`. They are separate
+documents rather than in-place switches, so their live demos run on the Svelte adapter. The
+selector links to them, and the sidebar on a Svelte page opens other Svelte pages. Svelte 5.46+
+and a TypeScript project are required; `@kida-ui/svelte` stays private until an npm release
+decision.
+
 React uses the existing `/r/<name>.json` registry through `shadcn`. Vue uses
 `/r/vue/<name>.json` through `shadcn-vue@2.8.2`, with its own catalog at `/r/vue/registry.json`.
-Both CLI paths copy the required Kida source and CSS and declare only public third-party packages.
+Svelte uses `/r/svelte/<name>.json` through `shadcn-svelte@1.8.0`, with its catalog at
+`/r/svelte/registry.json`. Every CLI path copies the required Kida source and CSS and declares
+only public third-party packages.
 No unpublished `@kida-ui/*` dependency is required by copied source.
 
 ```bash
@@ -31,6 +39,15 @@ initialize `components.json` first. `aliases.ui` controls the destination; the d
 `@/components/ui/kida/text-bloom.vue`. Manual copying is also documented on each component page.
 Keep Vue's SFC, `.types.ts`, `.motion.ts`, and CSS files together in the `kida` directory.
 
+```bash
+npx shadcn-svelte@1.8.0 add https://kida-ui.onrender.com/r/svelte/text-bloom.json
+```
+
+Svelte items install into `kida/` under `aliases.ui`, by default
+`src/lib/components/ui/kida`. SvelteKit 2 and Vite projects import them through `$lib`; SvelteKit
+3 projects use `#lib`, the `package.json` import that `shadcn-svelte init` configures. The
+shadcn-svelte CLI requires Tailwind CSS in the project even though Kida does not use it.
+
 `pnpm registry:check-copy` validates React source fixtures and invokes the pinned Vue CLI against
 an isolated loopback registry. Each Vue item is installed in its own clean TypeScript project;
 a combined installation uses a custom UI alias. These checks install actual public dependencies,
@@ -39,6 +56,13 @@ shown quick starts, production-bundle them, and render deterministic server HTML
 required TypeScript compiler is part of the host fixture. The CLI's icon catalog is supplied locally,
 so registry installation does not depend on the upstream website; public dependencies use npm.
 `--combined-only` on `scripts/check-vue-copy-source.mjs` is a debugging shortcut; CI runs all cases.
+
+`scripts/check-svelte-copy-source.mjs` does the same for Svelte with the pinned shadcn-svelte CLI:
+each item installs into its own clean project with `$lib`, then all items install together with a
+custom UI alias and again with SvelteKit 3's `#lib` package import. Each project runs
+`svelte-check --fail-on-warnings` on the copied source and the shown quick starts, builds them,
+and renders them on the server twice to confirm deterministic HTML. The CLI's base style index is
+served locally.
 
 `pnpm check:vue-consumer` packs the Vue, motion, and styles packages, extracts them into an isolated
 temporary consumer outside the workspace, and checks the displayed Vue demos against the packed

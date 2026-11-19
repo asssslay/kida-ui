@@ -2542,7 +2542,8 @@ a {
   gap: 0.5rem;
   margin: 1.5rem 0 2rem;
 }
-.framework-switcher button {
+.framework-switcher button,
+.framework-switcher a {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -2554,16 +2555,20 @@ a {
   font: inherit;
   cursor: pointer;
   font-size: 0.85rem;
+  text-decoration: none;
 }
 /* Pages list only the adapters they ship; the switcher itself stays mounted. */
-.framework-switcher button[hidden] {
+.framework-switcher button[hidden],
+.framework-switcher a[hidden] {
   display: none;
 }
-.framework-switcher button[aria-pressed="true"] {
+.framework-switcher button[aria-pressed="true"],
+.framework-switcher a[aria-current="page"] {
   background: var(--ink, #211c24);
   color: #fffafb;
 }
-.framework-switcher button:focus-visible {
+.framework-switcher button:focus-visible,
+.framework-switcher a:focus-visible {
   outline: 2px solid #6d52a8;
   outline-offset: 4px;
 }

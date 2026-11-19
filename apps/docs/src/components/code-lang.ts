@@ -7,6 +7,7 @@ export type CodeLang =
   | 'css'
   | 'html'
   | 'vue'
+  | 'svelte'
   | 'json'
   | 'bash'
   | 'text'

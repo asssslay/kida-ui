@@ -1,6 +1,6 @@
 # Kida UI — Architecture Decision Record
 
-Status: **decided** (2026-10-08) · Scope: React catalog + Vue adapter · Rev 8
+Status: **decided** (2026-11-16) · Scope: React catalog + Vue and Svelte adapters · Rev 9
 
 ## 1. Positioning
 
@@ -18,7 +18,7 @@ tactile and playful motion in response to intent. `DESIGN_DIRECTION.md` owns the
 | # | Decision | Rationale |
 |---|---|---|
 | D1 | Layered architecture: core / styles / adapters / distribution | Zag + Ark's proven shape; framework #2 must cost ~300 LOC, not a rewrite |
-| D2 | React and Vue 3.5 cover the catalog | Keep behavior and CSS shared so each adapter stays thin, and document availability per component. Require package, SSR, lifecycle, and parity evidence before adding another adapter. |
+| D2 | React, Vue 3.5, and Svelte 5 cover the catalog | Keep behavior and CSS shared so each adapter stays thin, and document availability per component. Require package, SSR, lifecycle, and parity evidence before adding another adapter. |
 | D3 | Animation engine built on vanilla `motion`, NOT `framer-motion` | `motion` is framework-agnostic → identical motion in every framework later |
 | D3a | **`@kida-ui/motion` has zero framework code and zero framework peer deps** | The real boundary. CI-enforceable. React adapter lives in `@kida-ui/react`, not `@kida-ui/motion/react` — otherwise React has two entry points. |
 | D4 | Behavior from Zag.js | 60+ audited machines, already supports 6 frameworks |
@@ -39,7 +39,7 @@ tactile and playful motion in response to intent. `DESIGN_DIRECTION.md` owns the
 ```
 L4  DISTRIBUTION   registry JSON (copy)   +   npm packages (install)
                    ▲── both generated from the SAME source ──▲
-L3  ADAPTERS       react/  vue/  [svelte/ solid/ — later]                   thin
+L3  ADAPTERS       react/  vue/  svelte/  [solid/ — later]                  thin
 L2  STYLES         plain CSS custom properties + data-* selectors  100% shared
                    (+ optional @theme layer for Tailwind users)
 L1  CORE           @kida-ui/motion (agnostic) + Zag machines        100% shared
@@ -73,6 +73,7 @@ packages/react/           @kida-ui/react — the ONLY React surface
   src/motion/             useReveal, useStagger …  (~50 LOC each)
   src/components/         the components
 packages/vue/             @kida-ui/vue — SFC adapters for the catalog
+packages/svelte/          @kida-ui/svelte — Svelte 5 rune adapters for the catalog (private)
 ```
 
 Note: `motion@13.1.0` ships `.` + `./react` in one package using
@@ -137,6 +138,7 @@ kida-ui/
 │  ├─ styles/          L2  plain CSS tokens + keyframes (+ optional tailwind.css)
 │  ├─ react/           L3  React adapter (motion hooks) + components
 │  ├─ vue/             L3  Vue 3.5 adapter + components
+│  ├─ svelte/          L3  Svelte 5 adapter + components (private)
 │  └─ cli/             (v2) `kida add <c> --framework svelte`
 ├─ registry/
 │  ├─ registry.json
@@ -158,7 +160,7 @@ packages/react/src/spotlight-card.tsx      ← single source of truth
    └── build-registry.ts ──► registry/r/spotlight-card.json
 ```
 
-The copy path is available for every public React and Vue component. Each registry item contains all
+The copy path is available for every public React, Vue, and Svelte component. Each registry item contains all
 required Kida source and CSS and declares only public third-party runtime packages. The package
 path remains the future upgradeable option once the Kida packages are published.
 
@@ -171,8 +173,9 @@ v1 needs **no Kida CLI**: emit shadcn-schema JSON and users run
 // → npx shadcn@latest add @kida-ui/reveal
 ```
 
-Vue uses generated `/r/vue/<name>.json` items with the official shadcn-vue CLI. Framework
-selection lives in the docs; both CLI paths are validated outside the workspace. A custom Kida
+Vue uses generated `/r/vue/<name>.json` items with the official shadcn-vue CLI, and Svelte uses
+`/r/svelte/<name>.json` with shadcn-svelte. Framework selection lives in the docs; every CLI path
+is validated outside the workspace. A custom Kida
 CLI remains deferred while the existing framework CLIs cover installation.
 
 ## 8. Toolchain
@@ -195,6 +198,10 @@ Vitest + Playwright + axe · Biome · Astro (docs) · Shiki
   and parity, generated copied-source distribution, and framework-specific documentation;
   copied source is the supported install path and npm publication is deferred;
   manual screen-reader and real-device checks are recommended, not release gates
+- **P6 — complete:** Svelte 5 supports all eleven components with SSR/hydration/browser/touch
+  evidence and settled React/Svelte pixel parity, generated copied-source distribution through
+  shadcn-svelte for SvelteKit 2, SvelteKit 3, and Vite, and Svelte documentation pages;
+  the package stays private, and Firefox/WebKit runs are not yet set up for it
 
 ## 10. Known risks
 

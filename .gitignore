@@ -12,4 +12,5 @@ coverage/
 # Vitest browser mode writes a screenshot for every failing test.
 __screenshots__/
 .vitest-attachments/
+.svelte-kit/
 .copy-source-fixture/

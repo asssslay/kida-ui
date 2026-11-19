@@ -1,0 +1,31 @@
+<script lang="ts">
+import { drawInView } from '@kida-ui/motion'
+import { untrack } from 'svelte'
+import type { ScribbleHighlightProps } from './types.js'
+
+let {
+  variant = 'underline',
+  once,
+  amount,
+  element = $bindable(null),
+  children,
+  ...rest
+}: ScribbleHighlightProps = $props()
+
+const paths = {
+  underline: 'M2 12.5 C18 8.5 34 15.5 50 11 C66 6.5 82 14 98 9.5',
+  circle: 'M6 10 C16 1 78 0 94 8 C104 15 88 20 50 19 C14 19 -3 15 6 10',
+} as const
+
+const root = $derived(element)
+const optionsKey = $derived(JSON.stringify([variant, once, amount]))
+
+$effect(() => {
+  const node = root
+  void optionsKey
+  if (!node) return
+  return untrack(() => drawInView(node, { once, amount }))
+})
+</script>
+
+<span {...rest} bind:this={element} data-kida-scribble="" data-variant={variant} data-state="idle"><span data-kida-scribble-content="">{@render children?.()}</span><svg aria-hidden="true" viewBox="0 0 100 20" preserveAspectRatio="none"><path d={paths[variant]} /></svg></span>

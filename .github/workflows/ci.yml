@@ -76,7 +76,7 @@ jobs:
       - name: Install locked browser and operating system dependencies
         run: pnpm --filter @kida-ui/react exec playwright install --with-deps "${{ matrix.browser }}"
       - name: Build adapters and shared dependencies
-        run: pnpm exec turbo run build --filter=@kida-ui/react --filter=@kida-ui/vue
+        run: pnpm exec turbo run build --filter=@kida-ui/react --filter=@kida-ui/vue --filter=@kida-ui/svelte
       - name: React behavior and responsive geometry
         run: pnpm --filter @kida-ui/react test:cross-browser --project "${{ matrix.browser }}"
       - name: Vue behavior, hydration, accessibility, and adapter parity
